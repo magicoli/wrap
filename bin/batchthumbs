@@ -1,0 +1,67 @@
+#!/bin/sh
+
+PGM=`basename "$0"`
+TMP="/tmp/$PGM.$$"
+method=cannelle
+
+pwd | grep "/hella/" >/dev/null && method=hella
+
+[ ! $1 ] && echo must specify list && exit 1
+
+list=$1
+
+[ "$2" ] && method=$2
+
+echo "method: $method" >&2
+
+cat "$list" | egrep "[A-Za-z]" | while read nr name
+do
+	[ "$name" == "" ] && continue
+	echo "$name" >> "$TMP.list"
+	name=`webnormalize "$name"`
+	case $method in
+		"andrieu")
+		lastnr=$(($nr - 1))
+		if [ "$lastname" ]
+			then
+			[ -f "$lastnr.mov" ] \
+				&& qt-thumbnailswide.sh -l -0 "$lastnr.mov" \
+				&& cp -p ".browsercache/$lastnr-thumb.jpg" \
+				"../web/.browsercache/$lastname-thumb.jpg"
+			[ -f "$lastnr.MTS" ] \
+				&& qt-thumbnailswide.sh -l -0 "$lastnr.MTS" \
+				&& cp -p ".browsercache/$lastnr-thumb.jpg" \
+				"../web/.browsercache/$lastname-thumb.jpg"
+		fi
+		lastname=$name
+		;;
+		"hella")
+		[ -f "../web/.browsercache/$name-thumb.jpg" ] && continue
+		lastnr=$(($nr - 2))
+		if [ "$lastname" ]
+			then
+			[ -f "$lastnr.mov" ] \
+				&& qt-thumbnailswide.sh -l -0 "$lastnr.mov" \
+				&& cp -p ".browsercache/$lastnr-thumb.jpg" \
+				"../web/.browsercache/$lastname-thumb.jpg"
+			[ -f "$lastnr.MTS" ] \
+				&& qt-thumbnailswide.sh -l -0 "$lastnr.MTS" \
+				&& cp -p ".browsercache/$lastnr-thumb.jpg" \
+				"../web/.browsercache/$lastname-thumb.jpg"
+		fi
+		lastname=$name
+		;;
+		"cannelle")
+		## use last frame of last sequence for each clip
+		[ -f "../web/.browsercache/$name-thumb.jpg" ] && continue
+		[ -f ".browsercache/$nr-thumb.jpg" ] || continue
+		cp -p ".browsercache/$nr-thumb.jpg" "../web/.browsercache/$name-thumb.jpg"
+		;;
+		default)
+		echo "no method"
+		break
+		;;
+	esac
+done >&2
+
+makeplaylist "$TMP.list" | sed "s/\$reserve=/\$customnames=/"

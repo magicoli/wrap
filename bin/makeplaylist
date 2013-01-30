@@ -1,0 +1,63 @@
+#!/bin/sh
+
+PGM=`basename "$0"`
+TMP="/tmp/$PGM.$$"
+
+echo "<?php"
+printf "\$reserve=array(\n"
+
+if [ "$1" ]
+	then
+	for param in "$@"
+	do
+		if [ -f "$param" ]
+			then
+			sort=false
+			cat "$param" | cut -d '"' -f 2 | sed "s/$/.mp4/"
+		elif [ -d "$param" ] 
+			then
+			sort=true
+			ls "$param"/*.mov "$param"/*.mp4 "$param"/*.m4v "$param"/*.mp3 "$param"/*.mpg "$param"/*.pdf "$param"/*.jpg  2>/dev/null \
+				| grep -v "\-large."\
+				| grep -v "\-dv."
+		fi
+	done | while read name
+	do
+		echo "$name" | webnormalize
+	done
+else
+	sort=true
+	ls *.mov *.mp4 *.m4v *.mp3 *.mpg *.jpg *.pdf 2>/dev/null | grep -v "\-large."\
+		| grep -v "\-dv."
+fi | while read name
+do
+	# file=`echo "$name" | webnormalize`
+	file=$name
+	name=`basename "$name" | sed "s/\.[a-zA-Z0-9]*$//" | sed "s/_/ /g" | sed "s/[-\. ][0-9]*$//"`
+	second=`echo "$file" | egrep "^[0-9]*,[0-9]*-" | cut -d "-" -f 1 | grep "," | cut -d "," -f 2`
+	first=`echo "$file" | egrep "^[0-9]" | cut -d "-" -f 1 | cut -d "," -f 1`
+	
+	if [ "$second" ]
+		then 
+		if [ $second -gt $first ]
+			then printf "${second}b\t"
+		else
+			printf "${first}b\t"
+		fi
+	else
+		printf "${first}\t"
+	fi
+	printf "\t\"$file\" => '$name',\n"
+done > "$TMP.playlist"
+
+if [ "$sort" = "true" ]
+	then
+	cat "$TMP.playlist" | sort -n | cut -f 2-
+else
+	cat "$TMP.playlist" | cut -f 2-
+fi
+
+echo ");"
+echo "?>"
+
+rm -f "$TMP.playlist"

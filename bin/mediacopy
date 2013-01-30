@@ -1,0 +1,49 @@
+#!/bin/sh
+
+removable=/media/usb*
+
+PGM=$(basename "$0")
+TMP=/tmp/$PGM.$$
+
+(
+    find $removable -iname "*.mp4"
+    find $removable -iname "*.mts"
+) > $TMP.files
+
+if [ $(basename "$PWD") = "sources" ]
+then
+    sources=$PWD
+else
+    if [ -d $PWD/sources ]
+	then
+	sources=$PWD/sources
+    fi
+fi
+
+cat $TMP.files | sed "s:[^/]*$::" | sort -u | while read folder
+do
+    echo "$folder"
+    count=$(grep -c "$folder" $TMP.files)
+    extension=$(grep "$folder" $TMP.files | sed "s/.*\.//" | sort -u)
+    echo "$count $extension videos"
+    if [ ! "$sources" ]
+	then
+	echo "copy these files to a casting sources folder"
+	echo "or start this program from a casting folder"
+	continue
+    fi
+    echo "$PGM: copying files"
+
+    rsync --progress -Wavz $folder/*.$extension $sources/
+
+    echo "$PGM: making thumbnails"
+
+    cd $sources
+    ls *.$extension | while read file
+    do
+	qt-thumbnailswide.sh -1 $file
+    done
+
+done
+
+rm -f $TMP*

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+for folder in mp4 sources
+do
+	[ ! -d $folder ] && echo missing $folder folder && exit 1
+done
+
+PGM=$(basename "$0")
+TMP=/tmp/$PGM
+
+cd sources || exit 2
+if [ ! -f $TMP.mov ]
+	then
+	echo "calculating original times"
+	movietime *.mov | grep mov | sort -n > $TMP.mov
+	echo $(cat $TMP.mov | wc -l) originals
+fi
+
+cd ../mp4 || exit 3
+echo "calculating mp4 times"
+movietime *.mp4 | grep mp4 | sort -n > $TMP.mp4
+echo $(cat $TMP.mp4 | wc -l) conversions
+
+cd ../sources
+
+grep mp4 $TMP.mp4 | while read file time seconds
+do
+	mp4=${file/:/}
+	mov=${mp4/mp4/mov}
+	orig=$(grep "^$mov:" $TMP.mov | cut -d " " -f 3)
+	[ "$orig" = "$seconds" ] && continue
+	printf "$mp4 $orig $seconds"
+	printf " making"
+	makemp4 $mov >/dev/null 2>/dev/null
+	[ ! -f /tmp/$mp4 ] && echo "not found " && break
+	printf " moving"
+	mv /tmp/$mp4 ../mp4/
+	echo
+done

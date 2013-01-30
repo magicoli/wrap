@@ -1,0 +1,23 @@
+#!/bin/sh
+
+if [ "$1" == "--large" ]
+	then
+	dest=../mp4-hd
+else
+	dest=../mp4
+fi
+
+[ ! -d "$dest" ] && echo "$dest missing" && exit 1
+[ ! -d "../web" ] && echo "../web missing" && exit 2
+
+while true
+do
+	# scratchmove --mp4 ./ $dest/
+	batchff liste
+	# batchturbo liste
+	# batchthumbs liste > playlist.php
+	batchthumbs liste > ../web/playlist.php
+	# batchsync -nt -nv
+	echo
+	read -t 10
+done
