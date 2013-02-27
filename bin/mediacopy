@@ -39,7 +39,9 @@ do
     echo "$PGM: making thumbnails"
 
     cd $sources
-    ls *.$extension | while read file
+    clips-renumber
+
+    ls *.$extension *.mov 2>/dev/null | sort -n | while read file
     do
 	qt-thumbnailswide.sh -1 $file
     done

@@ -1,10 +1,15 @@
-#!/bin/sh
+#!/bin/bash
+
+PGM=$(basename $0)
+TMP=/tmp/$PGM.$$
 
 if [ "$1" == "--large" ]
 	then
 	dest=../mp4-hd
+	method=$2
 else
 	dest=../mp4
+	method=$1
 fi
 
 [ ! -d "$dest" ] && echo "$dest missing" && exit 1
@@ -14,9 +19,11 @@ while true
 do
 	# scratchmove --mp4 ./ $dest/
 	batchff liste
+	batchthumbs liste $method > $TMP.playlist
+	mv $TMP.playlist ../web/playlist.php
+
 	# batchturbo liste
 	# batchthumbs liste > playlist.php
-	batchthumbs liste > ../web/playlist.php
 	# batchsync -nt -nv
 	echo
 	read -t 10

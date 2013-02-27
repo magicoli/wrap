@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # i=0; cat liste.txt | while read file; do  i=`expr $i + 1`; name="julien_frison-$i.mov"; chapcutmovie "$file" -o "$name"; done; ls *unnamed\ chapter*| while read file; do newfile=`echo "$file" | sed "s/ <unnamed chapter>//"`; echo $newfile; mv "$file" "$newfile"; done
 
@@ -114,7 +114,7 @@ if [ $1 ]
 	then
 	job=$1
 else
-	for basefolder in Jobs Showreels Castagne Sites Archaos MagiiicMobile
+	for basefolder in castings Jobs Showreels Castagne Sites Archaos MagiiicMobile
 	do
 		job=`pwd | grep $basefolder | sed "s/.*$basefolder//" | tr [:upper:] [:lower:] | sed "s/ //g" | cut -d "/" -f 2`
 		if [ "$job" ]
@@ -146,10 +146,23 @@ if [ ! $viewparams ]
 	echo "$PGM: processing $job"
 fi
 
-defaults read "net.van-helden.$PGM" "$job" 2>/dev/null | grep "=" | sed "s/^ *//" | sed "s/ *= */=/" > "$TMP.prefs" 
+defaults=$(which defaults)
 
-. "$TMP.prefs"
-rm "$TMP.prefs"
+if [ $defaults ]
+then
+    defaults read "net.van-helden.$PGM" "$job" 2>/dev/null | grep "=" | sed "s/^ *//" | sed "s/ *= */=/" > "$TMP.prefs" 
+    . "$TMP.prefs"
+    rm "$TMP.prefs"
+else
+    ini_parser="$(which ini_parser)"
+    [ "$ini_parser" ] && . $ini_parser 2>/dev/null
+
+    for ini in /etc/${PGM}.ini ~/.${PGM}rc
+    do
+	[ -f "$ini" ] && ini_parser "$ini"
+    done
+    ini_section_$job
+fi
 
 if [ "$forceprocessvideo" ]
 	then
@@ -189,12 +202,17 @@ fi
 
 if [ $saveprefs ]
 	then
+    if [ $defaults ]
+	then
 	defaults write "net.van-helden.$PGM" $job -dict-add \
 		local "$local" \
 		remote "$remote" \
 		processvideo $processvideo \
 		processthumbs $processthumbs \
 	&& 	echo "$hash$PGM: parameters saved"
+    else
+	echo "$PGM: parameters can't be saved in this OS"
+    fi
 fi
 
 if [ $viewparams ]
