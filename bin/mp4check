@@ -29,7 +29,10 @@ do
 	mov=${mp4/mp4/mov}
 	orig=$(grep "^$mov:" $TMP.mov | cut -d " " -f 3)
 	[ "$orig" = "$seconds" ] && continue
-	printf "$mp4 $orig $seconds"
+	delta=$(($orig - $seconds))
+	printf "$mp4 $orig $seconds "
+	[ $delta -eq 1 ] && echo "low diff, ignoring" && continue
+	[ $delta -eq -1 ] && echo "low diff, ignoring" && continue
 	printf " making"
 	makemp4 $mov >/dev/null 2>/dev/null
 	[ ! -f /tmp/$mp4 ] && echo "not found " && break
