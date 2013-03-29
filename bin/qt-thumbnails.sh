@@ -10,7 +10,6 @@ LARGESIZEWIDE=1024x576
 THUMBBEGIN=5
 FORCE=no
 WIDE=no
-LARGEDISABLED=yes
 
 PGM=`basename "$0" .sh`
 TMP=$PGM.$$
@@ -26,9 +25,12 @@ do
 		then
 		FORCE=yes
 #		echo "FORCE=yes"
-	elif [ "$check" = "l" ]
+	elif [ "$check" = "e" ]
 		then
 		USELASTIMAGE=yes
+	elif [ "$check" = "l" ]
+		then
+		LARGEENABLED=yes
 	elif [ "$check" = "w" ]
 		then
 		THUMBSIZE=$THUMBSIZEWIDE
@@ -75,14 +77,9 @@ do
 		then
 		if [ "$USELASTIMAGE" = "yes" ]
 			then
-			# movielength=$(qt_info "$movie" | grep duration | sed "s/.*duration : //" | cut -d "(" -f 1 | cut -d "." -f 1 | sort -n | tail -1 | sed "s/[^0-9]*//g")
 			movielength=$(movietime "$movie"  | head -1 | cut -d " " -f 3)
-			# baselength=$(date -j "+%s" 198001010000)
-			# movielength=$(date -j +"%s" 19800101`ffmpeg -i "$movie" 2>&1 | grep Duration | sed "s/.*Duration: //" | cut -d "," -f 1 | cut -d "." -f 1 | sed "s/://" | sed "s/:/./"`)
-			# movielength=`qt_info "$movie" |grep "track duration"|head -1|cut -d ":" -f 2|cut -d "." -f 1|sed "s/ //g"`
 			if [ $movielength ]
 				then
-				# movielength=$(expr $movielength - $baselength)
 				thumbpos=`expr $movielength - $THUMBBEGIN`
 				duration="$thumbpos,`expr $thumbpos + 1`"
 				echo "use last image: $duration"
@@ -104,37 +101,12 @@ do
 		continue
 	fi
 
-		exportcommand="ffmpeg -i "
-		exportparams="-y -ss $thumbpos -t 0.1 -f mjpeg"
-		tmpimage=
+	exportcommand="ffmpeg -i "
+	exportparams="-y -ss $thumbpos -t 0.1 -f mjpeg"
+	tmpimage=
 
-	# echo $exportcommand "$TMP.$extension" $exportparams "$dir/$TMP.jpg"
-	# $exportcommand "$TMP.$extension" -s "THUMBSIZE" $exportparams "$dir/$TMP-thumb.jpg" >/dev/null 2>/dev/null
-	# 
-	# if [ $? -eq 0 ] 
-	# 	then
-	# 	printf "." 
-	# else
-	# 	rm -f "$dir/$TMP.jpg"
-	# 	continue
-	# fi
-	# 
-	# rm -f "$TMP.$extension"
 	if [ ! -f "$thumb" -o "$FORCE" = "yes" ]
 		then
-#		jpgresult=$(convert -resize ${THUMBSIZE}\! -border $THUMBSIZE -bordercolor black -crop $THUMBSIZE+0+0 -gravity center "$dir/$TMP.jpg" "$dir/$TMP-thumb.jpg" 2>&1 1>/dev/null)
-		# jpgresult=$(convert -geometry ${THUMBSIZE}\! "$dir/$TMP.jpg" "$dir/$TMP-thumb.jpg" 2>&1 1>/dev/null)
-#		jpgresult=$(convert -geometry $THUMBSIZE "$dir/$TMP.jpg" "$dir/$TMP-thumb.jpg" 2>&1 1>/dev/null)
-
-
-		# if [ "$jpgresult" ] 
-		# then
-		# 	echo "ImageMagick convert error, using tmp file instead"
-		# 	# echo "$jpgresult" | sed "s/^/    /"
-		# 	mv "$dir/$TMP.jpg" "$dir/$TMP-thumb.jpg"
-		# 	LARGEDISABLED="yes"
-		# fi
-		# printf "."
 		$exportcommand "$TMP.$extension" -s $THUMBSIZE $exportparams "$dir/$TMP-thumb.jpg" >/dev/null 2>/dev/null
 		if [ $? -eq 0 ]
 			then
@@ -149,7 +121,7 @@ do
 		printf "t"
 	fi
 	
-	if [ "$LARGEDISABLED" = "yes" ]
+	if [ "$LARGEENABLED" != "yes" ]
 		then
 		rm -f "$TMP.$extension" "$dir/$TMP.jpg" && echo
 		continue
@@ -157,16 +129,6 @@ do
 	
 	if [ ! -f "$large" -o "$FORCE" = "yes" ]
 		then
-		# jpgresult=$(convert -geometry ${LARGESIZE}\! "$dir/$TMP.jpg" "$dir/$TMP-large.jpg" 2>&1 1>/dev/null)
-		# if [ "$jpgresult" ] 
-		# then
-		# 	echo "ImageMagick convert error, skipping large"
-		# 	# echo "$jpgresult"
-		# 	rm -f "$dir/$TMP.jpg"
-		# 	rm -f "$dir/$TMP-large.jpg"
-		# 	continue
-		# fi
-		# printf "."
 		$exportcommand "$TMP.$extension" $exportparams "$dir/$TMP-large.jpg" >/dev/null 2>/dev/null
 		if [ $? -eq 0 ]
 			then
