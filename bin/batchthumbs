@@ -80,4 +80,4 @@ do
 	esac
 done >&2
 
-# makeplaylist "$TMP.list" | sed "s/\$reserve=/\$customnames=/"
+makeplaylist "$TMP.list" | sed "s/\$reserve=/\$customnames=/"
