@@ -67,7 +67,7 @@ do
 	large="$dir/$name-large.jpg"
 	if [ -f "$thumb" -a "$FORCE" != "yes" ]
 	then
-		if [ -f "$large" -a "$FORCE" != "yop" ]
+		if [ -f "$large" -a "$FORCE" != "yep" ]
 			then
 			continue
 		fi
