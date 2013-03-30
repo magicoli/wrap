@@ -16,46 +16,63 @@ echo "method: $method" >&2
 
 cat "$list" | egrep "[A-Za-z]" | while read nr name
 do
-	[ "$name" == "" ] && continue
+	[ "$name" = "" ] && continue
 	echo "$name" >> "$TMP.list"
 	name=`webnormalize "$name"`
 	case $method in
 		"andrieu")
 		lastnr=$(($nr - 1))
+		thumb="../web/.browsercache/$lastname-thumb.jpg"
+		large="../web/.browsercache/$lastname-large.jpg"
+		[ -f "$lastnr.mov" ] && source=$lastnr.mov
+		[ -f "$lastnr.MTS" ] && source=$lastnr.MTS
 		if [ "$lastname" ]
 			then
-			[ -f "$lastnr.mov" ] \
-				&& qt-thumbnailswide.sh -l -0 "$lastnr.mov" \
-				&& cp -p ".browsercache/$lastnr-thumb.jpg" \
-				"../web/.browsercache/$lastname-thumb.jpg"
-			[ -f "$lastnr.MTS" ] \
-				&& qt-thumbnailswide.sh -l -0 "$lastnr.MTS" \
-				&& cp -p ".browsercache/$lastnr-thumb.jpg" \
-				"../web/.browsercache/$lastname-thumb.jpg"
+			[ ! -f "$thumb" ] \
+				&& qt-thumbnailswide.sh -e -0 "$source" \
+				&& cp -p ".browsercache/$lastnr-thumb.jpg" "$thumb"
+			[ ! -f "$large" ] \
+				&& qt-thumbnailswide.sh -l -e -0 "$source" \
+				&& cp -p ".browsercache/$lastnr-large.jpg" "$large"
 		fi
 		lastname=$name
 		;;
 		"hella")
+		thumb="../web/.browsercache/$lastname-thumb.jpg"
+		large="../web/.browsercache/$lastname-large.jpg"
 		[ -f "../web/.browsercache/$name-thumb.jpg" ] && continue
 		lastnr=$(($nr - 2))
+		[ -f "$lastnr.mov" ] && source=$lastnr.mov
+		[ -f "$lastnr.MTS" ] && source=$lastnr.MTS
 		if [ "$lastname" ]
 			then
 			[ -f "$lastnr.mov" ] \
-				&& qt-thumbnailswide.sh -l -0 "$lastnr.mov" \
+				&& qt-thumbnailswide.sh -e -0 "$lastnr.mov" \
 				&& cp -p ".browsercache/$lastnr-thumb.jpg" \
-				"../web/.browsercache/$lastname-thumb.jpg"
+				"$thumb"
 			[ -f "$lastnr.MTS" ] \
-				&& qt-thumbnailswide.sh -l -0 "$lastnr.MTS" \
+				&& qt-thumbnailswide.sh -e -0 "$lastnr.MTS" \
 				&& cp -p ".browsercache/$lastnr-thumb.jpg" \
-				"../web/.browsercache/$lastname-thumb.jpg"
+				"$thumb"
 		fi
 		lastname=$name
 		;;
 		"cannelle")
+		thumb="../web/.browsercache/$name-thumb.jpg"
+		large="../web/.browsercache/$name-large.jpg"
+		[ -f "$nr.mov" ] && source=$nr.mov
+		[ -f "$nr.MTS" ] && source=$nr.MTS
+
 		## use last frame of last sequence for each clip
-		[ -f "../web/.browsercache/$name-thumb.jpg" ] && continue
-		[ -f ".browsercache/$nr-thumb.jpg" ] || continue
-		cp -p ".browsercache/$nr-thumb.jpg" "../web/.browsercache/$name-thumb.jpg"
+		[ ! -f "$thumb" ] \
+			&& qt-thumbnailswide.sh -e -0 "$source" \
+			&& cp -p ".browsercache/$nr-thumb.jpg" "$thumb"
+		[ ! -f "$large" ] \
+			&& qt-thumbnailswide.sh -l -e -0 "$source" \
+			&& cp -p ".browsercache/$nr-large.jpg" "$large"
+		# [ -f "../web/.browsercache/$name-thumb.jpg" ] && continue
+		# [ -f ".browsercache/$nr-thumb.jpg" ] || continue
+		# cp -p ".browsercache/$nr-thumb.jpg" "../web/.browsercache/$name-thumb.jpg"
 		;;
 		default)
 		echo "no method"
@@ -64,4 +81,4 @@ do
 	esac
 done >&2
 
-makeplaylist "$TMP.list" | sed "s/\$reserve=/\$customnames=/"
+# makeplaylist "$TMP.list" | sed "s/\$reserve=/\$customnames=/"
