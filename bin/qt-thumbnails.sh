@@ -82,7 +82,6 @@ do
 				then
 				thumbpos=`expr $movielength - $THUMBBEGIN`
 				duration="$thumbpos,`expr $thumbpos + 1`"
-				echo "use last image: $duration"
 			else
 				duration=0,1
 			fi
@@ -93,7 +92,7 @@ do
 	then
 		shortname="$shortname(...)"
 	fi
-	printf "$shortname "
+	printf "$shortname ($thumbpos) "
 	ln -s "$movie" "$TMP.$extension"
 	if [ ! $? -eq 0 ] 
 		then
@@ -127,9 +126,19 @@ do
 		continue
 	fi
 	
+	originalsize=$(ffmpeg -i $TMP.$extension 2>&1 | grep Video: | sed "s/.* \([0-9]*x[0-9]*\) .*/\\1/")
+	resizeparam=
+	if [ "$WIDE" ]
+		then
+		x=$(echo $originalsize | cut -d "x" -f 1)
+		y=$(($x * 9 / 16))
+		if [ "$originalsize" != "${x}x${y}" ]
+			then
+			resizeparam="-s ${x}x${y}"
+	fi
 	if [ ! -f "$large" -o "$FORCE" = "yes" ]
 		then
-		$exportcommand "$TMP.$extension" $exportparams "$dir/$TMP-large.jpg" >/dev/null 2>/dev/null
+		$exportcommand "$TMP.$extension" $resizeparam $exportparams "$dir/$TMP-large.jpg" >/dev/null 2>/dev/null
 		if [ $? -eq 0 ]
 			then
 			mv "$dir/$TMP-large.jpg" "$large" \
