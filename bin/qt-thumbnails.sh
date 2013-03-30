@@ -73,7 +73,12 @@ do
 		fi
 	fi
 	thumbpos=$THUMBBEGIN
-	if [ ! -f "$thumb" -o "$FORCE" = "yes" ]
+	missinglarge=
+	if [ "$LARGEENABLED" = "yes" -a ! -f "$large" ]
+		then
+		missinglarge=yes
+	fi
+	if [ ! -f "$thumb" -o "$missinglarge" = "yes" -o "$FORCE" = "yes" ]
 		then
 		if [ "$USELASTIMAGE" = "yes" ]
 			then
