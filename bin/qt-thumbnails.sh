@@ -135,6 +135,7 @@ do
 		if [ "$originalsize" != "${x}x${y}" ]
 			then
 			resizeparam="-s ${x}x${y}"
+		fi
 	fi
 	if [ ! -f "$large" -o "$FORCE" = "yes" ]
 		then
