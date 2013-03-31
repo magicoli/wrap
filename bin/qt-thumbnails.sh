@@ -131,7 +131,7 @@ do
 		continue
 	fi
 	
-	originalsize=$(ffmpeg -i $TMP.$extension 2>&1 | grep Video: | sed "s/.* \([0-9]*x[0-9]*\) .*/\\1/")
+	originalsize=$(ffmpeg -i $TMP.$extension 2>&1 | egrep "Video:.*[0-9]*x[0-9]*" | head -1 | sed "s/^.* \([0-9]*x[0-9]*\)[, ].*$/\\1/")
 	resizeparam=
 	if [ "$WIDE" ]
 		then
