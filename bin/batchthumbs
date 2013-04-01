@@ -21,54 +21,23 @@ do
 	name=`webnormalize "$name"`
 	case $method in
 		"andrieu")
-		thumb="../web/.browsercache/$name-thumb.jpg"
-		large="../web/.browsercache/$name-large.jpg"
-		[ -f "$nr.mov" ] && source=$nr.mov
-		[ -f "$nr.MTS" ] && source=$nr.MTS
-
-		## use last frame of last sequence for each clip
-		[ ! -f "$thumb" ] \
-			&& qt-thumbnailswide.sh -e -0 "$source" \
-			&& cp -p ".browsercache/$nr-thumb.jpg" "$thumb"
-		[ ! -f "$large" ] \
-			&& qt-thumbnailswide.sh -l -e -0 "$source" \
-			&& cp -p ".browsercache/$nr-large.jpg" "$large"
+		thumbname=$lastname
+		thumbnr=$(($nr - 1))
+		posargs="-e -0"
+		lastname=$name
 		;;
 
 		"hella")
-		thumb="../web/.browsercache/$lastname-thumb.jpg"
-		large="../web/.browsercache/$lastname-large.jpg"
-		[ -f "../web/.browsercache/$name-thumb.jpg" ] && continue
-		lastnr=$(($nr - 2))
-		[ -f "$lastnr.mov" ] && source=$lastnr.mov
-		[ -f "$lastnr.MTS" ] && source=$lastnr.MTS
-		if [ "$lastname" ]
-			then
-			[ -f "$lastnr.mov" ] \
-				&& qt-thumbnailswide.sh -e -0 "$lastnr.mov" \
-				&& cp -p ".browsercache/$lastnr-thumb.jpg" \
-				"$thumb"
-			[ -f "$lastnr.MTS" ] \
-				&& qt-thumbnailswide.sh -e -0 "$lastnr.MTS" \
-				&& cp -p ".browsercache/$lastnr-thumb.jpg" \
-				"$thumb"
-		fi
+		thumbname=$lastname
+		thumbnr=$(($nr - 2))
+		posargs="-e -0"
 		lastname=$name
 		;;
 
 		"cannelle")
-		thumb="../web/.browsercache/$name-thumb.jpg"
-		large="../web/.browsercache/$name-large.jpg"
-		[ -f "$nr.mov" ] && source=$nr.mov
-		[ -f "$nr.MTS" ] && source=$nr.MTS
-
-		## use last frame of last sequence for each clip
-		[ ! -f "$thumb" ] \
-			&& qt-thumbnailswide.sh -1 "$source" \
-			&& cp -p ".browsercache/$nr-thumb.jpg" "$thumb"
-		[ ! -f "$large" ] \
-			&& qt-thumbnailswide.sh -l -1 "$source" \
-			&& cp -p ".browsercache/$nr-large.jpg" "$large"
+		thumbname=$name
+		thumbnr=$nr
+		posargs="-1"
 		# [ -f "../web/.browsercache/$name-thumb.jpg" ] && continue
 		# [ -f ".browsercache/$nr-thumb.jpg" ] || continue
 		# cp -p ".browsercache/$nr-thumb.jpg" "../web/.browsercache/$name-thumb.jpg"
@@ -78,6 +47,18 @@ do
 		break
 		;;
 	esac
+	thumb="../web/.browsercache/$thumbname-thumb.jpg"
+	large="../web/.browsercache/$thumbname-large.jpg"
+	[ -f "$thumbnr.mov" ] && source=$thumbnr.mov
+	[ -f "$thumbnr.MTS" ] && source=$thumbnr.MTS
+
+	[ ! -f "$thumb" ] \
+		&& qt-thumbnailswide.sh $posargs "$source" \
+		&& cp -p ".browsercache/$thumbnr-thumb.jpg" "$thumb"
+	[ ! -f "$large" ] \
+		&& qt-thumbnailswide.sh -l $posargs "$source" \
+		&& cp -p ".browsercache/$thumbnr-large.jpg" "$large"
+
 done >&2
 
 makeplaylist "$TMP.list" | sed "s/\$reserve=/\$customnames=/"
