@@ -34,6 +34,11 @@ do
 		lastname=$name
 		;;
 
+		"alexandra")
+		thumbname=$name
+		thumbnr=$(($nr + 1))
+		posargs="-1"
+		;;
 		"cannelle")
 		thumbname=$name
 		thumbnr=$nr
