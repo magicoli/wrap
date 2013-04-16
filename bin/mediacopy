@@ -43,7 +43,7 @@ do
 
     ls *.$extension *.mov 2>/dev/null | sort -n | while read file
     do
-	qt-thumbnailswide.sh -1 $file
+	qt-thumbnailswide.sh -1 -l $file
     done
 
 done
