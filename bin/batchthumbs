@@ -23,14 +23,14 @@ do
 		"andrieu")
 		thumbname=$lastname
 		thumbnr=$(($nr - 1))
-		posargs="-e -0"
+		posargs="-w -e -0"
 		lastname=$name
 		;;
 
 		"hella")
 		thumbname=$lastname
 		thumbnr=$(($nr - 2))
-		posargs="-e -0"
+		posargs="-w -e -0"
 		lastname=$name
 		;;
 
@@ -42,7 +42,7 @@ do
 		"cannelle")
 		thumbname=$name
 		thumbnr=$nr
-		posargs="-1"
+		posargs="-w -1"
 		# [ -f "../web/.browsercache/$name-thumb.jpg" ] && continue
 		# [ -f ".browsercache/$nr-thumb.jpg" ] || continue
 		# cp -p ".browsercache/$nr-thumb.jpg" "../web/.browsercache/$name-thumb.jpg"
@@ -58,10 +58,10 @@ do
 	[ -f "$thumbnr.MTS" ] && source=$thumbnr.MTS
 
 	[ ! -f "$thumb" ] \
-		&& qt-thumbnailswide.sh $posargs "$source" \
+		&& qt-thumbnails.sh $posargs "$source" \
 		&& cp -p ".browsercache/$thumbnr-thumb.jpg" "$thumb"
 	[ ! -f "$large" ] \
-		&& qt-thumbnailswide.sh -l $posargs "$source" \
+		&& qt-thumbnails.sh -l $posargs "$source" \
 		&& cp -p ".browsercache/$thumbnr-large.jpg" "$large"
 
 done >&2
