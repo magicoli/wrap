@@ -81,7 +81,7 @@ echo $lastnumber
 				printf " $i"
 				input=$(ls -t $i.mov $i.MP4 $i.MTS 2>/dev/null | head -1)
 				[ -f $input ] && lastfound=$i
-				grep -q "^$i\." ignore && i=`expr $i + 1` && continue
+				grep -q "^$i\." ignore 2>&1 && i=`expr $i + 1` && continue
 				sources="$sources $convertfolder/$i.mp4"
 				mergesources="$mergesources -cat $convertfolder/$i.mp4"
 				if [ ! -f "$convertfolder/$i.mp4" ]
