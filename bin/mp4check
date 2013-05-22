@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[ ! -d sources ] && [ -d ../sources ] && cd ..
+
 for folder in mp4 sources
 do
 	[ ! -d $folder ] && echo missing $folder folder && exit 1
