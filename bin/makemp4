@@ -120,7 +120,7 @@ do
     unset output
 done
 
-echo "errors $errors"
+#echo "errors $errors"
 [ $errors -eq 1 ] && errors="$errors $errors error" || {
     [ $errors -gt 1 ] && errors="$errors $errors errors"
 }
