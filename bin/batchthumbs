@@ -47,7 +47,12 @@ do
 		# [ -f ".browsercache/$nr-thumb.jpg" ] || continue
 		# cp -p ".browsercache/$nr-thumb.jpg" "../web/.browsercache/$name-thumb.jpg"
 		;;
-		default)
+		"2sur2")
+		thumbname=$name
+		thumbnr=$nr
+		posargs="-w -e -1"
+		;;
+	    default)
 		echo "no method"
 		break
 		;;
