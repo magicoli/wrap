@@ -102,12 +102,12 @@ errors=0
 for file in "$@"
 do
     cd $ORIPWD
-    cd $(dirname "$file") || break
+    cd $(dirname "$file")
     
     command=ffmpeg
     name=$(basename "$file" | sed "s/\.[a-zA-Z0-9]*$//")
     tmpfile=$TMP.processing.mp4
-    command="$command -i $(basename $file)"
+    command="$command -i $file"
     [ ! $output ] && output=$destfolder/$name.mp4
     [ -f "$output" ] && echo "$PGM: $output exists" && continue
 
@@ -120,7 +120,7 @@ do
     unset output
 done
 
-#echo "errors $errors"
+echo "errors $errors"
 [ $errors -eq 1 ] && errors="$errors $errors error" || {
     [ $errors -gt 1 ] && errors="$errors $errors errors"
 }
