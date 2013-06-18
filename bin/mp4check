@@ -32,7 +32,7 @@ grep mp4 $TMP.conversions | while read file time length
 do
     	mp4=${file/:/}
 	original=${mp4/mp4/$ext}
-	egrep -q "^$original$|^$mp4$" ignore 2>&1 && continue
+	egrep -q "^$original$|^$mp4$" ignore 2>/dev/null && continue
 	originallength=$(grep "^$original:" $TMP.originals | cut -d " " -f 3)
 	[ "$originallength" = "$length" ] && continue
 	if [ "$length" != "" ]
