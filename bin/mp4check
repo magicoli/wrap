@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[ ! -d sources ] && [ -d ../sources ] && cd ..
+
 for folder in mp4 sources
 do
 	[ ! -d $folder ] && echo missing $folder folder && exit 1
@@ -8,35 +10,44 @@ done
 PGM=$(basename "$0")
 TMP=/tmp/$PGM
 
+ls sources/*.mov 2>/dev/null >/dev/null && ext=mov
+ls sources/*.MTS 2>/dev/null >/dev/null && ext=MTS
+
 cd sources || exit 2
-if [ ! -f $TMP.mov ]
+if [ ! -f $TMP.originals ]
 	then
 	echo "calculating original times"
-	movietime *.mov | grep mov | sort -n > $TMP.mov
-	echo $(cat $TMP.mov | wc -l) originals
+	movietime *.$ext | grep $ext | sort -n > $TMP.originals
+	echo $(cat $TMP.originals | wc -l) originals
 fi
 
 cd ../mp4 || exit 3
 echo "calculating mp4 times"
-movietime *.mp4 | grep mp4 | sort -n > $TMP.mp4
-echo $(cat $TMP.mp4 | wc -l) conversions
+movietime *.mp4 | grep mp4 | sort -n > $TMP.conversions
+echo $(cat $TMP.conversions | wc -l) conversions
 
 cd ../sources
 
-grep mp4 $TMP.mp4 | while read file time seconds
+grep mp4 $TMP.conversions | while read file time length
 do
-	mp4=${file/:/}
-	mov=${mp4/mp4/mov}
-	orig=$(grep "^$mov:" $TMP.mov | cut -d " " -f 3)
-	[ "$orig" = "$seconds" ] && continue
-	delta=$(($orig - $seconds))
-	printf "$mp4 $orig $seconds "
-	[ $delta -eq 1 ] && echo "low diff, ignoring" && continue
-	[ $delta -eq -1 ] && echo "low diff, ignoring" && continue
+    	mp4=${file/:/}
+	original=${mp4/mp4/$ext}
+	egrep -q "^$original$|^$mp4$" ignore 2>/dev/null && continue
+	originallength=$(grep "^$original:" $TMP.originals | cut -d " " -f 3)
+	[ "$originallength" = "$length" ] && continue
+	if [ "$length" != "" ]
+	    then
+	    delta=$(($originallength - $length))
+	    printf "$mp4 $originallength ($length) "
+	    [ $delta -eq 1 ] && echo "low diff, ignoring" && continue
+	    [ $delta -eq -1 ] && echo "low diff, ignoring" && continue
+	else
+	    printf "$mp4 "
+	fi
 	printf " making"
-	makemp4 $mov >/dev/null 2>/dev/null
-	[ ! -f /tmp/$mp4 ] && echo "not found " && break
+	makemp4 $original >/dev/null 2>/dev/null
+	[ ! -f $mp4 ] && echo "not found " && break
 	printf " moving"
-	mv /tmp/$mp4 ../mp4/
+	mv $mp4 ../mp4/
 	echo
 done

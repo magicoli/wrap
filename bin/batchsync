@@ -2,7 +2,7 @@
 
 # i=0; cat liste.txt | while read file; do  i=`expr $i + 1`; name="julien_frison-$i.mov"; chapcutmovie "$file" -o "$name"; done; ls *unnamed\ chapter*| while read file; do newfile=`echo "$file" | sed "s/ <unnamed chapter>//"`; echo $newfile; mv "$file" "$newfile"; done
 
-EXCLUDE='--exclude=".qmsubexp" --exclude="qt-thumbnails*" --exclude=".DS*" --exclude="disabled" --exclude=".qt*" --exclude=".QT*" --exclude="*~" --exclude=".sources"'
+EXCLUDE='--exclude=".makemp4*" --exclude=".qmsubexp" --exclude="qt-thumbnails*" --exclude=".DS*" --exclude="disabled" --exclude=".qt*" --exclude=".QT*" --exclude="*~" --exclude=".sources"'
 SUFFIX="-MPEG4_"
 EXTENSION="mp4"
 NEWEXT="mp4"
@@ -326,6 +326,7 @@ do
 			--exclude="*.mov" \
 			--exclude="*.mpg" \
 			--exclude="logs" \
+		        --exclude=".makemp4*" \
 			--exclude=".qmsubexp" --exclude="qt-thumbnails*" --exclude=".DS*" \
 			--exclude="disabled" --exclude=".qt*" --exclude=".QT*" \
 			"$local/" \
@@ -338,6 +339,7 @@ do
 				--exclude="*-dv.*" \
 				--exclude="*-original.*" \
 				--exclude="logs" \
+		                --exclude=".makemp4*" \
 				--exclude=".qmsubexp" --exclude="qt-thumbnails*" --exclude=".DS*" \
 				--exclude="disabled" --exclude=".qt*" --exclude=".QT*" \
 				"$local/" \
@@ -349,6 +351,7 @@ do
 	fi
 	rsync $n --progress -${syncmode}avz --timeout=180 \
 		--exclude="logs" \
+	        --exclude=".makemp4*" \
 		--exclude=".qmsubexp" --exclude="qt-thumbnails*" --exclude=".DS*" \
 		--exclude="disabled" --exclude=".qt*" --exclude=".QT*" \
 		"$local/" \
