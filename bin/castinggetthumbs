@@ -1,0 +1,18 @@
+#!/bin/sh
+
+export PATH=$PATH:$(dirname $0)
+. $(which casting-helpers) || exit 1
+
+pwd | egrep -q "^$localdir.*casting[0-9]*$" || end 1 "Ce n'est pas un dossier de casting"
+
+castingdir=$client/$job/$casting
+echo "client: $client"
+echo "job: $job"
+echo "casting: $casting"
+
+rsync -Wavz $remote/$castingdir/sources/.browsercache/ $localdir/$castingdir/browsercache/ --exclude "*thumb*" \
+	|| end $? "Erreur à la synchronisation" \
+	&& open browsercache/ \
+	&& touch liste && touch ignore && open -a textmate liste ignore
+
+end $?

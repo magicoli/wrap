@@ -1,0 +1,20 @@
+#!/bin/bash
+
+export PATH=$PATH:$(dirname $0)
+. $(which casting-helpers) || exit 1
+
+pwd | egrep -q "^$localdir.*casting[0-9]*$" || end 1 "Ce n'est pas un dossier de casting"
+
+castingdir=$client/$job/$casting
+echo "client: $client"
+echo "job: $job"
+echo "casting: $casting"
+
+while true
+do
+	rsync -Wavz liste ignore $remote/$castingdir/sources/ \
+		| grep "^liste$" | sed "s/$/ $(date)/"
+	read -t 17
+done
+
+end $?
