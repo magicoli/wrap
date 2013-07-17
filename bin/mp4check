@@ -8,7 +8,7 @@ do
 done
 
 PGM=$(basename "$0")
-TMP=/tmp/$PGM
+TMP=$PWD/.$PGM
 
 ls sources/*.mov 2>/dev/null >/dev/null && ext=mov
 ls sources/*.MTS 2>/dev/null >/dev/null && ext=MTS

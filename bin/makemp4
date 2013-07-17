@@ -104,17 +104,14 @@ for file in "$@"
 do
     cd $ORIPWD
     cd $(dirname "$file") || break
-    
+
     command=ffmpeg
     name=$(basename "$file" | sed "s/\.[a-zA-Z0-9]*$//")
     tmpfile=$TMP.processing.mp4
-<<<<<<< HEAD
-    command="$command -i $(basename $file)"
-=======
     ext=$(echo "$file" | sed "s/.*\.//")
     alias=$TMP.alias.$ext
     rm -f $tmpfile $alias
-    ln -s "$file" $alias || break 
+    ln -s "$PWD/$(basename "$file")" $alias || break 
     if [ "$size" = "o" ]
     then
 	convertsize=$(ffmpeg -i $alias 2>&1 | egrep "Stream #.*Video:" | sed "s/.*[^0-9]\([0-9]*x[0-9]*\)[^0-9].*/\\1/")
@@ -123,7 +120,6 @@ do
     fi
 
     command="$command -i $alias"
->>>>>>> 51d4a1166f4bdb584deaef881e388b85fdb89a78
     [ ! $output ] && output=$destfolder/$name.mp4
     [ -f "$output" ] && echo "$PGM: $output exists" && continue
 
