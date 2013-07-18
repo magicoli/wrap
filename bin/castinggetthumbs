@@ -12,7 +12,11 @@ echo "casting: $casting"
 
 rsync -Wavz $remote/$castingdir/sources/.browsercache/ $localdir/$castingdir/browsercache/ --exclude "*thumb*" \
 	|| end $? "Erreur à la synchronisation" \
-	&& open browsercache/ \
-	&& touch liste && touch ignore && open -a textmate liste ignore
-
+	&& if [ ! -f liste -o ! -f ignore ]
+		then
+		open browsercache/
+		[ ! -f liste ] && touch liste
+		[ ! -f ignore ] && touch ignore
+		open -a textmate liste ignore
+	fi
 end $?
