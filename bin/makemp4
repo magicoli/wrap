@@ -102,8 +102,8 @@ errors=0
 
 for file in "$@"
 do
-    cd $ORIPWD
-    cd $(dirname "$file") || break
+    cd "$ORIPWD"
+    cd "$(dirname "$file")" || break
 
     command=ffmpeg
     name=$(basename "$file" | sed "s/\.[a-zA-Z0-9]*$//")
