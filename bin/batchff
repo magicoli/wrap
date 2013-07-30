@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Note for later: check comparison of aac encoders
-# aac, libfaac, libfdk_aac, libvo_aacenc
+#     aac, libfaac, libfdk_aac, libvo_aacenc
 # https://trac.ffmpeg.org/wiki/AACEncodingGuide
+# Best encoders: libfdk_aac > libfaac > Native FFmpeg AAC ≥ libvo_aacenc
 
 PGM=`basename "$0"`
 TMP=/tmp/$PGM.$$
