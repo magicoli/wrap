@@ -126,7 +126,7 @@ do
     
     case $os in 
 	leopard)
-	    acodec="aac -strict -2"
+	    acodec="aac -strict experimental"
 	    directpred="-direct-pred"
 	    osparams=""
 	    ;;
