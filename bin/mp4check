@@ -17,13 +17,13 @@ cd sources || exit 2
 if [ ! -f $TMP.originals ]
 	then
 	echo "calculating original times"
-	movietime *.$ext | grep $ext | sort -n > $TMP.originals
+	movietime *.$ext | grep $ext | sed "s/[[:blank:]][[:blank:]]*/ /g" | sort -n > $TMP.originals
 	echo $(cat $TMP.originals | wc -l) originals
 fi
 
 cd ../mp4 || exit 3
 echo "calculating mp4 times"
-movietime *.mp4 | grep mp4 | sort -n > $TMP.conversions
+movietime *.mp4 | grep mp4 | sed "s/[[:blank:]][[:blank:]]*/ /g" | sort -n > $TMP.conversions
 echo $(cat $TMP.conversions | wc -l) conversions
 
 cd ../sources

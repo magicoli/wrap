@@ -1,19 +1,44 @@
 #!/bin/sh
 
-total=30
+OS=`uname -a | cut -d " " -f 1 | sed "s/[^a-zA-Z0-9]//g"`
 
+seconds() {
+	string=$@
+	case $OS in
+		"Darwin"|"FreeBSD")
+		seconds=$(date -j -f "%Y-%m-%d %H:%M:%S" "$string" +%s 2>/dev/null)
+		# alias seconds=date -j -f "%Y-%m-%d %H:%M:%S" "1970-01-01 00:00:00" +"%Y-%m-%d %H:%M:%S %s"
+		;;
+		*)
+		seconds=$(date -d "$string" +%s)
+		;;
+	esac
+	if [ "$seconds" ]
+	then
+	    [ $timedelta ] && seconds=$((seconds - $timedelta))
+	else
+	    seconds=-1
+	fi
+	echo $seconds
+	return
+}
+timedelta=$(seconds "1970-01-01 00:00:00")
+
+total=0
 for movie in $@
 do
 	printf "$movie: "
 	duration=$(ffmpeg -i "$movie" 2>&1 | grep Duration: | sed "s/.*Duration: //" | cut -d "," -f 1 | cut -d "." -f 1)
 	printf "$duration "
-	seconds=$(($(date -d "1970-01-01 $duration" +%s) + 3600))
-	printf "$seconds "
+#	seconds=0
+	seconds=$(seconds "1970-01-01 $duration")
+	printf " $seconds "
 	total=$(($total + $seconds))
 	echo
 done
 
 echo total: $total
+total=$(($total + 59))
 
 minutes=$(($total / 60))
 echo minutes: $minutes

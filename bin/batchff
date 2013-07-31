@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Note for later: check comparison of aac encoders
+#     aac, libfaac, libfdk_aac, libvo_aacenc
+# https://trac.ffmpeg.org/wiki/AACEncodingGuide
+# Best encoders: libfdk_aac > libfaac > Native FFmpeg AAC ≥ libvo_aacenc
+
 PGM=`basename "$0"`
 TMP=/tmp/$PGM.$$
 TURBO=true
@@ -63,6 +68,10 @@ echo $lastnumber
 				;;
 			esac
 			printf "$showname "
+			
+			cd "$convertfolder" || exit $?
+			convertfolder="$PWD"
+			cd "$OLDPWD"
 
 			export convertfolder
 			export size
@@ -75,7 +84,7 @@ echo $lastnumber
 				end=999999
 			fi
 			sources=""
-			mergesources=""
+			printf "" > $TMP.sources
 			while [ $i -lt $end ]
 			do
 				printf " $i"
@@ -83,13 +92,17 @@ echo $lastnumber
 				[ -f $input ] && lastfound=$i
 				grep -q "^$i\." ignore 2>/dev/null && i=`expr $i + 1` && continue
 				sources="$sources $convertfolder/$i.mp4"
-				mergesources="$mergesources -cat $convertfolder/$i.mp4"
+				echo "file '$convertfolder/$i.mp4'" >> $TMP.sources
 				if [ ! -f "$convertfolder/$i.mp4" ]
 				# if [ ! -f "$0" ]
 					then
 					printf "(c)"
 					rm -f $output
-					makemp4 $input 2>/dev/null
+					makemp4 $input 2>/dev/null || {
+					    error=$?
+					    rm $TMP.*
+					    exit $error
+					}
 					printf "\b\b\b"
 					# name=$(basename "$input" | sed "s/\.[a-zA-Z0-9]*$//")
 					# echo $name
@@ -106,13 +119,15 @@ echo $lastnumber
 				then
 				echo "$output ok"
 			else
-				# echo "ls -1 $sources >/dev/null 2>/dev/null && echo \"merging $sources\" && MP4Box $mergesources -new $output" >> $TMP.makemp4
 				ls -1 $sources >/dev/null 2>/dev/null
-				# ls -1 >/dev/null 2>/dev/null
 				if [ $? -eq 0 ]
 				then
-					echo "mergin $sources:"
-					MP4Box $mergesources -new $output
+				    if [ -f "$TMP.sources" ]
+				    then
+					echo "mergin $sources:" | sed "s|$convertfolder/*||g"
+					ffmpeg -f concat -i "$TMP.sources" -c copy "$output" </dev/null
+					echo "ffmpeg result:$?"
+				    fi
 				fi
 			fi
 		fi
