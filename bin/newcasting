@@ -90,9 +90,12 @@ fi
 
 printf "Castings:\n"
 
-ls -d "$base/$client/$job"/casting* 2>/dev/null | cut -d "/" -f 6 | sed "s/\..*//" | sort -u > "$TMP.castings"
+ls -d "$base/$client/$job"/casting* 2>/dev/null \
+    | sed "s|$base/$client/$job/||" \
+    | sed "s/\..*//" | sort -u > "$TMP.castings"
 
 cat -n "$TMP.castings"
+
 newnumber=$((`cat "$TMP.castings" | wc -l` + 1))
 casting="casting$newnumber"
 
