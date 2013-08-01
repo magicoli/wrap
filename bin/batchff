@@ -124,8 +124,8 @@ echo $lastnumber
 				then
 				    if [ -f "$TMP.sources" ]
 				    then
-					echo "mergin $sources:" | sed "s|$convertfolder/*||g"
-					ffmpeg -f concat -i "$TMP.sources" -c copy "$output" </dev/null
+					printf "mergin $sources: " | sed "s|$convertfolder/*||g"
+					ffmpeg -f concat -i "$TMP.sources" -c copy "$output" </dev/null 2>/dev/null
 					echo "ffmpeg result:$?"
 				    fi
 				fi
