@@ -17,6 +17,7 @@ helpers="$(which helpers)"
 log "help functions loaded" 2>/dev/null || exit 1
 
 uname -a | grep -q "Darwin Kernel Version 9.8.0" && os=leopard
+uname -a | grep -q "Darwin Kernel Version 12\.4\." && os=leopard
 
 OPTS="b:d:o:s:HVQ"
 
