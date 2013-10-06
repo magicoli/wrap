@@ -23,7 +23,7 @@ if [ "$1" ]
 		fi
 	done | while read name
 	do
-		echo "$name" | webnormalize
+		echo "$name"
 	done
 else
 	sort=true
@@ -31,8 +31,8 @@ else
 		| grep -v "\-dv."
 fi | while read name
 do
-	# file=`echo "$name" | webnormalize`
-	file=$name
+	file=`echo "$name" | webnormalize`
+	#file=$name
 	name=`basename "$name" | sed "s/\.[a-zA-Z0-9]*$//" | sed "s/_/ /g" | sed "s/[-\. ][0-9]*$//"`
 	second=`echo "$file" | egrep "^[0-9]*,[0-9]*-" | cut -d "-" -f 1 | grep "," | cut -d "," -f 2`
 	first=`echo "$file" | egrep "^[0-9]" | cut -d "-" -f 1 | cut -d "," -f 1`
