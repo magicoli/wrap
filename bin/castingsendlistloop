@@ -9,6 +9,7 @@ castingdir=$client/$job/$casting
 echo "client: $client"
 echo "job: $job"
 echo "casting: $casting"
+echo "remote: $remote"
 
 while true
 do

@@ -3,14 +3,15 @@
 export PATH=$PATH:$(dirname $0)
 . $(which casting-helpers) || exit 1
 
-pwd | egrep -q "^$localdir.*casting[0-9]*$" || end 1 "Ce n'est pas un dossier de casting"
+pwd | egrep -q "^$base.*casting[0-9]*$" || end 1 "Ce n'est pas un dossier de casting"
 
 castingdir=$client/$job/$casting
 echo "client: $client"
 echo "job: $job"
 echo "casting: $casting"
+echo "remote: $remote"
 
-rsync -Wavz $remote/$castingdir/sources/.browsercache/ $localdir/$castingdir/browsercache/ --exclude "*thumb*" \
+rsync -Wavz $remote/$castingdir/sources/.browsercache/ $base/$castingdir/browsercache/ --exclude "*thumb*" \
 	|| end $? "Erreur à la synchronisation" \
 	&& if [ ! -f liste -o ! -f ignore ]
 		then
