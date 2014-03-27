@@ -3,7 +3,7 @@ body {
 /*	font-family: "ITC Berkeley Oldstyle", "Berkeley", "ITC Garamond", "Garamond", "Adobe Garamond Pro", "Times", "Times New Roman", Serif;*/
 	text-align: center;
 	margin: 20px;
-	background-color: #F00;
+/*	background-color: #F00;*/
 	font-size: 10pt;
 }
 
@@ -143,6 +143,10 @@ a {
 	width: 100%;
 	height: 420px;
 }
+object.player, embed.player {	
+	background: url(/lib/wrap/images/loading.gif);
+	background-position:center center;
+}
 
 
 .playlist {
@@ -259,7 +263,7 @@ div.large {
 	bottom: 0;
 	margin: 30px auto;
 
-	width: 100%
+	width: 100%;
 	/* max-width: 960px; */
 	height: 600px;
 	max-width: 100%;
