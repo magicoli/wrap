@@ -1,0 +1,633 @@
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+/*	font-family: "ITC Berkeley Oldstyle", "Berkeley", "ITC Garamond", "Garamond", "Adobe Garamond Pro", "Times", "Times New Roman", Serif;*/
+	text-align: center;
+	margin: 20px;
+	background-color: #DDD;
+	font-size: 10pt;
+}
+
+.about {
+	float: none;
+	display: block;
+	text-align: left;
+	margin-bottom: 12pt;
+}
+.print {
+	display: none;
+}
+.list {
+	position: relative;
+	left: 80px;
+	margin: 1px 80px 0 0;
+}
+.list .year {
+	display: inline-block;
+	margin: 3px 0 0 -80px;
+	width: 80px;
+}
+img {
+	border: none;
+}
+
+.container {
+/*	position: absolute;*/
+	display: block;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin:auto auto;
+	text-align: left;
+	width: 100%;
+	max-width:  960px;
+	height: 90%;
+	border: solid 1px #999;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	background-color: #EEE;
+	padding: 0px;
+}
+.container .inner {
+    padding: 10px;
+}
+div.logo {
+	position: relative;
+	top: 0;
+	right: 0;
+	height: 0;
+/*	float: right;*/
+	font-weight: bold;
+	text-align: right;
+	font-size: 12pt;
+	white-space: nowrap;
+	margin-bottom: 30px;
+}
+.footer .logo {
+	float: right;
+	text-align: right;
+}
+
+.nav .parent {
+/*	float:left;*/
+	top: 0;
+	left: 0;
+	font-size: 10pt;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	margin-top: -30px;
+	height: 30px;
+/*	display: inline;*/
+}
+
+.nav h1 {
+	display: inline-block;
+	font-size: 10pt;
+	line-height: normal;
+	font-weight: bold;
+}
+
+a {
+	color: #666;
+}
+.nav a {
+	text-decoration: none;
+}
+.nav a:hover {
+	text-decoration: underline;
+}
+
+.nav .sisters, .branch#main {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	height: 26px;
+	vertical-align: bottom;
+	text-align: center;
+	margin: 0px;
+	line-height: 21px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.branch#main .leaf, .branch#main .leafactive {
+	display: inline-block;
+}
+.nav .sister, .nav .sisteractive, .branch#main a {
+	display: inline-block;
+	border: solid 1px black;
+	padding: 1px 6px 2px;
+	margin: 0px -6px 0px 0px;
+	position:relative;
+	background-color: #ccc;
+	font-size: 12px;
+	line-height: 17px;
+	position: relative;
+	z-index: 1;
+}
+.nav .sister:hover, .branch#main a:hover {
+	font-size: 14px;
+	line-height: 19px;
+	z-index: 2;
+}
+.nav .sisteractive, .branch#main .leafactive a {
+	font-size: 16px;
+	line-height: 21px;
+	background-color: white;
+	border-bottom: solid 1px white;
+	border-radius: 7px 7px 0 0;
+	-moz-border-radius: 7px 7px 0 0;*/
+	z-index: 3;
+}
+
+.player {
+	width: 100%;
+	height: 420px;
+}
+
+
+.playlist {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: left;
+}
+
+.item, .thumbframe {
+	width: auto;
+	display: inline-block;
+}
+.thumbframe {
+	width: auto;
+	height: 300px;
+}
+.item {
+	display: inline-block;
+	font-size: 8pt;
+/*	height: 150px;*/
+	text-indent: 0px;
+	padding: 0px;
+	margin: 0 0 5px 0;
+	vertical-align: top;
+	text-align: center;
+	height: 160px;
+}
+
+.thumbframe, .thumb {
+	padding: 0;
+	margin: 0;
+	border: none;
+	vertical-align: middle;
+}
+
+div.thumb img {
+	display: inline-block;
+	vertical-align: middle;
+	padding: 0;
+	margin: 0;
+	border: none;
+}
+
+.playlist .item {
+	width: auto;
+}
+
+div.thumbframe, div.thumb {
+	width: auto;
+	height: auto;
+	background: none;
+}
+
+div.thumb img.thumb {
+	display: inline-block;
+	height: 124px;
+	vertical-align: middle;
+}
+
+.thumbframe {
+	position: relative;
+}
+.item .name {
+	position: relative;
+	top: 0px;
+	height: 20px;
+	width: 100%;
+	left: 0;
+	right: 0;
+	background: white;
+}
+.item:hover .name {
+	display: block;
+}
+a.itemlink:link, a.itemlink:visited, a.itemlink:active {
+	text-decoration: none;
+}
+
+#blanket {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+	max-width: 100%;
+	max-height: 100%;
+	background: white;
+	z-index: 4;
+	opacity: 1;
+	filter:alpha(opacity=100);
+}
+#blanketfix {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	width: 98%;
+	height: 100%;
+	max-width: 100%;
+	max-height: 100%;
+	margin: auto auto;
+	z-index: 5;
+}
+
+div.large {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	margin: 30px auto;
+
+	width: 100%
+	/* max-width: 960px; */
+	height: 600px;
+	max-width: 100%;
+	max-height: 100%;
+	text-align: center;
+}
+
+img.large {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+	max-width: 100%;
+	max-height: 100%;
+	border: solid 1px black;
+}
+.large .nav {
+/*	font-family: Arial, Helvetica, sans-serif;*/
+}
+.large .nav .close, .large .nav .next, .large .nav .previous {
+	position: absolute;
+	bottom: 100%;
+	width: auto;
+	margin: 0 auto;
+	padding: 7px 0;
+	text-align: left;
+	z-index: 6;
+}
+.large .nav .next {
+	text-align: right;
+	bottom: -30px;
+	right: 0;
+}
+.large .nav .previous {
+	text-align: left;
+	top: 100%;
+	left: 0;
+}
+.large .nav .close {
+	text-align: right;
+	right: 0;
+}
+
+
+.nav .links {
+	position: absolute;
+	right: 0;
+	top: 100%;
+	margin-top: 30px;
+	margin-right: 60px;
+	background: white;
+	border: solid 1px black;
+	border-top: none;
+	padding: 0 5px 5px;
+	border-radius: 0 0 3px 3px;
+	-moz-border-radius: 0 0 3px 3px;
+}
+.variants {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	margin-top: 30px;
+}
+.variants:before {
+	content: "qualité: ";
+}
+.nav .links:before {
+	content: "télécharger: ";
+}
+.large .info {
+	position: absolute;
+	top: 100%;
+	width: 100%;
+	margin: 0 auto;
+	padding: 7px 0;
+}
+
+.large video {
+	width: 100%;
+	max-height: 640px;
+}
+.large .info .largename {
+	text-align: center;
+}
+.content {
+	position: relative;
+	background-color: #FFF;
+	margin: -1px 0 0 0;
+	border: solid 1px black;
+	width: 100%;
+/*	max-width: 960px;*/
+	min-height: 480px;
+/*	height: 640px;*/
+	padding: 0;
+	border-spacing:10px; 
+}
+.content tr {
+	height: 640px;
+}
+.content td {
+	vertical-align: top;
+	padding: 0;
+}
+td.left, .content td.right {
+/*	width: 0;*/
+	margin-bottom: 10px;
+	max-width: 250px;
+	font-size: smaller;
+}
+.content td.article {
+/*	max-width: 100%;
+	max-height: 100%;
+*/
+}
+
+.left .tree {
+    max-width: 200px;
+}
+
+.right h4 {
+	margin-bottom: 0px;
+	padding-bottom: 0px;
+}
+
+.rss .channelname {
+	font-weight: bold;
+	font-size: 10pt;
+}
+
+.rss .right {
+	display: block;
+	width: 100%;
+	float: none;
+	margin: 0;
+	text-align: right;
+}
+
+.footer {
+	clear: both;
+	margin-top: 10px;
+	height: 25px;
+}
+
+.link, .media .controls a {
+	text-transform: uppercase;
+	font-size: 7pt; 
+	background: #CCC;
+	color: #333;
+	text-decoration: none;
+	border: solid 1px #333;
+	padding: 1px 3px;
+	margin-left: -1px;
+}
+.link:before {
+	font-weight: bold;
+	content: "▼ ";
+}
+
+.controls {
+	text-align: center;
+	height: 30px;
+}
+
+.cloud, .cloud a {
+	margin: 10px 0;
+	text-align: left;
+	color: #CCC;
+	text-decoration: none;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.cloud1 { font-size: 10pt; font-weight: 100; }
+.cloud2 { font-size: 11pt; font-weight: 300; }
+.cloud3 { font-size: 12pt; font-weight: 500; }
+.cloud4 { font-size: 13pt; font-weight: 700; }
+.cloud5 { font-size: 14pt; font-weight: 900; }
+
+.branch {
+	margin-left: 10px;
+	font-size: 95%;
+	margin-bottom: 10px;
+}
+.tree > .branch {
+    margin-left: 0;
+}
+.leaf, .leafactive {
+	display: block;
+/*	white-space: nowrap;*/
+	margin-bottom: 5px;
+}
+.leafactive {
+	font-weight: bold;
+}
+.nav .parent, .nav .parent a {
+	font-weight: normal;
+}
+.parent .interleave:before {
+	content: "/";
+}
+.parent a:link {
+	text-decoration: none;
+}
+
+/*.article :first-child {
+	margin-top: 0px;
+}
+*/
+.article h1 {
+	display: none;
+}
+
+strike {
+	text-decoration: line-through;
+}
+
+.wrapbox {
+font-family: "ITC Berkeley Oldstyle", "Berkeley", "ITC Garamond", "Garamond", "Adobe Garamond Pro", "Times", "Times New Roman", Serif;
+/*	display: inline-block;*/
+	position: absolute;
+	width: 100%;
+	max-width: 960px;
+	top: 63px;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	margin: 0 auto;
+	font-size: 10pt;
+/*	background: white;*/
+	padding: 0 ;
+/*	border: solid 1px #CCC;*/
+	border-top: none;
+	z-index: 7;
+	text-align: right;
+	height: 0;
+}
+.wrapbox div {
+	display: inline;
+}
+.wrapbox a, .wrap_buttons a {
+	border: solid 1px #999;
+	padding: 2px 2px 0;
+	text-transform: uppercase;
+	text-decoration: none;
+	font-size: 90%;
+	background: white;
+/*	font-variant: small-caps;*/
+}
+.wrapbox a.button#active, .wrap_buttons a.button#active {
+	background: #CCC;
+}
+.wrapinfo {
+	margin-bottom: 6pt;
+}
+
+.social {
+	position: absolute;
+	top: -27px;
+	left: 0;
+}
+.fb_item_like {
+	position: absolute;
+	top: -20px;
+	left: 0px;
+}
+.fb_item_comments {
+	position: relative;
+	top: 100%;
+	width: 555px;
+	margin-right: -15px;
+	margin-left: 10px;
+	margin-top: 35px;
+/*	background: pink;*/
+	float:right;
+	z-index:8;
+	background-color: #EEE;
+}
+.fb_item_comments iframe {
+/*	background: white;*/
+}
+
+.large .description {
+	position: relative;
+	top: 100%;
+	margin-top: 32px;
+	left: 0;
+	width: 100%;
+	margin: 32px -22px 20px;
+	background-color: #EEE;
+/*	float: left;*/
+	text-align: left;
+	padding: 1px 10px;
+	border: solid 1px #999;
+	border-top: none;
+	border-radius: 0 0 10px 10px;
+	-moz-border-radius: 10px;
+}
+
+.item .short {
+	display: none;
+}
+
+
+@media print {
+	html, body, page {
+		height: 100%;
+	}
+	body {
+		margin: 0.5cm 1cm;
+		background: none;
+	}
+	a {
+		color: black;
+		text-decoration: none;
+	}
+	.tree, .media, .links, .nav .sisters, .cloud {
+		display: none;
+	}
+	.article h1 {
+		display: block;
+	}
+	
+	.nav {
+		display: block;
+		margin: 0 0 14pt;
+	}
+	.nav .parent, .nav h1, .nav .pagetitle {
+		font-size: 14pt;
+	}
+	.container, .content, div.content {
+		border: none;
+		background: none;
+		padding: 0;
+/*		margin: 0;*/
+	}
+	#blanket,
+	#blanketfix,
+	.playall {
+		display: none;
+	}
+	table.browser,
+	table.browser tbody,
+	table.browser tbody tr,
+	table.browser tbody tr td,
+	table.browser tbody tr td.main div#playlists {
+	    width: 100%;
+	}
+	table.browser tbody tr td.main div#playlists {
+	}
+	.left, .right {
+		display: none;
+	}
+
+	.playlist {
+	    width: inherit;
+	}
+	.item {
+	}
+	.item .name {
+		width: 220px;
+	}
+	.item .thumb {
+		width: 220px;
+	}
+	tfoot {
+	width: 100%;
+	position: absolute;
+	bottom: 0px;
+	}
+}
