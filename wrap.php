@@ -1,5 +1,6 @@
 <?php
-ini_set("error_reporting", E_ALL & ~E_NOTICE);
+
+ini_set("error_reporting",  E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 if(preg_match("/^dev\.|^local\.|^preview\./", getenv("HTTP_HOST"))) {
 	ini_set("display_errors", true);
 	$localserver=true;
@@ -14,7 +15,7 @@ $includes=array(
 	"$libdir/cfpropertylist/CFPropertyList.php",
 	"$libdir/Mobile_Detect.php",
 	"$libdir/../Mobile_Detect.php",
-)
+);
 
 foreach ($includes as $include) {
 	if (is_file($include)) {
@@ -1287,8 +1288,8 @@ function firstWritableFolder() {
 	}
 	foreach($folders as $folder) {
 		$checkfile="$folder/.wrapcheck";
-		if (is_dir("$folder") && touch("$checkfile")) {
-			return $folder;
+		if (is_dir("$folder")) {
+			if(touch("$checkfile")) return $folder;
 		}
 	}
 	return null;
@@ -1664,9 +1665,17 @@ if(!isset($_SESSION['source_referer']))
     $_SESSION['source_referer'] = $_SERVER['HTTP_REFERER'];
 }
 $referer=$_SESSION['source_referer'];
-
-
-$cacheroot=firstWritableFolder("$scriptroot/wrap/cache", dirname($scriptroot) . "/cache/wrap", "$webroot/wrap/cache", dirname($scriptroot) . "/tmp", "$webroot/cache", "/tmp/wrap", "/tmp");
+// open_basedir
+$cacheroot=firstWritableFolder(
+	dirname($webroot) . "/tmp", 
+	"$scriptroot/wrap/cache",
+	dirname($scriptroot) . "/cache/wrap",
+	"$webroot/wrap/cache",
+	dirname($scriptroot) . "/tmp",
+	"$webroot/cache", 
+	"/tmp/wrap",
+	"/tmp"
+);
 
 // echo "cacheroot: $scriptroot";
 
