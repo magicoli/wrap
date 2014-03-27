@@ -9,16 +9,17 @@ $timebegin=time();
 
 $libdir=dirname(__FILE__);
 
-if (is_file("$libdir/rssfeed.php")) {
-	include_once("$libdir/rssfeed.php");
-}
+$includes=array(
+	"$libdir/rssfeed.php",
+	"$libdir/cfpropertylist/CFPropertyList.php",
+	"$libdir/Mobile_Detect.php",
+	"$libdir/../Mobile_Detect.php",
+)
 
-if (is_file("$libdir/cfpropertylist/CFPropertyList.php")) {
-	include_once("$libdir/cfpropertylist/CFPropertyList.php");
-}
-
-if (is_file("$libdir/Mobile_Detect.php")) {
-	include_once("$libdir/Mobile_Detect.php");
+foreach ($includes as $include) {
+	if (is_file($include)) {
+		include_once($include);
+	}
 }
 
 $largelinktype="next";
