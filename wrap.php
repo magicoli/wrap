@@ -1,6 +1,6 @@
 <?php
 ini_set("error_reporting", E_ALL & ~E_NOTICE);
-if(ereg("^dev\.", getenv("HTTP_HOST"))) {
+if(preg_match("/^dev\.|^local\.|^preview\./", getenv("HTTP_HOST"))) {
 	ini_set("display_errors", true);
 	$localserver=true;
 }
@@ -52,7 +52,7 @@ $popupinblanket=true;
 
 $slideshow=false;
 $downloadOnly=false;
-if(ereg("^dev\.|^preview\.", getenv("HTTP_HOST"))) {
+if(preg_match("/^dev\.|^local\.|^preview\./", getenv("HTTP_HOST"))) {
 	$noindex=true;
 } else {
 	$noindex=false;
@@ -277,10 +277,10 @@ $addons['aloha']=true;
 $charset="utf-8";
 setlocale(LC_ALL, "fr_BE.UTF-8");
 
-if(ereg('iPad', getenv('HTTP_USER_AGENT'))) {
+if(preg_match('/iPad/', getenv('HTTP_USER_AGENT'))) {
 	$output='iPad';
 } else {
-	if(ereg('iPhone|iPod', getenv('HTTP_USER_AGENT')) || $_REQUEST['force']=="iPhone") {
+	if(preg_match('/iPhone|iPod/', getenv('HTTP_USER_AGENT')) || $_REQUEST['force']=="iPhone") {
 		$output='iPhone';
 		$onload.='window.scrollTo(0, 1);';
 		$pageid="smartphone";
