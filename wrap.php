@@ -1,5 +1,4 @@
 <?php
-
 ini_set("error_reporting",  E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 if(preg_match("/^dev\.|^local\.|^preview\./", getenv("HTTP_HOST"))) {
 	ini_set("display_errors", true);
