@@ -8,6 +8,8 @@ if(preg_match("/^dev\.|^local\.|^preview\./", getenv("HTTP_HOST"))) {
 $timebegin=time();
 
 $libdir=dirname(__FILE__);
+$libdirurl=dirname($_SERVER[SCRIPT_NAME]);
+$scriptname="wrap";
 
 $requires=array(
 	"functions.php",
@@ -102,7 +104,7 @@ $fb_comments_width="auto";
 $facebooktags=true;
 $default_fb_app_id="217300954968904";
 $fbadmins="582749884";
-$defaultposter="/lib/browser6-poster-black.jpg";
+$defaultposter="$libdirurl/$scriptname-poster-black.jpg";
 
 $logo="
 <div class=logo>
@@ -177,6 +179,7 @@ $ignore=array (
 	".*.plist",
 	"playlist.php",
 	"browser.html",
+	"$scripname.html",
 	"home.html",
 	"links.txt",
 	"text.txt",
@@ -462,6 +465,16 @@ if($_POST['signed_request'] || $_REQUEST['force']=="facebook") {
 
 $path=split('/', ereg_replace('/$', '', $uri));
 
+if(is_file("$libdir/css/browser.css")) {
+	$combinedcss.="
+		<link href='$libdirurl/css/browser.css' rel='stylesheet' media='all'>";
+	$inpagecss.=file_get_contents("$libdir/css/browser.css");
+}
+// if(is_file("$libdir/css/$scriptname.css")) {
+// 	$combinedcss.="
+// 		<link href='$libdirurl/css/$scriptname.css' rel='stylesheet' media='all'>";
+// 	$inpagecss.=file_get_contents("$libdir/css/$scriptname.css");
+// }
 
 if(is_array($path))
 {
@@ -1633,6 +1646,7 @@ if($includeparentstyle) {
 	$checktemplate[]="$webroot/browser.html";
 }
 
+$checktemplate[]="browser.html";
 $checktemplate[]=ereg_replace("\.php$", ".html", $scriptfilename);
 
 $pagetemplate=firstValidFile($checktemplate);
@@ -3251,7 +3265,7 @@ else if($REQUEST['output']=="flv")
 	}
 	if(!ereg("browser[0-9]*.js", $layout))
 	{
-		$layout=eregi_replace('</head>', "<script type='text/javascript' src='/lib/browser6.js'></script></head>", $layout);
+		$layout=eregi_replace('</head>', "<script type='text/javascript' src='$libdirurl/$scriptname.js'></script></head>", $layout);
 	}
 	switch ($videofallback) {
 		case "jwplayer":
