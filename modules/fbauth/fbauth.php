@@ -1,5 +1,5 @@
 <?php
-require_once("fbauth_functions.php");
+require_once __DIR__ . "/functions.php";
 
 if($addons['fbauth']) {
 	// if($facebookapi) {
