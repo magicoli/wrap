@@ -133,14 +133,16 @@ do
 	
 	originalsize=$(ffmpeg -i $TMP.$extension 2>&1 | egrep "Video:.*[0-9]*x[0-9]*" | head -1 | sed "s/^.* \([0-9]*x[0-9]*\)[, ].*$/\\1/")
 	resizeparam=
-	if [ "$WIDE" ]
+	x=$(echo $originalsize | cut -d "x" -f 1)
+	if [ "$WIDE" = "yes" ]
 		then
-		x=$(echo $originalsize | cut -d "x" -f 1)
 		y=$(($x * 9 / 16))
-		if [ "$originalsize" != "${x}x${y}" ]
-			then
-			resizeparam="-s ${x}x${y}"
-		fi
+	else
+		y=$(($x * 3 / 4))
+	fi
+	if [ "$originalsize" != "${x}x${y}" ]
+	then
+	    resizeparam="-s ${x}x${y}"
 	fi
 	if [ ! -f "$large" -o "$FORCE" = "yes" ]
 		then
