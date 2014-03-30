@@ -1,5 +1,45 @@
 #!/bin/sh
 
+if [ "$1" = "-l" ]
+	then
+	method=link
+	shift
+else
+	method=copy
+fi
+
+source=$1
+[ ! -d "$source" ] && echo "usage: $PGM <source path>" && exit 1
+
+[ -f ../sources ] && cd ../sources || { [ -d sources ] && cd sources ] ; }
+
+pwd | xargs basename | grep "^sources$" || exit 2
+
+echo "source: $source"
+echo "method: $method"
+
+ls "$source/"*.MPG "$source/"*.MTS 2>/dev/null | wc -l | sed "s/$/ movies/"
+
+ls "$source/"*.MPG "$source/"*.MTS 2>/dev/null | sort -n \
+	| while read file
+do
+	i=$(($i + 1))
+	if [ ! -f $i.mov ]
+		then
+		if [ "$method" = "copy" ]
+			then
+			printf "$file "
+			cp -p "$file" $i.mov && echo " > $i.mov"
+		else
+			ln -s "$file" $i.mov
+		fi
+	fi
+	qt-thumbnailswide.sh -l -1 "$i.mov"
+done
+
+exit
+
+
 removable=/media/usb*
 
 PGM=$(basename "$0")
