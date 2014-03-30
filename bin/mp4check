@@ -23,14 +23,16 @@ fi
 
 cd ../mp4 || exit 3
 echo "calculating mp4 times"
-movietime *.mp4 | grep mp4 | sed "s/[[:blank:]][[:blank:]]*/ /g" | sort -n > $TMP.conversions
+ls *.mp4 | sort -n | xargs movietime | grep mp4 | sed "s/[[:blank:]][[:blank:]]*/ /g" | sort -n > $TMP.conversions
 echo $(cat $TMP.conversions | wc -l) conversions
 
 cd ../sources
 
+rm -f "$TMP.batch"
+
 grep mp4 $TMP.conversions | while read file time length
 do
-    	mp4=${file/:/}
+    mp4=${file/:/}
 	original=${mp4/mp4/$ext}
 	egrep -q "^$original$|^$mp4$" ignore 2>/dev/null && continue
 	originallength=$(grep "^$original:" $TMP.originals | cut -d " " -f 3)
@@ -45,9 +47,14 @@ do
 	    printf "$mp4 "
 	fi
 	printf " making"
-	makemp4 $original >/dev/null 2>/dev/null
-	[ ! -f $mp4 ] && echo "not found " && break
-	printf " moving"
-	mv $mp4 ../mp4/
+	echo "printf \"$mp4\"; makemp4 $original >/dev/null 2>/dev/null; [ -f $mp4 ] && mv $mp4 ../mp4/ && echo" >> $TMP.batch
+	# [ ! -f $mp4 ] && echo "not found " && continue
+	# printf " moving"
+	# mv $mp4 ../mp4/
 	echo
 done
+
+[ -f "$TMP.batch" ] && . "$TMP.batch"
+
+batchff liste
+batchsync
