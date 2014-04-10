@@ -325,6 +325,7 @@ do
 			--exclude="*.mp4" \
 			--exclude="*.mov" \
 			--exclude="*.mpg" \
+			--exclude="*.ogv" \
 			--exclude="logs" \
 		        --exclude=".makemp4*" \
 			--exclude=".qmsubexp" --exclude="qt-thumbnails*" --exclude=".DS*" \
