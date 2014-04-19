@@ -113,7 +113,7 @@ do
     ext=$(echo "$file" | sed "s/.*\.//")
     alias=$TMP.alias.$ext
     rm -f $tmpfile $alias
-    ln -s "$PWD/$(basename "$file")" $alias || end 1 "could not make mp4"
+    ln -s "$PWD/$(basename "$file")" $alias || end 1 "could not make alias"
     if [ "$size" = "o" ]
     then
 	convertsize=$(ffmpeg -i $alias 2>&1 | egrep "Stream #.*Video:" | sed "s/.*[^0-9]\([0-9]*x[0-9]*\)[^0-9].*/\\1/")
