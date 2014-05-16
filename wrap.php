@@ -3252,8 +3252,9 @@ else if($REQUEST['output']=="flv")
 
 	if ($noindex) 
 	{
-		$head.=  '		<meta name="robots" content="noindex">' . "\n";
-		$head.=  '		<meta name="googlebot" content="noindex">' . "\n";
+		$head.=  '		<meta name="robots" content="noindex, nofollow">' . "\n";
+		$head.=  '		<meta name="googlebot" content="noindex, nofollow">' . "\n";
+		header("X-Robots-Tag: noindex, nofollow", true);
 	}
 	if ($podcast)
 	{
