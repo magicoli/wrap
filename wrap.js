@@ -138,7 +138,7 @@ function videotoggle(div_id) {
 
 function getVideoById(div_id) {
 	video = document.getElementById('video_' + div_id);
-	firefoxFixVideo(video);
+	// firefoxFixVideo(video);
 	if(!video) {
 	// if(typeof(video.play) != 'function'){
 		// tryjw;
@@ -286,13 +286,19 @@ function textediv_id(div_id) {
 
 function canPlayVideo(object) {
 	if(typeof(object)!='object') return false;
-	if(!object.src) return false;
-	extension=getFileExtension(object.src).toLowerCase();
-	if(extension=='m4v') extension='mp4';
-	if(extension=="") return false;
-	if(typeof(object.canPlayType) != 'function') return false;
-	if(!object.canPlayType("video/" + extension)) return false;
-	return true;
+	// if(!object.src) return false;
+	if(object.src) {
+		extension=getFileExtension(object.src).toLowerCase();
+		if(extension=='m4v') extension='mp4';
+		if(extension=="") return false;
+		if(typeof(object.canPlayType) != 'function') return false;
+		if(!object.canPlayType("video/" + extension)) return false;
+		return true;
+	}
+	if(object.currentSrc) {
+		return true;
+	}
+	return false;
 }
 function getFileExtension(filename) {
 	if( filename.length == 0 ) return "";
@@ -313,14 +319,19 @@ function firefoxFixVideo(object) {
 	if(canPlayVideo(object)) {
 		return;
 	}
-	fallback=object.innerHTML;
-	fallback.id=object.id;
-	
-	if(object.outerHTML) {
-		object.outerHTML=fallback;
-	} else {
-		parent=object.parentNode;
-		parent.innerHTML=fallback;
+	if(!object.innerHTML) {
+		return;
+	}
+ 	if(object.NETWORK_NO_SOURCE) {
+		fallback=object.innerHTML;
+		fallback.id=object.id;
+
+		if(object.outerHTML) {
+			object.outerHTML=fallback;
+		} else {
+			parent=object.parentNode;
+			parent.innerHTML=fallback;
+		}
 	}
 	return;
 }
