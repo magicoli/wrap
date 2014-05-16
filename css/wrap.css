@@ -567,7 +567,6 @@ font-family: "ITC Berkeley Oldstyle", "Berkeley", "ITC Garamond", "Garamond", "A
 	display: none;
 }
 
-
 @media print {
 	html, body, page {
 		height: 100%;
