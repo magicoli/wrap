@@ -227,6 +227,13 @@ $playable=array (
 	".m4v",
 	".mp3"
 );
+$html5_playable=array(
+	"mp4",
+	"m4v",
+	"ogv",
+	"ogg",
+	"webm"
+);
 
 $downloadable=array (
 	".toast",
@@ -253,6 +260,9 @@ $mimetypes=array(
 	"m4p" => 'video/mp4',
 	"mp3" => 'audio/mpeg',
 	"wmv" => 'video/wmv',
+	"ogv" => 'video/ogg',
+	"ogg" => 'video/ogg',
+	"webm" => 'video/webm',
 	"pdf" => 'application/pdf',
 	"jpg" => 'image/jpeg',
 	"jpeg" => 'image/jpeg',
@@ -293,19 +303,18 @@ setlocale(LC_ALL, "fr_BE.UTF-8");
 if(preg_match('/iPad/', getenv('HTTP_USER_AGENT'))) {
 	$output='iPad';
 } else {
-	if(preg_match('/iPhone|iPod/', getenv('HTTP_USER_AGENT')) || $_REQUEST['force']=="iPhone") {
+	if(preg_match('/iPhone|iPad|iPod/', getenv('HTTP_USER_AGENT')) || $_REQUEST['force']=="iPhone") {
 		$output='iPhone';
 		$onload.='window.scrollTo(0, 1);';
 		$pageid="smartphone";
 	}
-
-	$detect = new Mobile_Detect();
-	// isAndroid(), isBlackberry(), isOpera(), isPalm(), isWindows(), isGeneric().
-	if ($detect->isMobile()) {
-		$pageid="smartphone";
-	}
-
 }
+$detect = new Mobile_Detect();
+// isAndroid(), isBlackberry(), isOpera(), isPalm(), isWindows(), isGeneric().
+if ($detect->isMobile()) {
+	$pageid="smartphone";
+}
+
 // if(ereg('iPhone|iPod', getenv('HTTP_USER_AGENT')) || $_REQUEST['force']=="iPhone")
 // {
 // }
@@ -650,6 +659,8 @@ if(is_array($wrap_rights)) {
 
 ## Facebook authentication
 require_once("modules/fbauth/fbauth.php");
+require_once("modules/videosub.php");
+// require_once("modules/video-js/video-js.php");
 
 unset($_SESSION['debug']);
 
@@ -2090,9 +2101,27 @@ if(is_array($names))
 			$filesizeh=HumanReadableFilesize($filesize);
 		}
 		$filetype=ereg_replace("/.*", "", $mimetypes[$extension]);
+		
 		if($filetype=="image") {
 			$img=$file;
-		} else {
+		} else if ($filetype=="video") {
+			unset($video_sources);
+ 			foreach ($html5_playable as $ext) {
+				$altfile=preg_replace("/\.$extension$/", ".$ext", $file);
+				if(is_file("$webroot/$altfile")) {
+					$safealtfile=ereg_replace("//", "/", "/" . urlsafe($altfile));
+					$video_sources.="<source src='" . ereg_replace("//", "/", "/" . urlsafe($altfile)) 
+						. "' type='" . $mimetypes[$ext] . "' />\n";
+				}
+			}
+
+			unset($video_tracks);
+			$vtt=preg_replace("/\.$extension$/", ".vtt", $file);
+			if(is_file("$webroot/$vtt")) {
+				$video_tracks.="<track kind='subtitles' src='" . ereg_replace("//", "/", "/" . urlsafe($vtt))					. "' default></track>";
+				// srclang='en' label='English' 
+			}
+ 		} else {
 			$img=ereg_replace("\.$extension$", ".jpg", $file);
 		}
 		if(is_external($file))
@@ -2565,6 +2594,7 @@ if(is_array($names))
 							$controls="false";
 						}
 						$controls="true";
+						
 						switch($videofallback) {
 							case "jwplayer":
 							$video_object="
@@ -2637,10 +2667,7 @@ if(is_array($names))
 						// if($useragent!="firefox" && $useragent!='opera') {
 							$video_html5="
 								$largelink
-								<video class='large' id='video_$i' src='$filesafe' alt='$namesafe'";
-							if($mimetypes[$extension]) {
-								$video_html5.=" type='$mimetypes[$extension]' ";
-							}
+								<video controls class='large $classes[video]' id='video_$i' alt='$namesafe'";
 							$video_html5.=" preload=\"none\" ";
 							// $video_html5.=" preload ";
 							$preloadvideo="preloadVideos();";
@@ -2653,19 +2680,23 @@ if(is_array($names))
 							if($autonext) {
 								$video_html5.=" onEnded='popOff(\"$i\"); popOn(\"$next\")' ";
 							}
-							$video_html5.=">$video_object</video>
-								$largelinkout";							
-							// $video_html5.="></video>
-							// 	$largelinkout";
+							$video_html5.=">\n";
+							// $video_html5.="<source src='$filesafe' type='video/mp4' ";
+							// 							if($mimetypes[$extension]) {
+							// 	$video_html5.=" type='$mimetypes[$extension]' ";
+							// }
+							$video_html5.=$video_sources;
+							$video_html5.=$video_tracks;
+							$video_html5.=$video_object;
+							$video_html5.="</video>";
+							$video_html5.=$largelinkout;							
 						// }
-
 						// if($inpage || $useragent=='firefox' || $useragent=='opera') {
 						if($inpage || $videofallback=='videojs') {
 							$popuphtml.=$video_object;
 						} else {
 							$popuphtml.=$video_html5;
 						}
-
 						// $popuphtml.=$object;
 						break;
 					}
@@ -2793,9 +2824,11 @@ if ($preloadcode || $preloadvideo) {
 	$onload.="firefoxFixAll();";
 }
 
-if($REQUEST['ih']) {
-	$hash=$REQUEST['ih'];
-	$showitem=$hashindex[$hash];
+if($REQUEST['ih'] || isset($showitem)) {
+	if(!isset($showitem)) {
+		$hash=$REQUEST['ih'];
+		$showitem=$hashindex[$hash];
+	}
 	if(isset($showitem)) {
 		$file=$index[$showitem];
 		
@@ -2962,7 +2995,17 @@ if($facebookcommentspages) {
 if($facebooktags) {
 
 	if($ogtype) {
-		$fb_meta.="<meta property=\"og:type\" content=\"$ogtype\"/>";
+		$videourl="$hostname/$index[0]";
+		$fb_meta.="<meta property=\"og:type\" content=\"$ogtype\" />";
+		if($ogtype=="movie") {
+		$fb_meta.="
+			<meta property=\"og:video\" content=\"http://$videourl\" />
+			<meta property=\"og:video:secure_url\" content=\"https://$videourl\" />
+			<meta property=\"og:video:type\" content=\"video/mp4\" \>
+		  	<meta property=\"og:video:height\" content=\"270\" />
+  			<meta property=\"og:video:width\" content=\"480\" />
+			";
+		}
 	}
 	if(!$oglock) {
 		if(ereg("[<\]img", $about.$description)) {
