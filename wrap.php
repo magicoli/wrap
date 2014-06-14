@@ -3350,6 +3350,14 @@ else if($REQUEST['output']=="flv")
 	// }
 	$finalpage=processChordPro($finalpage);
 
+	if (! $pageid) {
+	   if ($requesturi == "/") {
+	      $pageid="front";
+	   } else {
+	      $pageid=preg_replace("/[^a-zA-Z0-9]+/", "-", $requesturi); 
+	      $pageid=preg_replace("/^-/", "", $pageid); 
+	   }
+	}
 	if ($pageid) {
 		$finalpage=ereg_replace("<body", "<body id='$pageid'", $finalpage);
 	} elseif ($isroot) {
