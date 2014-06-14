@@ -3411,9 +3411,18 @@ else if($REQUEST['output']=="flv")
 	if($REQUEST['output']=='source') {
 		$finalpage="<pre>" . htmlentities($finalpage) . "</pre>";
 	}
+
 	$finalpage=ereg_replace("<aside></aside>", "", $finalpage);
-	$finalpage=ereg_replace("<div class=left></div>", "", $finalpage);
+	$finalpage=ereg_replace("<div class=left>[:blank:]*</div>", "", $finalpage);
 	$finalpage=clean_html_code($finalpage);
+	$finalpage=ereg_replace("\n", " ", $finalpage);
+	$finalpage=ereg_replace("  *", " ", $finalpage);
+	$finalpage=ereg_replace("> <", "><", $finalpage);
+	$finalpage=ereg_replace("<p></p>", "", $finalpage);
+	$finalpage=ereg_replace("<div[^>]*></div>", "", $finalpage);
+	$finalpage=ereg_replace("<aside[^>]*></aside>", "", $finalpage);
+	$finalpage=ereg_replace("<nav[^>]*></nav>", "", $finalpage);
+	$finalpage=ereg_replace("<div[^>]*></div>", "", $finalpage);
 	print "$finalpage";
 }
 ?>
