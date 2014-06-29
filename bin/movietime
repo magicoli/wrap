@@ -3,7 +3,7 @@
 OS=`uname -a | cut -d " " -f 1 | sed "s/[^a-zA-Z0-9]//g"`
 
 seconds() {
-	string=$@
+	string=$(echo $@ | sed "s| N/A||")
 	case $OS in
 		"Darwin"|"FreeBSD")
 		seconds=$(date -j -f "%Y-%m-%d %H:%M:%S" "$string" +%s 2>/dev/null)
