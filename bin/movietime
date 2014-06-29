@@ -25,7 +25,7 @@ seconds() {
 timedelta=$(seconds "1970-01-01 00:00:00")
 
 total=0
-for movie in $@
+for movie in "$@"
 do
 	printf "$movie: "
 	duration=$(ffmpeg -i "$movie" 2>&1 | grep Duration: | sed "s/.*Duration: //" | cut -d "," -f 1 | cut -d "." -f 1)
