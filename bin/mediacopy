@@ -18,9 +18,9 @@ pwd | xargs basename | grep "^sources$" || exit 2
 echo "source: $source"
 echo "method: $method"
 
-ls "$source/"*.MPG "$source/"*.MTS 2>/dev/null | wc -l | sed "s/$/ movies/"
+ls "$source/"*.MPG "$source/"*.MOV "$source/"*.MTS 2>/dev/null | wc -l | sed "s/$/ movies/"
 
-ls "$source/"*.MPG "$source/"*.MTS 2>/dev/null | sort -n \
+ls "$source/"*.MPG "$source/"*.MOV "$source/"*.MTS 2>/dev/null | sort -n \
 	| while read file
 do
 	i=$(($i + 1))
