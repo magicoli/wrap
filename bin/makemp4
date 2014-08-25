@@ -129,12 +129,14 @@ do
     cd "$(dirname "$file")" || break
 
     command=ffmpeg
+    filename=$(basename "$file")
     name=$(basename "$file" | sed "s/\.[a-zA-Z0-9]*$//")
     tmpfile=$TMP.processing.mp4
     ext=$(echo "$file" | sed "s/.*\.//")
     alias=$TMP.alias.$ext
     rm -f $tmpfile $alias
-    ln -s "$PWD/$(basename "$file")" $alias || end 1 "could not make alias"
+    ln -s "$filename" "$alias" || end 1 "could not make alias"
+#    ln -s "$PWD/$(basename "$file")" $alias || end 1 "could not make alias"
     if [ "$scale" = "o" ]
     then
 	convertsize=$(ffmpeg -i $alias 2>&1 | egrep "Stream #.*Video:" | sed "s/.*[^0-9]\([0-9]*x[0-9]*\)[^0-9].*/\\1/")
