@@ -20,7 +20,7 @@ do
 	echo "$name" >> "$TMP.list"
 	# info=$(echo "$name" | grep "//" | sed "s|[^/]*//[[:blank:]]*||" | sed "s| */[/ ]*| |")
 	name=$(echo "$name" | sed "s|[[:blank:]]*//.*||")
-	name=`webnormalize "$name"`
+	name=`webnormalize "$name" | sed "s|_*/_*|_|g"`
 	case $method in
 		"andrieu")
 		thumbname=$lastname

@@ -16,7 +16,8 @@ if [ "$1" ]
 			cat "$param" | cut -d '"' -f 2 \
 				| sed "s|$| //|" \
 				| sed "s|[[:blank:]]*//|.mp4 //|" \
-				| sed "s|[[:blank:]]*//[[:blank:]]*$||"
+				| sed "s|[[:blank:]]*//[[:blank:]]*$||" \
+			 	| sed "s|/|-SLASH-|g"
 		elif [ -d "$param" ] 
 			then
 			sort=true
@@ -36,9 +37,10 @@ fi | while read name
 do
 	info=$(echo "$name" | grep "//" | sed "s|[^/]*//[[:blank:]]*||" | sed "s| */[/ ]*| |" | sed "s|^| // |")
 	name=$(echo "$name" | sed "s|[[:blank:]]*//.*||")
-	file=`echo "$name" | webnormalize`
+	file=`echo "$name" | webnormalize | sed "s/_*-SLASH-_*/_/g"`
+	name=$(basename "$name" | sed "s|-SLASH-|/|g")
 	#file=$name
-	name=`basename "$name" | sed "s/\.[a-zA-Z0-9]*$//" | sed "s/_/ /g" | sed "s/[-\. ][0-9]*$//"`
+	name=`echo "$name" | sed "s/\.[a-zA-Z0-9]*$//" | sed "s/_/ /g" | sed "s/[-\. ][0-9]*$//"`
 	second=`echo "$file" | egrep "^[0-9]*,[0-9]*-" | cut -d "-" -f 1 | grep "," | cut -d "," -f 2`
 	first=`echo "$file" | egrep "^[0-9]" | cut -d "-" -f 1 | cut -d "," -f 1`
 	

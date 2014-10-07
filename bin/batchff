@@ -42,7 +42,7 @@ echo $lastnumber
 		then
 		if [ "$showname" ]
 			then
-			filename=$(echo "$showname" | webnormalize)
+			filename=$(echo "$showname" | webnormalize | sed "s|_*/_*|_|g")
 			case $format in
 				"web")
 				convertfolder=../mp4
