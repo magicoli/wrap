@@ -306,13 +306,16 @@ if(preg_match('/iPad/', getenv('HTTP_USER_AGENT'))) {
 	if(preg_match('/iPhone|iPad|iPod/', getenv('HTTP_USER_AGENT')) || $_REQUEST['force']=="iPhone") {
 		$output='iPhone';
 		$onload.='window.scrollTo(0, 1);';
-		$pageid="smartphone";
+		$bodyclasses['smartphone']="smartphone";
+		$bodyclasses['iphone']="iPhone";
 	}
 }
 $detect = new Mobile_Detect();
 // isAndroid(), isBlackberry(), isOpera(), isPalm(), isWindows(), isGeneric().
 if ($detect->isMobile()) {
-	$pageid="smartphone";
+	$bodyclasses['smartphone']="smartphone";
+} else {
+  $bodyclasses['not-smartphone']="not-smartphone";
 }
 
 // if(ereg('iPhone|iPod', getenv('HTTP_USER_AGENT')) || $_REQUEST['force']=="iPhone")
@@ -605,7 +608,7 @@ if($fb_app_id) {
 $fb_init="<div style=\"margin-top: 0px\" id=\"fb-root\"></div><script src=\"http://connect.facebook.net/fr_FR/all.js#appId=$fb_param_appid&amp;xfbml=1\"></script>";
 
 if($facebooked || $facebookapp) {
-	$pageid="simplified";
+	$bodyclasses[]="simplified";
 	$fbtweak="
 	<div id=\"fb-root\"></div>
 	<script>
@@ -1195,7 +1198,7 @@ if($autoplay) {
 	$autoplay='false';
 }
 
-
+#if($output=="iPhone" || isset($bodyclasses['smartphone'])) {
 if($output=="iPhone") {
 	$facebooklinks=false;
 	$facebooklinksitems=false;
@@ -3350,12 +3353,17 @@ else if($REQUEST['output']=="flv")
 	// }
 	$finalpage=processChordPro($finalpage);
 
+	if(is_array($bodyclasses)) {
+	    $bodyclass="class=\"" . implode(" ", $bodyclasses) . "\"";
+		$finalpage=ereg_replace("<body", "<body $bodyclass ", $finalpage);
+	}
+
 	if (! $pageid) {
 	   if ($requesturi == "/") {
 	      $pageid="front";
 	   } else {
 	      $pageid=preg_replace("/[^a-zA-Z0-9]+/", "-", $requesturi); 
-	      $pageid=preg_replace("/^-/", "", $pageid); 
+	      $pageid=preg_replace("/^-|-$/", "", $pageid); 
 	   }
 	}
 	if ($pageid) {
@@ -3375,6 +3383,10 @@ else if($REQUEST['output']=="flv")
 		$finalpage=eregi_replace('</head>', $session['shop']['csslink'] . "\n</head>", $finalpage);
 	}
 
+	$viewport='<meta name="viewport" content="width=device-width, initial-scale=1.0">';
+	$finalpage=eregi_replace('</head>', "${viewport}</head>", $finalpage);
+
+#	if($output=="iPhone" || isset($bodyclasses['smartphone']))
 	if($output=="iPhone")
 	{
 // 		<meta name='viewport' content='initial-scale=1' />
