@@ -1,0 +1,68 @@
+#footer .logo {
+	margin: 5px 0 5px;
+}
+
+#content > .clearfix {
+	padding: 10px;
+}
+	#content > .clearfix > .columns {
+/*		margin: 10px;*/
+/*		width: 100%;*/
+	}
+	#header {
+		height: 0;
+		vertical-align: top;
+	}
+	#header > .clearfix > .content {
+		margin: 10px 10px 0;
+	}
+	#footer {
+		height: 0;
+		vertical-align: bottom;
+	}
+	#footer > .clearfix > .content {
+		margin: 0 10px 10px;
+	}
+
+@media only screen and (min-width: 768px) {
+	#content > .clearfix {
+		padding: 0;
+	}
+	#content .columns {
+		display: table;
+		empty-cells: hide;
+		border-collapse: separate;
+		border-spacing: 10px;
+		height: 100%;
+		margin: 0;
+	}
+	#content .columns > div {
+		display: table-cell;
+		vertical-align: top;
+	}
+	#content h1 {
+		margin-top: 0;
+	}
+	#content .columns .right :first-child,
+	#content #right :first-child {
+		margin-top: 0;
+	}
+	#left .tree,
+	#content .columns > .left div p,
+	#content .columns > .right div p{
+		width: 180px;
+	}
+	#footer .logo {
+		margin-top: -1em;
+		float: right;
+		clear: right;
+	}
+}
+
+@media only screen and (min-width: 960px) {
+	#left .tree,
+	#content .columns > .left div p,
+	#content .columns > .right div p{
+		width: 220px;
+	}
+}
