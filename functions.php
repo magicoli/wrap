@@ -329,9 +329,11 @@ function parseWeather ($args) {
 	$args=split(',', $string);
 	#http://weather.yahooapis.com/forecastrss?w=80897&u=c
 	
-	#80897,615702
+	# yahoo						80897		615702
+	# weather.com				GPXX7711:1	FRXX0076:1
+	# World Weather Online		880019		803267
 	while (list($key, $WOEID) = each($args)) {
-		$result=parseRDFtoVar("http://weather.yahooapis.com/forecastrss?w=$WOEID&u=c");
+		$result=parseRDFtoVar("http://weather.yahooapis.com/forecastrss?w=80897&u=c");
 		if ($result)
 		{
 			$city=ereg_replace(".*Conditions for ([^,]*),.*", "\\1", $result);
