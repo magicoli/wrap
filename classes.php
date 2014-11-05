@@ -1,7 +1,7 @@
 <?php
 class item {
 	function item() {
-		global $hostname, $webroot;
+		global $hostname, $webroot, $protocol;
 		$arg=func_get_args();
 		if(is_array($arg[0]))
 		{
@@ -19,7 +19,7 @@ class item {
 			}
 			else
 			{
-				$this->url="http://$hostname/" . ereg_replace('^/', '', $file);
+				$this->url="$protocol://$hostname/" . ereg_replace('^/', '', $file);
 			}
 		}
 		$this->hostname=ereg_replace('/.*', '', ereg_replace('^[a-z]*://', '', $this->url));

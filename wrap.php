@@ -110,8 +110,8 @@ $defaultposter="$libdirurl/$scriptname-poster-black.jpg";
 
 $logo="
 <div class=logo>
-	<a href='$protocol://www.magiiic.co.uk/' target=magiiic>
-		<img alt='WRAP by Magiic' src='$protocol://www.magiiic.co.uk/images/magiiic-wrap-black.png'>
+	<a href='$protocol://www.magiiic.com/' target=magiiic>
+		<img alt='WRAP by Magiic' src='$protocol://www.magiiic.com/images/magiiic-wrap-black.png'>
 	</a>
 </div>";
 $footerlogo=$logo;
@@ -669,7 +669,7 @@ require_once("modules/videosub.php");
 
 unset($_SESSION['debug']);
 
-if(($auth_id && ereg("magiiic.co.uk$", $hostname) || $localserver)) {
+if(($auth_id && ereg("magiiic.com$", $hostname) || $localserver)) {
 	if($_GET['auth']) {
 		$_SESSION['request']=$_REQUEST;
 		$_SESSION['request']['referer']=getenv("HTTP_REFERER");
@@ -3217,7 +3217,7 @@ if($REQUEST['output']=="rss" && $podcast)
 	. "<lastBuildDate>$lastBuildDate</lastBuildDate>"
 	. "<pubDate>$pubDate</pubDate>"
 	. "<docs>http://blogs.law.harvard.edu/tech/rss</docs>"
-	. "<webMaster>webmaster@magiiic.co.uk</webMaster>";
+	. "<webMaster>webmaster@magiiic.com</webMaster>";
 	echo $podcastxml
 	. "</channel>"
 	. "</rss>";
