@@ -1,5 +1,7 @@
 <?php
 ini_set("error_reporting",  E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+$protocol=preg_replace("/:.*/", "", getenv("SCRIPT_URI"));
+
 if(preg_match("/^dev\.|^local\.|^preview\./", getenv("HTTP_HOST"))) {
 	ini_set("display_errors", true);
 	$localserver=true;
@@ -108,8 +110,8 @@ $defaultposter="$libdirurl/$scriptname-poster-black.jpg";
 
 $logo="
 <div class=logo>
-	<a href='http://www.magiiic.co.uk/' target=magiiic>
-		<img alt='WRAP by Magiic' src='http://www.magiiic.co.uk/images/magiiic-wrap-black.png'>
+	<a href='$protocol://www.magiiic.co.uk/' target=magiiic>
+		<img alt='WRAP by Magiic' src='$protocol://www.magiiic.co.uk/images/magiiic-wrap-black.png'>
 	</a>
 </div>";
 $footerlogo=$logo;
@@ -363,7 +365,7 @@ $cacheroot=firstWritableFolder(
 
 // echo "cacheroot: $scriptroot";
 
-$siteurl="http://$hostname";
+$siteurl="$protocol://$hostname";
 $requesturi=getenv('REQUEST_URI');
 $uri=ereg_replace("[\?\$].*", "", $requesturi);
 $requesturl="$siteurl$requesturi";
@@ -605,7 +607,7 @@ if($fb_app_id) {
 } else {
 	$fb_param_appid=$default_fb_app_id;
 }
-$fb_init="<div style=\"margin-top: 0px\" id=\"fb-root\"></div><script src=\"http://connect.facebook.net/fr_FR/all.js#appId=$fb_param_appid&amp;xfbml=1\"></script>";
+$fb_init="<div style=\"margin-top: 0px\" id=\"fb-root\"></div><script src=\"$protocol://connect.facebook.net/fr_FR/all.js#appId=$fb_param_appid&amp;xfbml=1\"></script>";
 
 if($facebooked || $facebookapp) {
 	$bodyclasses[]="simplified";
@@ -672,7 +674,7 @@ if(($auth_id && ereg("magiiic.co.uk$", $hostname) || $localserver)) {
 		$_SESSION['request']=$_REQUEST;
 		$_SESSION['request']['referer']=getenv("HTTP_REFERER");
 		if(!$_SESSION['request']['referer'] && $localserver) {
-			$_SESSION['request']['referer']="http://dev.van-helden.net/wrap/?wrap=connect";
+			$_SESSION['request']['referer']="$protocol://dev.van-helden.net/wrap/?wrap=connect";
 		}		
 	}
 	if($_SESSION['request']['auth']) {
@@ -828,9 +830,9 @@ if(isset($redirect)) {
 
 ## JQuery
 if($addons['jquery']) {
-$head.='  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+$head.='  <link rel="stylesheet" href="'  . $protocol . '://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+  <script src="'  . $protocol . '://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="'  . $protocol . '://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
   <link rel="stylesheet" href="/resources/demos/style.css" />
   <script>
   $(function() {
@@ -1981,7 +1983,7 @@ if($foundsomethingtoplay &! $downloadOnly )
 		
 		$flvplaylist = "<playlist version='1' xmlns='http://xspf.org/ns/0/'>\n"
 			.  "	<title>$pagetitle</title>\n"
-		 	.  "		<info>http://www.jeroenwijering.com/</info>\n"
+/*		 	.  "		<info>http://www.jeroenwijering.com/</info>\n"*/
 			.  "	<trackList>\n"
 			. $flvplaylist
 			.  "	</trackList>\n"
@@ -2385,7 +2387,7 @@ if(is_array($names))
 		// }
 				
 		if(!is_external(urlencode($file)) && is_file($file)) {
-			$fileurl="http://$hostname/" . urlsafe("$file");
+			$fileurl="$protocol//$hostname/" . urlsafe("$file");
 		}
 		else
 		{
@@ -2416,7 +2418,7 @@ if(is_array($names))
 			}
 			$podcastxml .= "<item>"
 			. "<title>" . xmlsafe($name). "</title>"
-			. "<link>http://$hostname". rewritelinkid($key) . "</link>"
+			. "<link>$protocol//$hostname". rewritelinkid($key) . "</link>"
 			. "<guid>". rewritelinkid($key) . "</guid>";
 			#				echo "$file<br>";
 			if (is_downloadable($file) || $downloadOnly)
@@ -2628,7 +2630,7 @@ if(is_array($names))
 									  data=\"http://releases.flowplayer.org/swf/flowplayer-3.2.1.swf\">
 									  <param name=\"movie\" value=\"http://releases.flowplayer.org/swf/flowplayer-3.2.1.swf\" />
 									  <param name=\"allowfullscreen\" value=\"true\" />
-									  <param name=\"flashvars\" value='config={\"playlist\":[\"/$postersafe\", {\"url\": \"http://dev.emmanueljespers.com$filesafe\",\"autoPlay\":false,\"autoBuffering\":true}]}' />
+									  <param name=\"flashvars\" value='config={\"playlist\":[\"/$postersafe\", {\"url\": \"$protocol//$hostname/$filesafe\",\"autoPlay\":false,\"autoBuffering\":true}]}' />
 									  <img src=\"/$postersafe\" alt=\"$namesafe\"
 									    title=\"No video playback capabilities.\" />
 									</object>
@@ -2731,7 +2733,7 @@ if(is_array($names))
 				if(isset($thumb)) {
 					$podcastxml .= "<description>"
 						. "&lt;a href=" . rewritelinkid($playlistid) . "&gt;"
-						. "&lt;img src='http://$hostname/". urlsafe($thumb) . "' border=0&gt;"
+						. "&lt;img src='$protocol//$hostname/". urlsafe($thumb) . "' border=0&gt;"
 					. "&lt;/a&gt;";
 				}
 				else
@@ -2839,7 +2841,7 @@ if($REQUEST['ih'] || isset($showitem)) {
 		unset($ogthumbs);
 		$ogthumbs[]=$siteurl . $files[$file]['thumb'];
 		$oglock=true;
-		$oguri="http://$hostname$uri?ih=$hash";
+		$oguri="$protocol//$hostname$uri?ih=$hash";
 		// $ogtitle=$files[$file]['name'];
 		$ogdescription=$files[$file]['description'];
 		switch($files[$file]['type']) {
@@ -2963,7 +2965,7 @@ if($facebooklinks) {
 	$fb_like="
 		<div class=fb_button id=fb_like_button>
 			<iframe class=fb_like
-				src=\"http://www.facebook.com/plugins/like.php?href=" 
+				src=\"$protocol//www.facebook.com/plugins/like.php?href=" 
 					. $encodedurl
 					. "&amp;layout=$fb_like_buttonstyle&amp;show_faces=$fb_like_showfaces&amp;action=like&amp;font=lucida+grande&amp;colorscheme=light\" 
 				scrolling=\"no\" 
@@ -2975,14 +2977,14 @@ if($facebooklinks) {
 	$fb_recommend=ereg_replace("fb_like", "fb_recommend", ereg_replace("action=like", "action=recommend", $fb_like));
 	$fb_share="
 			<div class=fb_button id=fb_share_button>
-				<a class=\"fb_share\" name=\"fb_share\" type=\"button_count\" href=\"http://www.facebook.com/sharer.php\">Partager</a>
-				<script src=\"http://static.ak.fbcdn.net/connect.php/js/FB.Share\" type=\"text/javascript\"></script>
+				<a class=\"fb_share\" name=\"fb_share\" type=\"button_count\" href=\"$protocol//www.facebook.com/sharer.php\">Partager</a>
+				<script src=\"$protocol//static.ak.fbcdn.net/connect.php/js/FB.Share\" type=\"text/javascript\"></script>
 			</div>
 	";
 
-	$fb_like="<div style=\"margin-top: 0px\" id=\"fb-root\"></div><script src=\"http://connect.facebook.net/fr_FR/all.js#appId=$fb_param_appid&amp;xfbml=1\"></script><fb:like href=\"$cleanurl\" send=\"$fbsend\" layout=\"button_count\" width=\"auto\" show_faces=\"true\" colorscheme=\"$fbstyle\" font=\"lucida grande\"></fb:like>";
+	$fb_like="<div style=\"margin-top: 0px\" id=\"fb-root\"></div><script src=\"$protocol//connect.facebook.net/fr_FR/all.js#appId=$fb_param_appid&amp;xfbml=1\"></script><fb:like href=\"$cleanurl\" send=\"$fbsend\" layout=\"button_count\" width=\"auto\" show_faces=\"true\" colorscheme=\"$fbstyle\" font=\"lucida grande\"></fb:like>";
 
-	$fb_send="<div style=\"margin-top: 0px\" id=\"fb-root\"></div><script src=\"http://connect.facebook.net/fr_FR/all.js#appId=$fb_param_appid&amp;xfbml=1\"></script><fb:send href=\"$cleanurl\" font=\"lucida grande\" colorscheme=\"$fbstyle\"></fb:send>";
+	$fb_send="<div style=\"margin-top: 0px\" id=\"fb-root\"></div><script src=\"$protocol//connect.facebook.net/fr_FR/all.js#appId=$fb_param_appid&amp;xfbml=1\"></script><fb:send href=\"$cleanurl\" font=\"lucida grande\" colorscheme=\"$fbstyle\"></fb:send>";
 	
 	
 	$fb_buttons="$fb_init
@@ -3056,7 +3058,7 @@ if($facebooktags) {
 	if($oguri) {
 		$fb_meta.="<meta property=\"og:url\" content=\"$oguri\"/>";
 	} else {
-		$fb_meta.="<meta property=\"og:url\" content=\"http://$hostname$uri\"/>";
+		$fb_meta.="<meta property=\"og:url\" content=\"$protocol//$hostname$uri\"/>";
 	}
 	// if($facetitle) {
 		$fb_meta.="<meta property=\"og:title\" content=\"" . quotesafe($facetitle) ."\"/>";
@@ -3079,7 +3081,7 @@ if($inputurl) {
 		if(getenv('SERVER_PORT') != 80) {
 			$port=":" . getenv('SERVER_PORT');
 		}
-		$geturl.="http://$hostname$port/";
+		$geturl.="$protocol//$hostname$port/";
 		if(!ereg('^/', $inputurl)) {
 			$geturl.="$directory/";
 		}
@@ -3209,7 +3211,7 @@ if($REQUEST['output']=="rss" && $podcast)
 	. "<channel>"
 	. "<title>$globaltitle $pagetitle</title>"
 	. "<description>$pagetitle</description>"
-	. "<link>http://" . $hostname . rewritelink() . "</link>"
+	. "<link>$protocol//" . $hostname . rewritelink() . "</link>"
 	. "<language>en-us</language>"
 	. "<copyright>Copyright 2008</copyright>"
 	. "<lastBuildDate>$lastBuildDate</lastBuildDate>"
