@@ -37,7 +37,7 @@ fi | while read name
 do
 	info=$(echo "$name" | grep "//" | sed "s|[^/]*//[[:blank:]]*||" | sed "s| */[/ ]*| |" | sed "s|^| // |")
 	name=$(echo "$name" | sed "s|[[:blank:]]*//.*||")
-	file=`echo "$name" | webnormalize | sed "s/_*-SLASH-_*/_/g"`
+	file=`echo "$name" | webnormalize | sed "s/[_-]*SLASH-.*/_/g"`
 	name=$(basename "$name" | sed "s|-SLASH-|/|g")
 	#file=$name
 	name=`echo "$name" | sed "s/\.[a-zA-Z0-9]*$//" | sed "s/_/ /g" | sed "s/[-\. ][0-9]*$//"`
