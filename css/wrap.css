@@ -219,6 +219,12 @@ div.thumb img.thumb {
 	right: 0;
 	background: white;
 }
+.item .name .info {
+    display: block;
+    color: #666;
+    font-size: 0.8em;
+    font-style: italic;
+}
 .item:hover .name {
 	display: block;
 }
