@@ -36,8 +36,9 @@ else
 fi | while read name
 do
 	info=$(echo "$name" | grep "//" | sed "s|[^/]*//[[:blank:]]*||" | sed "s| */[/ ]*| |" | sed "s|^| // |")
-	name=$(echo "$name" | sed "s|[[:blank:]]*//.*||")
-	file=`echo "$name" | webnormalize | sed "s/[_-]*SLASH-.*/_/g"`
+	info=$(echo "$name" | grep "\-SLASH--SLASH-" | sed "s|[^/]*-SLASH--SLASH-[[:blank:]]*||" | sed "s| */[/ ]*| |")
+	name=$(echo "$name" | sed "s|[[:blank:]]*-SLASH--SLASH-.*||")
+	file=`echo "$name" | webnormalize | sed "s/[_-]*SLASH-.*/_/g" | sed "s/_*$//"`
 	name=$(basename "$name" | sed "s|-SLASH-|/|g")
 	#file=$name
 	name=`echo "$name" | sed "s/\.[a-zA-Z0-9]*$//" | sed "s/_/ /g" | sed "s/[-\. ][0-9]*$//"`
@@ -54,7 +55,8 @@ do
 	else
 		printf "${first}\t"
 	fi
-	printf "\t\"$file\" => '$name',$info\n"
+	[ "$info" ] && infohtml=" <span class=info>$info</span>";
+	printf "\t\"$file\" => '$name$infohtml', // $info\n"
 done > "$TMP.playlist"
 
 if [ "$sort" = "true" ]
