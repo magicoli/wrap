@@ -35,11 +35,12 @@ else
 		| grep -v "\-dv."
 fi | while read name
 do
+	unset info
 	info=$(echo "$name" | grep "//" | sed "s|[^/]*//[[:blank:]]*||" | sed "s| */[/ ]*| |" | sed "s|^| // |")
 	info=$(echo "$name" | grep "\-SLASH--SLASH-" | sed "s|[^/]*-SLASH--SLASH-[[:blank:]]*||" | sed "s| */[/ ]*| |")
-	name=$(echo "$name" | sed "s|[[:blank:]]*-SLASH--SLASH-.*||")
-	file=`echo "$name" | webnormalize | sed "s/[_-]*SLASH-.*/_/g" | sed "s/_*$//"`
-	name=$(basename "$name" | sed "s|-SLASH-|/|g")
+	name=$(echo "$name" | sed "s|[[:blank:]]*-SLASH--SLASH-.*||" )
+	file=`echo "$name" | webnormalize | sed "s/[_-]*SLASH-.*/_/g" | sed "s/_*$//" | sed "s/\.jpg\.mp4$/.jpg/"`
+	name=$(basename "$name" | sed "s|-SLASH-|/|g" | sed "s|\.[a-zA-Z0-9]*$||")
 	#file=$name
 	name=`echo "$name" | sed "s/\.[a-zA-Z0-9]*$//" | sed "s/_/ /g" | sed "s/[-\. ][0-9]*$//"`
 	second=`echo "$file" | egrep "^[0-9]*,[0-9]*-" | cut -d "-" -f 1 | grep "," | cut -d "," -f 2`
@@ -55,8 +56,10 @@ do
 	else
 		printf "${first}\t"
 	fi
-	[ "$info" ] && infohtml=" <span class=info>$info</span>";
-	printf "\t\"$file\" => '$name$infohtml', // $info\n"
+	unset infohtml
+	unset infocomment
+	[ "$info" ] && infohtml=" <span class=info>$info</span>"  && infocomment=$(webnoormalize " // $info");
+	printf "\t\"$file\" => '$name$infohtml',$infocomment\n"
 done > "$TMP.playlist"
 
 if [ "$sort" = "true" ]
