@@ -1282,7 +1282,12 @@ if ($d)
 					{
 						$target='_self';
 					}
-					$links.="<div class=link><a href='$thisurl' target='$target'>$site</a></div>";
+
+					if(empty($thisurl)) {
+						$links.="<p>$site</p>";
+					} else {
+						$links.="<div class=link><a href='$thisurl' target='$target'>$site</a></div>";
+					}
 				}
 			}
 			$links=ereg_replace('"<div class=title></div>"', '', $links);
