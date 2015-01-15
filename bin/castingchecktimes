@@ -1,0 +1,19 @@
+#!/bin/sh
+
+LIMIT=5
+cat times | grep "\.mov:" | sed "s/\.mov: / /" \
+	| while read n t s
+do
+	[ $s -gt $LIMIT ] && continue
+	o=$(($n + 1))
+	p=$(($n - 1))
+	egrep -q \
+		-e "^$n[[:blank:]][[:blank:]]*[0-9]" liste \
+		-e "^$p[[:blank:]][[:blank:]]*[0-9]" liste \
+		-e "^$n\.mov" \
+		-e "^$o[[:blank:]]|^$o[[:blank:]]*$" \
+		 && continue
+	# egrep -q "^$n\.mov" ignore && continue
+	# egrep -q "^$o[[:blank:]]|^$o[[:blank:]]*$" liste && continue
+	echo "$n.mov"
+done
