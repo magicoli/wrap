@@ -73,4 +73,15 @@ do
 
 done >&2
 
+if [ -f "thumbs" ]
+	then
+	cat thumbs | while read mp4 t
+	do
+		file=${mp4/.mp4/}
+		cp -p .browsercache/$t-thumb.jpg ../web/.browsercache/$file-thumb.jpg
+		cp -p .browsercache/$t-large.jpg ../web/.browsercache/$file-large.jpg
+	done
+fi
+
+
 makeplaylist "$TMP.list" | sed "s/\$reserve=/\$customnames=/"

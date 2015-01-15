@@ -18,6 +18,7 @@ rsync -Wavz $remote/$castingdir/sources/.browsercache/ $base/$castingdir/browser
 		open browsercache/
 		[ ! -f liste ] && touch liste
 		[ ! -f ignore ] && touch ignore
-		open -a textmate liste ignore
+		[ ! -f thumbs ] && touch thumbs
+		open -a textmate liste ignore thumbs
 	fi
 end $?
