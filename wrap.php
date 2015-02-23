@@ -3423,6 +3423,8 @@ else if($REQUEST['output']=="flv")
 	// 	. "</div>";
 	$finalpage=ereg_replace("\[playlist\]", $playlist, $finalpage);
 	$finalpage=ereg_replace("<p>\[img([a-zA-Z0-9]*):([^\[]*)\]</p>", "<div class=intext\\1>[img\\1:\\2]</div>", $finalpage);
+	$finalpage=ereg_replace("\[video([a-zA-Z0-9]*):([^\[]*)\.([a-zA-Z0-9]*)\]", "<video controls='' class='large intext' alt='\\2' preload='auto'><source src='\\2.\\3' type='video/\\3'><object class='player' codebase='http://www.apple.com/qtactivex/qtplugin.cab'><param name='src' value='\\2.\\3'><param name='controller' value='true'><param name='autoplay' value='false'><param name='cache' value='true'><param name='scale' value='aspect'><param name='kioskmode' value='true'><param name='saveembedtags' value='true'><param name='enablejs' value='true'><param name='allowscriptaccess' value='true'><embed class='player' name='\\2' src='\\2.\\3' controller='' autoplay='false' cache='true' scale='aspect' kioskmode='true' saveembedtags='true' enablejs='true' allowscriptaccess='true' type='video/\\3' pluginspage='http://www.apple.com/quicktime/download/'></object></video>", $finalpage);
+	
 	$finalpage=ereg_replace("\[img([a-zA-Z0-9]*):([^\[]*)\]", "<img class=intext\\1 src='\\2'>", $finalpage);
 
 	$finalpage=ereg_replace("</body", "$postload</body", $finalpage);
