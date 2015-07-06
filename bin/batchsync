@@ -15,7 +15,7 @@ syncmode=W
 processvideo=true
 processthumbs=true
 
-OPTS="fPsvl:r:n:"
+OPTS="1fPsvl:r:n:"
 SYNTAX=`echo $OPTS|sed "s/-://g"|sed "s/\(.*\)/[-\\1] [<args>]/g"|sed "s/\(.\):/] [-\\1 <value>/g"`
 
 help() {
@@ -57,6 +57,9 @@ while getopts $OPTS PARAM
 		;;
 	f)
 		forcesync=true
+		;;
+	1)
+		singlepass=true
 		;;
 	n)
 		case $OPTARG in
@@ -310,13 +313,15 @@ fi
 if [ $nosync ]
 	then
 	n="-n"
+	echo "$PGM: no sync, just showing"
+	singlepass=true
 fi
 
 while [ -f "$PENDING" ]
 do
 	rm "$PENDING"
 	#	~/bin/casting-batch-splitlist >/dev/null
-	if [ ! $nosync ]
+	if [ ! $singlepass ]
 		then
 		echo "$PGM: sending light files"
 		rsync $n --progress -${syncmode}avz --timeout=180 \
@@ -347,8 +352,6 @@ do
 				"$remote/"
 		# fi
 		echo "$PGM: sending large files (${syncmode})"
-	else
-		echo "$PGM: no sync, just showing"
 	fi
 	rsync $n --progress -${syncmode}avz --timeout=180 \
 		--exclude="logs" \
