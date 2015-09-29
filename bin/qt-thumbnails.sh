@@ -14,6 +14,15 @@ WIDE=no
 PGM=`basename "$0" .sh`
 TMP=$PGM.$$
 
+for app in avconv ffmpeg
+do
+    which $app | grep -q $app && vconv=$app && break
+done
+
+[ ! "$vconv" ] && echo "no video encoder found" && exit 1
+
+echo converter $vconv
+
 for param
 do
 	check=`echo ".$param" | grep "^\.-" | sed "s/^\.-//"`
@@ -105,7 +114,7 @@ do
 		continue
 	fi
 
-	exportcommand="ffmpeg -i "
+	exportcommand="$vconv -i "
 	exportparams="-y -ss $thumbpos -t 0.1 -f mjpeg"
 	tmpimage=
 
@@ -131,7 +140,7 @@ do
 		continue
 	fi
 	
-	originalsize=$(ffmpeg -i $TMP.$extension 2>&1 | egrep "Video:.*[0-9]*x[0-9]*" | head -1 | sed "s/^.* \([0-9]*x[0-9]*\)[, ].*$/\\1/")
+	originalsize=$($vconv -i $TMP.$extension 2>&1 | egrep "Video:.*[0-9]*x[0-9]*" | head -1 | sed "s/^.* \([0-9]*x[0-9]*\)[, ].*$/\\1/")
 	resizeparam=
 	x=$(echo $originalsize | cut -d "x" -f 1)
 	if [ "$WIDE" = "yes" ]
