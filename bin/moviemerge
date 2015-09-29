@@ -3,7 +3,7 @@
 # Time sheet tool
 #
 
-MOVEAFTERPROCESSING=yes
+#MOVEAFTERPROCESSING=yes
 
 PID=$$
 PGM=`basename $0`
@@ -159,7 +159,7 @@ if [ "$FIRST" -a "$LAST" ]
 then
     sources=$(ls | grep -A1000 "^$FIRST$" | grep -B1000 "^$LAST$")
 else
-    source=$@
+    sources=$@
 fi
 
 command=$(
@@ -170,6 +170,8 @@ command=$(
     done
     printf " -new $OUTPUT"
 )
+
+echo "$command"
 
 log mergin $sources into $OUTPUT
 $command || end $?
