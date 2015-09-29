@@ -14,7 +14,7 @@ TABLE=`echo "tmp_${PGM}_${PID}" | sed "s/[^a-zA-Z0-9_]//g"`
 
 export PAGER=cat
 
-OPTS="o:f:l:mHVQ"
+OPTS="o:f:l:mhvq"
 
 PAR=`echo $OPTS|sed 's/.://g'|grep -v "^$"|sed "s/\([a-zA-Z0-9]*\)/[-\\1]/g" `
 PAROPT=`echo $OPTS | sed "s/-://" | sed 's/\(.\)/\\1\//g' \
@@ -103,7 +103,7 @@ while getopts $OPTS PARAM
 	    esac
 	    ;;
 	o)
-	    OUTPUT=$OPTARG
+	    output=$OPTARG
 	    ;;
 	f)
 	    FIRST=$OPTARG
@@ -144,11 +144,11 @@ echo "$ERROR   type '$PGM --help' for more info"
     end "$ERROR   type '$PGM --help' for more info"
 fi
 
-if [ ! "$OUTPUT" ]
+if [ ! "$output" ]
 then
     if [ "$1" ]
     then
-	OUTPUT="$1"
+	output="$1"
 	shift 1
     else
 	end 1 must specify output
@@ -162,21 +162,59 @@ else
     sources=$@
 fi
 
-command=$(
-    printf MP4Box
-    for source in $sources
-    do
-	printf " -cat $source"
-    done
-    printf " -new $OUTPUT"
-)
+for app in avconv ffmpeg MP4Box catmovie 
+do
+    which $app | grep -q $app || continue
+#    case $app in
+#	ffmpeg|avconv)
+#	    $app -c copy 2>&1 | grep -q "Unrecognized option 'c'" && continue
+#	    ;;
+#   esac
+    method=$app && break
+done
+echo "method: $method"
 
-echo "$command"
+case $method in
+    "MP4Box")
+	command=$(
+	    printf MP4Box
+	    for source in $sources
+	    do
+		printf " -cat $source"
+	    done
+	    printf " -new $output"
+	)	    
+	;;
+    avconv|ffmpeg)
+	for source in $sources
+	do
+	    i=$(($i + 1))
+	    ts=.$source.ts
+	    if [ ! -f "$ts" ]
+	    then
+		log making intermediate for $source
+		$app -i $source -c copy -bsf:v h264_mp4toannexb -f mpegts $ts 2>/dev/null
+#		$app -i $source -acodec copy -vcodec copy -bsf:v h264_mp4toannexb -f mpegts $ts 2>/dev/null
+	    fi
+	    [ ! -f "$ts" ] && end 3 "could not make intermediate for $source"
+	    log "$source $ts"
+	    [ "$inter" ] \
+		&& inter="$inter|$ts" \
+		|| inter=$ts
+	done
+	command="$app -i concat:\"$inter\" -c copy -bsf:a aac_adtstoasc $output"
+#	command="$app -i concat:\"$inter\" -acodec copy -vcodec copy -bsf:a aac_adtstoasc $output"
+	;;
+    *)
+	end 1 "no valid method found"
+esac
 
-log mergin $sources into $OUTPUT
-$command || end $?
+echo "$command" | tee $TMP.command
 
-qt-thumbnailswide.sh $OUTPUT
+log merging $sources into $output
+. $TMP.command || end $?
+
+[ -f "$output" ] && qt-thumbnailswide.sh $output
 
 if [ "$MOVEAFTERPROCESSING" = "yes" ]
 then
