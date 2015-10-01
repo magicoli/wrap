@@ -15,6 +15,9 @@ DEBUG=yes
 # STAMP=`date +"%Y%m%d-%H%M%S" 2>/dev/null`
 PATH=$(dirname "$0"):$PATH
 
+which ffmpeg >/dev/null || alias ffmpeg=avconv
+ffmpeg -version >/dev/null 2>/dev/null || exit $?
+
 helpers="$(which helpers)"
 [ "$helpers" ] && . $helpers
 log "help functions loaded" 2>/dev/null || exit 1
