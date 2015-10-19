@@ -1,8 +1,6 @@
 #!/bin/sh
 
-# base=/Volumes/Castagne
-# base=/Volumes/MagiiicMobile
-base=/Volumes/Archaos
+base=$HOME/castings
 
 PGM=`basename "$0"`
 TMP="/tmp/$PGM"
