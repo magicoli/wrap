@@ -79,11 +79,22 @@ echo $lastnumber
 			# export output
 		
 			i=$begin
-			if [ ! $end ]
-				then
-				end=999999
+			echo "$i" | egrep -q "^[0-9][0-9]*$" 
+			if [ $? -ne 0 ]
+			    then
+			    echo "i should be an integer and is $i" >&2
+			    exit 5
+			    i=999999
+			fi
+			echo "$end" | egrep -q "^[0-9][0-9]*$" 
+			if [ $? -ne 0 ]
+			then
+			    echo "end should be an integer and is $end" >&2
+			    exit 6
+			    end=999999
 			fi
 			sources=""
+			printf " ($i->$end)"
 			printf "" > $TMP.sources
 			while [ $i -lt $end ]
 			do
@@ -126,7 +137,6 @@ echo $lastnumber
 				    then
 					printf "mergin $sources: " | sed "s|$convertfolder/*||g"
 					ffmpeg -f concat -i "$TMP.sources" -c copy "$output" </dev/null 2>/dev/null
-					echo "ffmpeg result:$?"
 				    fi
 				fi
 			fi
