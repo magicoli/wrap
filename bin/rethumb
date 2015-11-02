@@ -1,0 +1,13 @@
+#!/bin/bash
+
+cat liste | while read nr foo
+do
+    grep -q "^$nr.mov" .rethumbed 2>/dev/null && continue
+    grep "^$nr.mov" times | while read f f duration
+    do
+	d=$(($duration - 1))
+	qt-thumbnailswide.sh -f -l -$d $nr.mov \
+	    && echo  "$nr.mov" >> .rethumbed
+    done
+done
+
