@@ -140,10 +140,8 @@ errors=0
 
 if [ "$preset" -a "$method" = "avconv" ]
 then
-    echo check preset
     for path in $AVCONV_DATADIR $HOME/.avconv /usr/share/avconv
     do
-	echo looking in $path
 	ls "$path" | grep -q "^$preset\.avpreset" && goodpreset=$preset && break
     done
 fi
@@ -183,9 +181,9 @@ do
     [ ! "$acodec" ] && end 1 "no suitable audio codec"
     log "acodec: $acodec"
 
-    for codec in h264 libx64 
+    for codec in h264 libx64 libx264
     do
-	$vapp -codecs 2>&1 | grep -q "^[[:blank:]]*.E.....$codec[[:blank:]]" || continue
+	$vapp -codecs 2>&1 | grep -q "^[[:blank:]]*D*E.....$codec[[:blank:]]" || continue
 	vcodec=$codec
 	break
     done
@@ -206,7 +204,7 @@ do
 	#     osparams="-cmp +chroma -partitions +parti8x8+parti4x4+partp8x8+partb8x8 -flags2 +bpyramid+mixed_refs+wpred+dct8x8+fastpskip -flags2 -wpred-dct8x8 -level 30"
     esac
 
-    avconv --help 2>/dev/null | grep -q profile && profile="-profile main"
+#    avconv --help 2>/dev/null | grep -q profile && profile="-profile main"
     if [ "$preset" ]
     then
 	for var in pre preset
