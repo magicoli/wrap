@@ -3,6 +3,15 @@
 export PATH=$PATH:$(dirname $0)
 . $(which casting-helpers) || exit 1
 
+uname | grep -q Darwin
+if [ $? -eq 0 ]
+then
+    alias edit=open
+else
+    alias edit=gedit
+    alias open=gnome-open
+fi
+
 pwd | egrep -q "^$base.*casting[0-9]*$" || end 1 "Ce n'est pas un dossier de casting"
 
 castingdir=$client/$job/$casting
@@ -11,14 +20,17 @@ echo "job: $job"
 echo "casting: $casting"
 echo "remote: $remote"
 
-rsync -Wavz $remote/$castingdir/sources/.browsercache/ $base/$castingdir/browsercache/ --exclude "*thumb*" \
-	|| end $? "Erreur à la synchronisation" \
-	&& if [ ! -f liste -o ! -f ignore ]
-		then
-		open browsercache/
-		[ ! -f liste ] && touch liste
-		[ ! -f ignore ] && touch ignore
-		[ ! -f thumbs ] && touch thumbs
-		open -a textmate liste ignore thumbs
-	fi
+rsync -Wavz $remote/$castingdir/.sources/.browsercache/ $base/$castingdir/browsercache/ --exclude "*thumb*" \
+    || end $? "Erreur à la synchronisation" \
+    && if [ ! -f liste -o ! -f ignore ]
+then
+    open browsercache/
+    [ ! -f liste ] && touch liste
+    [ ! -f ignore ] && touch ignore
+    [ ! -f thumbs ] && touch thumbs
+    edit liste ignore thumbs
+fi
+
+rsync -Wavz $remote/$castingdir/.sources/times $base/$castingdir/
+
 end $?
