@@ -21,8 +21,6 @@ done
 
 [ ! "$vconv" ] && echo "no video encoder found" && exit 1
 
-echo converter $vconv
-
 for param
 do
 	check=`echo ".$param" | grep "^\.-" | sed "s/^\.-//"`
