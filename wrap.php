@@ -145,6 +145,9 @@ $multifilter=array(
 	".png",
 	".JPG",
 	".zip",
+	".tgz",
+	".tar",
+	".gz",
 	".ZIP"
 );
 $cachedir='.browsercache';
@@ -245,6 +248,9 @@ $downloadable=array (
 	".pdf",
 	".zip",
 	".bin",
+	".tgz",
+	".tar",
+	".gz",
 );
 
 $popable=array(
