@@ -4,6 +4,8 @@ PGM=`basename "$0"`
 TMP="/tmp/$PGM.$$"
 method=cannelle
 
+[ -f $(dirname "$0")/casting-helpers ] && . $(dirname "$0")/casting-helpers || exit 1
+
 pwd | grep "/hella/" >/dev/null && method=hella
 
 [ ! $1 ] && echo must specify list && exit 1
@@ -45,9 +47,9 @@ do
 		thumbname=$name
 		thumbnr=$nr
 		posargs="-w -1"
-		# [ -f "../web/.browsercache/$name-thumb.jpg" ] && continue
+		# [ -f "$WEBDIR/.browsercache/$name-thumb.jpg" ] && continue
 		# [ -f ".browsercache/$nr-thumb.jpg" ] || continue
-		# cp -p ".browsercache/$nr-thumb.jpg" "../web/.browsercache/$name-thumb.jpg"
+		# cp -p ".browsercache/$nr-thumb.jpg" "$WEBDIR/.browsercache/$name-thumb.jpg"
 		;;
 		"2sur2")
 		thumbname=$name
@@ -59,8 +61,8 @@ do
 		break
 		;;
 	esac
-	thumb="../web/.browsercache/$thumbname-thumb.jpg"
-	large="../web/.browsercache/$thumbname-large.jpg"
+	thumb="$WEBDIR/.browsercache/$thumbname-thumb.jpg"
+	large="$WEBDIR/.browsercache/$thumbname-large.jpg"
 	[ -f "$thumbnr.mov" ] && source=$thumbnr.mov
 	[ -f "$thumbnr.MTS" ] && source=$thumbnr.MTS
 
@@ -78,8 +80,8 @@ if [ -f "thumbs" ]
 	cat thumbs | while read mp4 t
 	do
 		file=${mp4/.mp4/}
-		cp -p .browsercache/$t-thumb.jpg ../web/.browsercache/$file-thumb.jpg
-		cp -p .browsercache/$t-large.jpg ../web/.browsercache/$file-large.jpg
+		cp -p .browsercache/$t-thumb.jpg $WEBDIR/.browsercache/$file-thumb.jpg
+		cp -p .browsercache/$t-large.jpg $WEBDIR/.browsercache/$file-large.jpg
 	done
 fi
 

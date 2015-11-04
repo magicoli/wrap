@@ -172,7 +172,6 @@ do
 #   esac
     method=$app && break
 done
-echo "method: $method"
 
 case $method in
     "MP4Box")
@@ -189,7 +188,7 @@ case $method in
 	for source in $sources
 	do
 	    i=$(($i + 1))
-	    ts=.$source.ts
+	    ts=.$(basename "$source").ts
 	    if [ ! -f "$ts" ]
 	    then
 		log making intermediate for $source
@@ -207,7 +206,7 @@ case $method in
 	end 1 "no valid method found"
 esac
 
-echo "$command" | tee $TMP.command
+echo "$command" > $TMP.command
 
 log merging $sources into $output
 . $TMP.command || end $?

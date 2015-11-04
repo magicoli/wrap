@@ -20,8 +20,11 @@ if [ $1 ]
 else
 	printf "\n"
 	ls -d "$base"/*/*/casting* 2>/dev/null \
-	    | cut -d "/" -f 4 | sort -u > "$TMP.clients"
-	cat -n "$TMP.clients"
+	    | sed "s%^$base/%%" | cut -d "/" -f 1 \
+	    | sort -u > "$TMP.clients"
+##	    | cut -d "/" -f 5 
+
+cat -n "$TMP.clients"
 	while [ ! "$client" ]
 	do
 		read -p "Choose client: " client
@@ -108,30 +111,40 @@ if [ "$create" != "y" ]
 fi
 
 initialdir="$PWD"
+castingdir=$base/$client/$job/$casting
+mkdir -p "$castingdir" || exit  4
+cd "$castingdir"
+
+for folder in $folders
+do
+    echo $folders
+done
+
+exit
 
 for folder in \
-	"$base/$client/$job/$casting" \
- 	"$base/$client/$job/$casting/sources" \
-	"$base/$client/$job/$casting/dv" \
-	"$base/$client/$job/$casting/mp4" \
-	"$base/$client/$job/$casting/mp4-hd" \
-	"$base/$client/web" \
-	"$base/$client/web/$job" \
-	"$base/$client/web/$job/$casting" \
-	"$base/$client/web/$job/$casting/.browsercache"
+    "$castingdir" \
+    "$castingdir/sources" \
+    "$castingdir/dv" \
+    "$castingdir/mp4" \
+    "$castingdir/mp4-hd" \
+    "$base/$client/web" \
+    "$base/$client/web/$job" \
+    "$base/$client/web/$job/$casting" \
+    "$base/$client/web/$job/$casting/.browsercache"
 do
-	if [ -d "$folder" ]
-		then
-		printf "\t $folder\n"
-	else
-		mkdir "$folder" || exit 4
-		printf "created\t$folder\n"
-	fi
+    if [ -d "$folder" ]
+    then
+	printf "\t $folder\n"
+    else
+	mkdir "$folder" || exit 4
+	printf "created\t$folder\n"
+    fi
 done
-cd "$base/$client/$job/$casting" || exit 5
+cd "$castingdir" || exit 5
 ln -s "$base/$client/web/$job/$casting" web || exit 6
-cd "$base/$client/$job/$casting/dv" || exit 7
+cd "$castingdir/dv" || exit 7
 ln -s "$base/$client/web/$job/$casting/.browsercache" || exit 8
 
 echo "Done"
-echo "$base/$client/$job/$casting"
+echo "$castingdir"
