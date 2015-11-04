@@ -1,5 +1,10 @@
 #!/bin/sh
 
+MOVEORIGINALS=no
+MOVEPREFIX=../.originals
+
+[ -f $(dirname "$0")/casting-helpers ] && . $(dirname "$0")/casting-helpers || exit 1
+
 if [ "$1" = "-l" ]
 	then
 	method=link
@@ -8,84 +13,84 @@ else
 	method=copy
 fi
 
-source=$1
-[ ! -d "$source" ] && echo "usage: $PGM <source path>" && exit 1
-
-[ -f ../sources ] && cd ../sources || { [ -d sources ] && cd sources ] ; }
-
-pwd | xargs basename | grep "^sources$" || exit 2
-
-echo "source: $source"
-echo "method: $method"
-
-ls "$source/"*.MPG "$source/"*.MOV "$source/"*.MTS 2>/dev/null | wc -l | sed "s/$/ movies/"
-
-ls "$source/"*.MPG "$source/"*.MOV "$source/"*.MTS 2>/dev/null | sort -n \
-	| while read file
-do
-	i=$(($i + 1))
-	if [ ! -f $i.mov ]
-		then
-		if [ "$method" = "copy" ]
-			then
-			printf "$file "
-			cp -p "$file" $i.mov && echo " > $i.mov"
-		else
-			ln -s "$file" $i.mov
-		fi
-	fi
-	qt-thumbnailswide.sh -l -1 "$i.mov"
-done
-
-exit
-
-
-removable=/media/usb*
-
-PGM=$(basename "$0")
-TMP=/tmp/$PGM.$$
-
-(
-    find $removable -iname "*.mp4"
-    find $removable -iname "*.mts"
-) > $TMP.files
-
-if [ $(basename "$PWD") = "sources" ]
+if [ "$MOVEORIGINALS" = "yes" ]
 then
-    sources=$PWD
-else
-    if [ -d $PWD/sources ]
-	then
-	sources=$PWD/sources
-    fi
+    [ ! "$MOVEPREFIX" ] && MOVEPREFIX=moved
+    lastmove=$(ls -d "$MOVEPREFIX".* | sed "s/.*\.//" | sort -n | tail -1 | grep "[0-9]" || echo 0)
+    movedir=$MOVEPREFIX.$(($lastmove + 1))
+    mkdir -p "$movedir" || end 1 "Could not create moved directory $movedir"
+    log 1 "Will move originals to $movedir"
 fi
 
-cat $TMP.files | sed "s:[^/]*$::" | sort -u | while read folder
+lastalias=$(
+    (
+	ls *.mov 2>/dev/null
+#	cat .aliases 2>/dev/null | cut -f 2
+    ) \
+	| cut -d "." -f 1 | sort -n | tail -1  | sed "s/^$/0/" \
+	| grep [0-9] || echo 0
+)
+s=$(($lastalias + 1))
+echo "start with $s"
+lastimport=$(cat .aliases | cut -f 1 | sort -n | tail -1 | cut -d "." -f 1 | sed -e "s/[^0-9]//g" -e "s/^0*//" | grep [0-9] || echo 0)
+
+#i=$(ls *.mov 2>/dev/null | cut -d "." -f 1 | sort -n | tail -1  | sed "s/^$/0/")
+i=$lastalias
+delta=$((lastalias - $lastimport))
+
+for source in "$@"
 do
-    echo "$folder"
-    count=$(grep -c "$folder" $TMP.files)
-    extension=$(grep "$folder" $TMP.files | sed "s/.*\.//" | sort -u)
-    echo "$count $extension videos"
-    if [ ! "$sources" ]
-	then
-	echo "copy these files to a casting sources folder"
-	echo "or start this program from a casting folder"
-	continue
-    fi
-    echo "$PGM: copying files"
+    [ ! -d "$source" ] && echo "ignoring $source" >&2 && continue
+    echo checkpoint $source >&2
+    echo "$source" | sed "s%/$%%"
+done | while read source
+do
+    echo "$source"
+    pwd | xargs basename | egrep "^\.*sources[0-9]*$" || exit 2
 
-    rsync --progress -Wavz $folder/*.$extension $sources/
+    echo "source: $source"
+    echo "method: $method"
+    
+    ls "$source/"*.MPG "$source/"*.MOV "$source/"*.MTS 2>/dev/null | wc -l | sed "s/$/ movies/"
 
-    echo "$PGM: making thumbnails"
-
-    cd $sources
-    clips-renumber
-
-    ls *.$extension *.mov 2>/dev/null | sort -n | while read file
+    ls "$source/"*.MPG "$source/"*.MOV "$source/"*.MTS 2>/dev/null \
+	| sort -n | while read file
     do
-	qt-thumbnailswide.sh -1 -l $file
-    done
+	i=$(($i + 1))
+#	j=$(($s + $i))
+#	j=$(basename "$file" | sed "s/\..*$//" | sed "s/[^0-9]//" | sed "s/^0*//" | sed "s/^$/0/")
+#	j=$(($s + $j))
+	
+	alias=$i.mov
+#	qt-thumbnailswide.sh -l -1 "$alias"
+	egrep "^$file " .aliases 2>/dev/null && echo "$file already there" && continue
+	[ -f "$alias" ] && echo "duplicate $alias for" $(basename $file) && end
 
+#	if [ ! -f $alias ]
+#	then
+	if [ "$MOVEORIGINALS" = "yes" ]
+	then
+	    mv -v "$file" "$movedir/" || end 1 "error moving $file to $movedir"
+	    origin="$movedir/$(basename "$file")"
+	else
+	    origin="$file"
+	fi
+	if [ "$method" = "copy" ]
+	then
+	    printf "$origin "
+	    cp -l "$origin" $alias \
+		&& printf "$origin\t$alias\n" >> .aliases \
+		&& printf " > $alias "
+	else
+	    ln -s "$origin" $alias \
+		&& printf "$origin\t$alias\n" >> .aliases \
+		&& printf " > $alias "
+	fi
+	qt-thumbnailswide.sh -l -1 "$alias"
+	echo files: $(ls *.mov | wc -l)
+    done
 done
 
-rm -f $TMP*
+movietime $(ls *.mov | sort -n) | tee times | tail -2
+
+end
