@@ -2,6 +2,14 @@
 
 OS=`uname -a | cut -d " " -f 1 | sed "s/[^a-zA-Z0-9]//g"`
 
+if [ "$1" = "-d" ]
+then
+    SEP="."
+    shift
+else
+    SEP="_"
+fi
+
 if [ "$1" ]
 	then
 	for name in "$@"
@@ -23,7 +31,8 @@ do
     fi | tr " [:upper:]" "_[:lower:]" \
 	| sed "s|[^a-zA-Z0-9_\./-]*||g" \
 	| sed "s|__*|_|g" \
-	| sed "s/_*--*_*/-/g"
+	| sed "s/_*--*_*/-/g" \
+	| sed "s/__*/$SEP/g"
 done
 
 	 # \
