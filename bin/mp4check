@@ -2,11 +2,6 @@
 
 [ ! -d sources ] && [ -d ../sources ] && cd ..
 
-for folder in mp4 sources
-do
-	[ ! -d $folder ] && echo missing $folder folder && exit 1
-done
-
 PGM=$(basename "$0")
 TMP=$PWD/.$PGM
 
@@ -17,10 +12,15 @@ SOURCES=../sources
 
 [ -f $(dirname "$0")/casting-helpers ] && . $(dirname "$0")/casting-helpers || exit 1
 
-ls sources/*.mov 2>/dev/null >/dev/null && ext=mov
-ls sources/*.MTS 2>/dev/null >/dev/null && ext=MTS
+for folder in $SDDIR $SOURCES
+do
+	[ ! -d $folder ] && echo missing $folder folder && exit 1
+done
 
-cd sources || cd $SOURCES || exit 2
+ls $SOURCES/*.mov 2>/dev/null >/dev/null && ext=mov
+ls $SOURCES/*.MTS 2>/dev/null >/dev/null && ext=MTS
+
+cd $SOURCES || exit 2
 if [ ! -f $TMP.originals ]
 	then
 	echo "calculating original times"
@@ -28,12 +28,12 @@ if [ ! -f $TMP.originals ]
 	echo $(cat $TMP.originals | wc -l) originals
 fi
 
-cd $MP4 || exit 3
+#cd $SDDIR || exit 3
 echo "calculating mp4 times"
-ls *.mp4 | sort -n | xargs movietime | grep mp4 | sed "s/[[:blank:]][[:blank:]]*/ /g" | sort -n > $TMP.conversions
+ls $SDDIR/*.mp4 | sort -n | xargs movietime | grep mp4 | sed "s/[[:blank:]][[:blank:]]*/ /g" | sed "s%^$SDDIR/%%" | sort -n > $TMP.conversions
 echo $(cat $TMP.conversions | wc -l) conversions
 
-cd ../sources
+cd $SOURCES
 
 rm -f "$TMP.batch"
 
