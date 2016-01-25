@@ -79,9 +79,11 @@ if [ -f "thumbs" ]
 	then
 	cat thumbs | while read mp4 t
 	do
-		file=${mp4/.mp4/}
-		cp -p .browsercache/$t-thumb.jpg $WEBDIR/.browsercache/$file-thumb.jpg
-		cp -p .browsercache/$t-large.jpg $WEBDIR/.browsercache/$file-large.jpg
+	    [ "$mp4" ] || continue
+	    file=$(basename $mp4 .mp4)
+	    # echo "special thumb for $file ($mp4)" >&2
+	    cp -p .browsercache/$t-thumb.jpg $WEBDIR/.browsercache/$file-thumb.jpg
+	    cp -p .browsercache/$t-large.jpg $WEBDIR/.browsercache/$file-large.jpg
 	done
 fi
 
