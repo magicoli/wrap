@@ -7,7 +7,7 @@ do
     do
 	echo "$foo" | grep -q "," \
 	    && d=5 \
-	    || d=$(($duration - 1))
+	    || d=$(($duration))
 	qt-thumbnailswide.sh -f -l -$d $nr.mov \
 	    && echo  "$nr.mov" >> .rethumbed
     done
