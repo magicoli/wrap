@@ -5,6 +5,8 @@ export PATH=$PATH:$(dirname $0)
 
 pwd | egrep -q "^$localdir.*casting[0-9]*$" || end 1 "Ce n'est pas un dossier de casting"
 
+[ "$1" = "-c" ] && REFRESHIGNORE=true
+
 castingdir=$client/$job/$casting
 echo "client: $client"
 echo "job: $job"
@@ -13,9 +15,21 @@ echo "remote: $remote"
 
 while true
 do
-	rsync -Wavz liste ignore thumbs $remote/$castingdir/.sources/ \
+    if [ "$REFRESHIGNORE" = "true" ]
+    then
+	echo refresh ignore list
+	last=$(cat liste | cut -f 1 | grep [0-9]  | tail -1)
+	castingchecktimes | while read file
+	do
+	    nr=${file/.mov/}
+	    [ $nr -ge $last ] && break
+	    grep -q "^$file$" ignore && continue
+	    echo "$file" | tee -a ignore
+	done
+    fi
+    rsync -Wavz liste ignore thumbs $remote/$castingdir/.sources/ \
 		| egrep "^liste$|ignore|thumbs" | sed "s/$/ $(date)/"
-	read -t 17
+    read -t 17
 done
 
 end $?
