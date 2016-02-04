@@ -1,6 +1,6 @@
 #!/bin/sh
 
-MOVEORIGINALS=no
+MOVEORIGINALS=yes
 MOVEPREFIX=../.originals
 
 [ -f $(dirname "$0")/casting-helpers ] && . $(dirname "$0")/casting-helpers || exit 1
