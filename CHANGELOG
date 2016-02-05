@@ -1,8 +1,8 @@
-# 1.8   Version 1.8
+# Version 1.8 (stable)
 - Stable version. 
 - Project is now known as WRAP, renamed files accordlingly; 
 - SSL handling, themes, body classes, nofollow, noindex, modules; 
 - split main code, functions and facebook auth.
 
-# 1.7   Version 1.7
-- Initial fork of "browser", new project name is WRAP
+# Version 1.7 (not stable)
+- Initial fork of "browser", new project name is WRAP.
