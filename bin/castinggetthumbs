@@ -28,7 +28,7 @@ then
     [ ! -f ignore ] && touch ignore
     [ ! -f thumbs ] && touch thumbs
     edit liste ignore thumbs >/dev/null 2>/dev/null &
-    open $(ls -d browsercache/* | sort -n | head -1) >/dev/null 2>/dev/null &
+    open browsercache/$(ls -d browsercache | grep "-large.jpg$" | sort -n | head -1) >/dev/null 2>/dev/null &
 fi
 
 rsync -Wavz $remote/$castingdir/.sources/times $base/$castingdir/
