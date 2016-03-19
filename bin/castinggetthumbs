@@ -24,11 +24,11 @@ rsync -Wavz $remote/$castingdir/.sources/.browsercache/ $base/$castingdir/browse
     || end $? "Erreur à la synchronisation" \
     && if [ ! -f liste -o ! -f ignore ]
 then
-    open browsercache/
     [ ! -f liste ] && touch liste
     [ ! -f ignore ] && touch ignore
     [ ! -f thumbs ] && touch thumbs
-    edit liste ignore thumbs
+    edit liste ignore thumbs >/dev/null 2>/dev/null &
+    open $(ls -d browsercache/* | sort -n | head -1) >/dev/null 2>/dev/null &
 fi
 
 rsync -Wavz $remote/$castingdir/.sources/times $base/$castingdir/
