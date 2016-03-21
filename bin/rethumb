@@ -1,14 +1,19 @@
 #!/bin/bash
 
-cat liste | while read nr foo
+[ "$1" ] && standard="$1"
+group=5
+
+cat liste | grep -i [a-z] | while read nr foo
 do
     grep -q "^$nr.mov" .rethumbed 2>/dev/null && echo "$nr aleardy seen" && continue
     grep "^$nr.mov" times | while read f f duration
     do
-	echo "$foo" | grep -q "," \
-	    && d=5 \
-	    || d=$(($duration))
-	qt-thumbnailswide.sh -f -l -$d $nr.mov \
-	    && echo  "$nr.mov" >> .rethumbed
+								echo "$foo" | grep -q "," \
+												&& d=$group \
+												|| {
+												[ "$standard" ] && d=$standard || d=$(($duration));
+												}
+								qt-thumbnailswide.sh -f -l -$d $nr.mov \
+												&& echo  "$nr.mov" >> .rethumbed
     done
 done
