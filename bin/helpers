@@ -43,10 +43,10 @@ log() {
 	if [ "$LOG" ]
 		then
 		ERRNUM=`echo "$@" |grep "^[0-9]* "|cut -d " " -f 1`
-		ERR=`echo $ERRNUM|sed "s/\([0-9]*\)/<\\1\> /"`
+		ERR=`echo $ERRNUM | grep [0-9] |sed "s/\([0-9]*\)/<\\1\> /"`
 		[ "$ERRNUM" ] && shift
 		LOGMESSAGE=$@
-		LOGLINE=`date +"%b %e %H:%M:%S"`" $PGM[$$]: $ERR$LOGMESSAGE"
+		LOGLINE=`date +"%Y-%m-%d %H:%M:%S"`" $PGM[$$]: $ERR$LOGMESSAGE"
 		[ "$LOGGING" = "yes" ] && (echo $LOGLINE >> $LOG)
 		if [ "$ERRNUM" ] 
 			then
