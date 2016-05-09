@@ -7,6 +7,10 @@
 PID=$$
 [ "$PGM" ] || PGM=`basename $0`
 [ "$TMP" ] || TMP=/tmp/$PGM.$PID
+[ "$LOCK" ] || LOCK=/tmp/.$PGM.lock
+
+trap 'rm -f $TMP.* $LOCK' EXIT
+
 SPC=$(echo "$PGM" | sed "s/./ /g")
 LOG=$TMP.log
 DATA="$HOME/.$PGM"
