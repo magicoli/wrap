@@ -201,6 +201,7 @@ case $method in
 		|| inter=$ts
 	done
 	command="$app -i concat:\"$inter\" -c copy -bsf:a aac_adtstoasc $output"
+        log "command: $command"
 	;;
     *)
 	end 1 "no valid method found"
