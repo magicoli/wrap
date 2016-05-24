@@ -58,7 +58,7 @@ do
 	fi
 	unset infohtml
 	unset infocomment
-	[ "$info" ] && infohtml=" <span class=info>$info</span>"  && infocomment=$(webnoormalize " // $info");
+	[ "$info" ] && infohtml=" <span class=info>$info</span>"  && infocomment=$(webnormalize " // $info");
 	printf "\t\"$file\" => '$name$infohtml',$infocomment\n"
 done > "$TMP.playlist"
 

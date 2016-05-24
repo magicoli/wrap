@@ -1,0 +1,29 @@
+#!/bin/bash
+
+director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1); 
+export PATH=$PATH:$(basename "$0")
+which helpers && . $(which helpers) || exit 1
+
+if [ ! "$@" ]
+then
+    sources=~/castings/$director/upload/server/php/files/
+else
+    sources=$@
+fi
+phptmp=~/domains/wrap.magiiic.media/tmp
+
+log "watching $sources"
+
+while true
+do
+    clear
+    echo $sources
+    ls -lrt $sources \
+        | egrep '\.MTS|\.MPG|\.MOV|\.MP4' \
+        | tee $TMP.files \
+        | tail
+    echo $(cat $TMP.files | wc -l) pending files
+    ls -lrt $phptmp | egrep '[[:blank:]]php' | tail -1
+    date
+read -t 1
+done

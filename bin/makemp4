@@ -19,7 +19,7 @@ PATH=$(dirname "$0"):$PATH
 which ffmpeg | grep -q ffmpeg || alias ffmpeg=avconv
 ffmpeg -version >/dev/null 2>/dev/null || exit $?
 
-for app in avconv ffmpeg MP4Box catmovie 
+for app in /usr/bin/avconv avconv ffmpeg MP4Box catmovie 
 do
     which $app | grep -q $app || continue
 #    case $app in
