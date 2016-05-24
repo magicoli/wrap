@@ -8,12 +8,12 @@ do
     grep -q "^$nr.mov" .rethumbed 2>/dev/null && echo "$nr aleardy seen" && continue
     grep "^$nr.mov" times | while read f f duration
     do
-								echo "$foo" | grep -q "," \
-												&& d=$group \
-												|| {
-												[ "$standard" ] && d=$standard || d=$(($duration));
-												}
-								qt-thumbnailswide.sh -f -l -$d $nr.mov \
-												&& echo  "$nr.mov" >> .rethumbed
+	echo "$foo" | grep -q "," \
+	    && d=$group \
+	    || {
+	    [ "$standard" ] && d=$standard || d=$(($duration));
+	}
+	qt-thumbnailswide.sh -f -l -$d $nr.mov \
+	    && echo  "$nr.mov" >> .rethumbed
     done
 done
