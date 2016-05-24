@@ -38,23 +38,28 @@ lastimport=$(cat .aliases | cut -f 1 | sort -n | tail -1 | cut -d "." -f 1 | sed
 i=$lastalias
 delta=$((lastalias - $lastimport))
 
-for source in "$@"
+if [ ! "$@" ]
+then
+    director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1); 
+    sources=~/castings/$director/upload/server/php/files/
+fi
+
+for source in $sources "$@"
 do
     [ ! -d "$source" ] && echo "ignoring $source" >&2 && continue
     echo checkpoint $source >&2
     echo "$source" | sed "s%/$%%"
 done | while read source
 do
-    echo "$source"
     pwd | xargs basename | egrep "^\.*sources[0-9]*$" || exit 2
 
     echo "source: $source"
     echo "method: $method"
     
-    ls "$source/"*.MPG "$source/"*.MOV "$source/"*.MTS 2>/dev/null | wc -l | sed "s/$/ movies/"
+    ls "$source/"*.MPG "$source/"*.MP4 "$source/"*.MOV "$source/"*.MTS 2>/dev/null > $TMP.movies
+    cat $TMP.movies | wc -l | sed "s/$/ movies/"
 
-    ls "$source/"*.MPG "$source/"*.MOV "$source/"*.MTS 2>/dev/null \
-	| sort -n | while read file
+    cat $TMP.movies | sort -n | while read file
     do
 	i=$(($i + 1))
 #	j=$(($s + $i))
