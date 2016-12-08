@@ -5,7 +5,7 @@ group=5
 
 cat liste | grep -i [a-z] | while read nr foo
 do
-    grep -q "^$nr.mov" .rethumbed 2>/dev/null && echo "$nr aleardy seen" && continue
+    grep -q "^$nr.mov" .rethumbed 2>/dev/null && echo "$nr already seen" && continue
     grep "^$nr.mov" times | while read f f duration
     do
 	echo "$foo" | grep -q "," \
