@@ -10,7 +10,9 @@ then
 else
     sources=$@
 fi
-phptmp=~/domains/wrap.magiiic.media/tmp
+[ -d "$sources/tmp" ] \
+    && phptmp=$sources/tmp \
+    || phptmp=~/domains/wrap.magiiic.media/tmp
 
 log "watching $sources"
 
@@ -23,6 +25,11 @@ do
         | tee $TMP.files \
         | tail
     echo $(cat $TMP.files | wc -l) pending files
+
+    ls $sources/tmp/php* >/dev/null 2>/dev/null \
+        && phptmp=$sources/tmp \
+        || phptmp=~/domains/wrap.magiiic.media/tmp
+    echo "$phptmp"
     ls -lrt $phptmp | egrep '[[:blank:]]php' | tail -1
     date
 read -t 1

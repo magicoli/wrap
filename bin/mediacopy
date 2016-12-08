@@ -1,5 +1,6 @@
 #!/bin/sh
 
+THUMBOFFSET=0
 MOVEORIGINALS=yes
 MOVEPREFIX=../.originals
 
@@ -91,7 +92,7 @@ do
 		&& printf "$origin\t$alias\n" >> .aliases \
 		&& printf " > $alias "
 	fi
-	qt-thumbnailswide.sh -l -1 "$alias"
+	qt-thumbnailswide.sh -l -$THUMBOFFSET "$alias"
 	echo files: $(ls *.mov | wc -l)
     done
 done
