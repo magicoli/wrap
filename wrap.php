@@ -142,6 +142,7 @@ $multifilter=array(
 	".doc",
 	".pdf",
 	".jpg",
+	".jpeg",
 	".png",
 	".JPG",
 	".zip",
