@@ -162,7 +162,7 @@ else
     sources=$@
 fi
 
-for app in avconv ffmpeg MP4Box catmovie 
+for app in MP4Box avconv ffmpeg catmovie 
 do
     which $app | grep -q $app || continue
 #    case $app in
@@ -182,7 +182,7 @@ case $method in
 		printf " -cat $source"
 	    done
 	    printf " -new $output"
-	)	    
+	)
 	;;
     avconv|ffmpeg)
 	for source in $sources
