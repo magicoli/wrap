@@ -18,7 +18,7 @@ if [ "$1" ]
 				| sed "s|[[:blank:]]*//|.mp4 //|" \
 				| sed "s|[[:blank:]]*//[[:blank:]]*$||" \
 			 	| sed "s|/|-SLASH-|g"
-		elif [ -d "$param" ] 
+		elif [ -d "$param" ]
 			then
 			sort=true
 			ls "$param"/*.mov "$param"/*.mp4 "$param"/*.m4v "$param"/*.mp3 "$param"/*.mpg "$param"/*.pdf "$param"/*.jpg  2>/dev/null \
@@ -43,11 +43,12 @@ do
 	name=$(basename "$name" | sed "s|-SLASH-|/|g" | sed "s|\.[a-zA-Z0-9]*$||")
 	#file=$name
 	name=`echo "$name" | sed "s/\.[a-zA-Z0-9]*$//" | sed "s/_/ /g" | sed "s/[-\. ][0-9]*$//"`
+	name=$(echo "$name" | sed "s/^title[0-9]*[[:blank:]|]*//")
 	second=`echo "$file" | egrep "^[0-9]*,[0-9]*-" | cut -d "-" -f 1 | grep "," | cut -d "," -f 2`
 	first=`echo "$file" | egrep "^[0-9]" | cut -d "-" -f 1 | cut -d "," -f 1`
-	
+
 	if [ "$second" ]
-		then 
+		then
 		if [ $second -gt $first ]
 			then printf "${second}b\t"
 		else

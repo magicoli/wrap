@@ -24,7 +24,7 @@ done
 for param
 do
 	check=`echo ".$param" | grep "^\.-" | sed "s/^\.-//"`
-	if [  "$check" != "" -a "$check" = "`echo "$check" | grep -v "[^0-9]"`" ]
+	if [  "$check" != "" -a "$check" = "`echo "$check" | grep -v "[^0-9\.]"`" ]
 		then
 		THUMBBEGIN=$check
 #		echo "THUMBBEGIN=$check"
