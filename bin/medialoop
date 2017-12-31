@@ -1,0 +1,31 @@
+#!/bin/bash
+
+min2copy=5
+min2thumb=10
+
+director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1);
+echo "director: $director"
+source=~/castings/$director/upload/server/php/files/
+[ ! -d "$source" ] && echo "source $source MISSING" >&2 && exit 1
+echo "source $source"
+
+while true
+do
+  i=$(($i + 1))
+  count=$(ls "$source"/*.MTS 2>/dev/null | wc -l)
+  [ $count -ge $min2copy ] && echo "$count enough to copy" \
+  || read -p "." -t 1 && i=$min2thumb && count=$min2copy \
+  || [ $count -gt 0 -a ! -f "$source"/tmp/php* ] \
+  && echo "$count and transfer ended" && i=$min2thumb && mediacopy
+
+  rmdir ../originals.* 2>/dev/null
+  
+  if [ $i -ge $min2thumb ]
+  then
+    echo
+    [ "$director" = "bobines" ] && rethumb
+    rm ../.browsercache/* 2>/dev/null
+    batchthumbs liste > ../playlist.php 2>/dev/null
+    i=0
+  fi
+done
