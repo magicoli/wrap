@@ -1,0 +1,22 @@
+#!/bin/bash
+
+[ "$1" = "-l" ] && LOOP=true
+
+while true
+do
+  grep -A1 , liste | while read nr name
+  do
+    if [ "$file" ]
+    then
+      grep -q "^$file[[:blank:]]" thumbs
+      if [ $? -ne 0 ]
+      then
+        n=$(($nr - 1)) && echo $file $n | tee -a thumbs
+      fi
+      unset file
+    fi
+    echo "$name" | grep -q , && file=$(webnormalize "$name")
+  done
+  [ $LOOP ] || break
+  read -t 1
+done
