@@ -1,12 +1,13 @@
 #!/bin/bash
 
+[ "$1" = "-l" ] && LOOP=true
+
 export PATH=$PATH:$(dirname $0)
 . $(which casting-helpers) || exit 1
 
 pwd | egrep -q "^$localdir.*casting[0-9]*$" || end 1 "Ce n'est pas un dossier de casting"
 
 [ "$1" = "-c" ] && REFRESHIGNORE=true
-[ "$1" = "-n" ] && REFRESHIGNORE=false
 
 castingdir=$client/$job/$casting
 echo "client: $client"
@@ -31,6 +32,7 @@ do
     fi
     rsync -Wavz liste ignore thumbs $remote/$castingdir/.sources/ \
 		| egrep "^liste$|ignore|thumbs" | sed "s/$/ $(date)/"
+    [ $LOOP ] || break
     read -t 17
 done
 

@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+
+[ "$1" = "-l" ] && LOOP=true
 
 export PATH=$PATH:$(dirname $0)
 . $(which casting-helpers) || exit 1
@@ -20,17 +22,25 @@ echo "job: $job"
 echo "casting: $casting"
 echo "remote: $remote"
 
-rsync -Wavz $remote/$castingdir/.sources/.browsercache/ $base/$castingdir/browsercache/ --exclude "*thumb*" \
-    || end $? "Erreur à la synchronisation" \
-    && if [ ! -f liste -o ! -f ignore ]
-then
+while true
+do
+  echo $client/$job/$casting
+
+  #  || end $? "Erreur à la synchronisation" \
+  rsync -Wavz $remote/$castingdir/.sources/.browsercache/ $base/$castingdir/browsercache/ --exclude "*thumb*" \
+  && if [ ! -f liste -o ! -f ignore ]
+  then
     [ ! -f liste ] && touch liste
     [ ! -f ignore ] && touch ignore
     [ ! -f thumbs ] && touch thumbs
     edit liste ignore thumbs >/dev/null 2>/dev/null &
     open browsercache/$(ls -d browsercache | grep "-large.jpg$" | sort -n | head -1) >/dev/null 2>/dev/null &
-fi
+  fi
 
-rsync -Wavz $remote/$castingdir/.sources/times $base/$castingdir/
+  rsync -Wavz $remote/$castingdir/.sources/times $base/$castingdir/
+
+  [ $LOOP ] || break
+  read -t 1
+done
 
 end $?
