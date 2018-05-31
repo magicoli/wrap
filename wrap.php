@@ -659,10 +659,11 @@ if(is_array($wrap_rights)) {
 	foreach($wrap_rights as $cacheduser => $rights) {
 		$usercache="$cacheroot/wrap_info_$cacheduser.info";
 		$fb_user=ereg_replace("^fb_", "", $cacheduser);
-		if(!file_exists($usercache) &! $localserver) {
-			$graph=file_get_contents("https://graph.facebook.com/$fb_user");
-			if($graph) file_put_contents($usercache, $graph);
-		}
+## causes big lag, disabled for now, don't remember the purpose anyway
+#		if(!file_exists($usercache) &! $localserver) {
+#			$graph=file_get_contents("https://graph.facebook.com/$fb_user");
+#			if($graph) file_put_contents($usercache, $graph);
+#		}
 		if(file_exists($usercache) && function_exists('json_decode')) {
 			$users[$cacheduser] = json_decode(file_get_contents($usercache));
 		}
