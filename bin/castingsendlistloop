@@ -9,6 +9,8 @@ pwd | egrep -q "^$localdir.*casting[0-9]*$" || end 1 "Ce n'est pas un dossier de
 
 [ "$1" = "-c" ] && REFRESHIGNORE=true
 
+alias rsync="rsync --timeout=60 --contimeout=60"
+
 castingdir=$client/$job/$casting
 echo "client: $client"
 echo "job: $job"

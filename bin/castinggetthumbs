@@ -5,6 +5,8 @@
 export PATH=$PATH:$(dirname $0)
 . $(which casting-helpers) || exit 1
 
+alias rsync="rsync --timeout=60 --contimeout=60"
+
 uname | grep -q Darwin
 if [ $? -eq 0 ]
 then
