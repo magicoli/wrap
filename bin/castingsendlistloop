@@ -1,5 +1,7 @@
 #!/bin/bash
 
+WAIT=60
+
 [ "$1" = "-l" ] && LOOP=true
 
 export PATH=$PATH:$(dirname $0)
@@ -35,7 +37,7 @@ do
     rsync -Wavz liste ignore thumbs $remote/$castingdir/.sources/ \
 		| egrep "^liste$|ignore|thumbs" | sed "s/$/ $(date)/"
     [ $LOOP ] || break
-    read -t 17
+    read -t $WAIT
 done
 
 end $?

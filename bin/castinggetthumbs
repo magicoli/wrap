@@ -1,5 +1,7 @@
 #!/bin/bash
 
+WAIT=60
+
 [ "$1" = "-l" ] && LOOP=true
 
 export PATH=$PATH:$(dirname $0)
@@ -42,7 +44,7 @@ do
   rsync -Wavz $remote/$castingdir/.sources/times $base/$castingdir/
 
   [ $LOOP ] || break
-  read -t 1
+  read -t $WAIT
 done
 
 end $?
