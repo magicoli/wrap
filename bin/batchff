@@ -12,8 +12,8 @@ EXT=mp4
 
 [ -f $(dirname "$0")/casting-helpers ] && . $(dirname "$0")/casting-helpers || exit 1
 
-which avconv | grep -q avconv || alias avconv=avconv
-avconv -version >/dev/null 2>/dev/null || exit $?
+#which avconv | grep -q avconv || alias avconv=avconv
+#avconv -version >/dev/null 2>/dev/null || exit $?
 
 list=$1
 format=$2
