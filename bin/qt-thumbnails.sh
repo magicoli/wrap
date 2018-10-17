@@ -10,6 +10,7 @@ LARGESIZEWIDE=1024x576
 THUMBBEGIN=5
 FORCE=no
 WIDE=no
+PORTRAIT=no
 
 PGM=`basename "$0" .sh`
 TMP=$PGM.$$
@@ -35,9 +36,12 @@ do
 	elif [ "$check" = "e" ]
 		then
 		USELASTIMAGE=yes
-	elif [ "$check" = "l" ]
+  elif [ "$check" = "l" ]
 		then
 		LARGEENABLED=yes
+  elif [ "$check" = "p" ]
+		then
+		PORTRAIT=yes
 	elif [ "$check" = "w" ]
 		then
 		THUMBSIZE=$THUMBSIZEWIDE
@@ -54,6 +58,13 @@ done
 if [ ! -f "$TMP.movies" ]
 	then
 	exit
+fi
+
+if [ "$PORTRAIT" = "yes" ]
+then
+  echo "PORTRAIT MODE" >&2
+  THUMBSIZE=$(echo $THUMBSIZE | cut -d "x" -f 2)x$(echo $THUMBSIZE | cut -d "x" -f 1)
+  LARGESIZE=$(echo $LARGESIZE | cut -d "x" -f 2)x$(echo $THUMBSIZE | cut -d "x" -f 1)
 fi
 
 cat "$TMP.movies" | while read movie
@@ -106,7 +117,7 @@ do
 	fi
 	printf "$shortname ($thumbpos) "
 	ln -s "$movie" "$TMP.$extension"
-	if [ ! $? -eq 0 ] 
+	if [ ! $? -eq 0 ]
 		then
 		rm -f "$TMP.$extension"
 		continue
@@ -122,8 +133,8 @@ do
 		if [ $? -eq 0 ]
 			then
 			mv "$dir/$TMP-thumb.jpg" "$thumb" \
-				&& printf "T" 
-		else 
+				&& printf "T"
+		else
 			echo " error making thumb"
 			rm "$TMP.$extension" "$dir/$TMP-thumb.jpg"
 			continue
@@ -131,13 +142,13 @@ do
 	else
 		printf "t"
 	fi
-	
+
 	if [ "$LARGEENABLED" != "yes" ]
 		then
 		rm -f "$TMP.$extension" "$dir/$TMP.jpg" && echo
 		continue
 	fi
-	
+
 	originalsize=$($vconv -i $TMP.$extension 2>&1 | egrep "Video:.*[0-9]*x[0-9]*" | head -1 | sed "s/^.* \([0-9]*x[0-9]*\)[, ].*$/\\1/")
 	resizeparam=
 	x=$(echo $originalsize | cut -d "x" -f 1)
@@ -157,8 +168,8 @@ do
 		if [ $? -eq 0 ]
 			then
 			mv "$dir/$TMP-large.jpg" "$large" \
-				&& printf "L" 
-		else 
+				&& printf "L"
+		else
 			echo "error making large"
 			rm "$TMP.$extension" "$dir/$TMP-thumb.jpg"
 			continue
