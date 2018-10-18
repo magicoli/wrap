@@ -4,18 +4,32 @@
 
 while true
 do
-  grep -A1 , liste | while read nr name
+  grep -A1 "[[:blank:]].*," liste | sed -e "s:#.*::" -e "s://.*::" | while read nr name
   do
+    [ "$nr" = "--" ] && unset file && continue
     if [ "$file" ]
     then
-      grep -q "^$file[[:blank:]]" thumbs
-      if [ $? -ne 0 ]
-      then
-        n=$(($nr - 1)) && echo $file $n | tee -a thumbs
-      fi
+      grep -q "^$file[[:blank:]]" thumbs && echo "$file $nr $name ignored" && unset file
+    fi
+    if [ "$file" ]
+    then
+      # grep -q "^$file[[:blank:]]" thumbs && unset file && continue
+      n=$(($(echo $nr | sed "s:[^0-9].*::") - 1))
+      [ $n -gt 0 ] && echo $file $n | tee -a thumbs
       unset file
     fi
     echo "$name" | grep -q , && file=$(webnormalize "$name")
+    grep -q "^$file[[:blank:]]" thumbs && echo "$file $nr $name ignored" && unset file
+    if [ "$file" ]
+    then
+      echo "$nr" | grep -q [,-]
+      if [ $? -eq 0 ]
+      then
+        n=$(echo $nr | sed "s/.*[^0-9]//")
+        [ "$n" ] && [ $n -gt 0 ] && echo $file $n | tee -a thumbs
+        unset file
+      fi
+    fi
   done
   [ $LOOP ] || break
   read -t 1

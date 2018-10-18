@@ -16,8 +16,12 @@ list=$1
 
 echo "method: $method" >&2
 
-cat "$list" | sed "s/[[:blank:]][[:blank:]]*/ /g" | egrep "[A-Za-z]" | while read nr name
+cat "$list" \
+	| sed -e "s:#.*::" -e "s://.*::" \
+ 	| sed "s/[[:blank:]][[:blank:]]*/ /g" | egrep "[A-Za-z]" | while read index name
 do
+	echo "$index" | egrep "[#/]" && continue
+		nr=$(echo $index | sed "s/[^0-9].*//")
 	[ "$name" = "" ] && continue
 	echo "$name" >> "$TMP.list"
 	# info=$(echo "$name" | grep "//" | sed "s|[^/]*//[[:blank:]]*||" | sed "s| */[/ ]*| |")
@@ -82,8 +86,8 @@ if [ -f "thumbs" ]
 	    [ "$mp4" ] || continue
 	    file=$(basename $mp4 .mp4)
 	    # echo "special thumb for $file ($mp4)" >&2
-	    cp -p .browsercache/$t-thumb.jpg $WEBDIR/.browsercache/$file-thumb.jpg
-	    cp -p .browsercache/$t-large.jpg $WEBDIR/.browsercache/$file-large.jpg
+	    cp -p .browsercache/$t-thumb.jpg $WEBDIR/.browsercache/$file-thumb.jpg 2>/dev/null
+	    cp -p .browsercache/$t-large.jpg $WEBDIR/.browsercache/$file-large.jpg 2>/dev/null
 	done
 fi
 
