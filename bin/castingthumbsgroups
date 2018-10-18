@@ -2,6 +2,8 @@
 
 [ "$1" = "-l" ] && LOOP=true
 
+[ -f thumbs ] || touch thumbs
+
 while true
 do
   grep -A1 "[[:blank:]].*," liste | sed -e "s:#.*::" -e "s://.*::" | while read nr name
@@ -9,7 +11,7 @@ do
     [ "$nr" = "--" ] && unset file && continue
     if [ "$file" ]
     then
-      grep -q "^$file[[:blank:]]" thumbs && echo "$file $nr $name ignored" && unset file
+      grep -q "^$file[[:blank:]]" thumbs 2>/dev/null && unset file
     fi
     if [ "$file" ]
     then
@@ -19,7 +21,7 @@ do
       unset file
     fi
     echo "$name" | grep -q , && file=$(webnormalize "$name")
-    grep -q "^$file[[:blank:]]" thumbs && echo "$file $nr $name ignored" && unset file
+    grep -q "^$file[[:blank:]]" thumbs 2>/dev/null && unset file
     if [ "$file" ]
     then
       echo "$nr" | grep -q [,-]
