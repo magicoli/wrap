@@ -12,7 +12,7 @@ echo "source $source"
 while true
 do
   i=$(($i + 1))
-  count=$(ls "$source"/*.MTS 2>/dev/null | wc -l)
+  count=$(ls "$source"/*.MTS "$source"/*.MOV 2>/dev/null | wc -l)
   [ $count -ge $min2copy ] && echo "$count enough to copy" \
   || read -p "." -t 1 && i=$min2thumb && count=$min2copy \
   || [ $count -gt 0 -a ! -f "$source"/tmp/php* ] \
