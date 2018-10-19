@@ -72,7 +72,7 @@ fi
 
 echo ");"
 found=$(cat "$TMP.playlist" | wc -l)
-[ $found -eq 0 ] && echo "\$hidden=$found;"
+[ $found -eq 0 ] && echo "\$hidden=true;"
 echo "?>"
 
 rm -f "$TMP.playlist"
