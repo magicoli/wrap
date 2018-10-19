@@ -3,17 +3,23 @@
 [ "$1" ] && standard="$1"
 group=5
 
-cat liste | grep -i [a-z] | while read nr foo
+cat liste | grep -i [a-z] | while read index foo
 do
-    grep -q "^$nr.mov" .rethumbed 2>/dev/null && echo "$nr already seen" && continue
-    grep "^$nr.mov" times | while read f f duration
+  nr=$(echo $index | sed "s/[^0-9].*//")
+  grep -q "^$nr.mov" .rethumbed 2>/dev/null && echo "$nr already seen" && continue
+  grep "^$nr.mov" times | while read f f duration
+  do
+    echo "$foo" | grep -q "," \
+    && d=$group \
+    || {
+      [ "$standard" ] && d=$standard || d=$(($duration));
+    }
+    while [ $d -ge 0 ]
     do
-	echo "$foo" | grep -q "," \
-	    && d=$group \
-	    || {
-	    [ "$standard" ] && d=$standard || d=$(($duration));
-	}
-	qt-thumbnailswide.sh -f -l -$d $nr.mov \
-	    && echo  "$nr.mov" >> .rethumbed
+      qt-thumbnailswide.sh -f -l -$d $nr.mov
+      du -sh .browsercache/$nr-thumb.jpg | grep ^0 && d=$(($d - 1)) && echo retrying && continue
+      echo  "$nr.mov" >> .rethumbed
+      break
     done
+  done
 done
