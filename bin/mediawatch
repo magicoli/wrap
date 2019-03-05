@@ -20,7 +20,8 @@ while true
 do
     clear
     echo $sources
-    ls -lrt $sources \
+    ls -l $sources \
+       | sort -k 9 \
         | egrep '\.MTS|\.MPG|\.MOV|\.MP4' \
         | tee $TMP.files \
         | tail
