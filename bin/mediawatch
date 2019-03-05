@@ -29,7 +29,7 @@ do
 
     printf "$(cat $TMP.files | wc -l) pending files"
     diffs=$(diff $TMP.bydate $TMP.files 2>/dev/null | grep ">" | wc -l)
-    [ "$diffs" -eq 0 ] && echo || echo " ($diffs TIME MISMATCHES)"
+    [ "$diffs" -eq 0 ] && echo || echo " ($diffs TIME MISMATCHESS" | grep --color ".*"
 
     ls $sources/tmp/php* >/dev/null 2>/dev/null \
         && phptmp=$sources/tmp \
