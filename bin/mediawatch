@@ -20,12 +20,16 @@ while true
 do
     clear
     echo $sources
-    ls -l $sources \
-       | sort -k 9 \
+    ls -lrt $sources \
         | egrep '\.MTS|\.MPG|\.MOV|\.MP4' \
-        | tee $TMP.files \
+        | tee $TMP.bydate \
         | tail
-    echo $(cat $TMP.files | wc -l) pending files
+    sort -k 9 $TMP.bydate \
+        > $TMP.files
+
+    printf "$(cat $TMP.files | wc -l) pending files"
+    diffs=$(diff $TMP.bydate $TMP.files 2>/dev/null | grep ">" | wc -l)
+    [ "$diffs" -eq 0 ] && echo || echo " ($diffs TIME MISMATCHES)"
 
     ls $sources/tmp/php* >/dev/null 2>/dev/null \
         && phptmp=$sources/tmp \
