@@ -17,6 +17,14 @@ DATA="$HOME/.$PGM"
 
 COLOR_HIGHLIGHT="[1;31;40m"
 COLOR_NORMAL="[0;;m"
+# red='\e[1;31m'
+# green='\e[1;32m'
+# yel='\e[1;33m'
+# blu='\e[1;34m'
+# mag='\e[1;35m'
+# cyn='\e[1;36m'
+# end='\e[0m'
+
 [ ! "$ENDSUCCESS" ] && ENDSUCCESS="Succeed"
 [ ! "$ENDFAILED" ] && ENDFAILED="Failed"
 
@@ -52,9 +60,9 @@ log() {
 		LOGMESSAGE=$@
 		LOGLINE=`date +"%Y-%m-%d %H:%M:%S"`" $PGM[$$]: $ERR$LOGMESSAGE"
 		[ "$LOGGING" = "yes" ] && (echo $LOGLINE >> $LOG)
-		if [ "$ERRNUM" ] 
+		if [ "$ERRNUM" ]
 			then
-			echo "${COLOR_HIGHLIGHT}$PGM:${COLOR_NORMAL} $LOGMESSAGE" >&2 
+			echo "${COLOR_HIGHLIGHT}$PGM:${COLOR_NORMAL} $LOGMESSAGE" >&2
 			[ "$USETTS" = "yes" ] && $SAY "Error $ERRNUM: $LOGMESSAGE" 2>/dev/null &
 		elif [ "$DEBUG" = "yes"  ]
 			then
@@ -89,7 +97,7 @@ end() {
 		[ "$USETTS" = "yes" ] && $SAY "$endMessage" 2>/dev/null &
 	fi
 
-	rm -f $TMP*
+	rm -f $TMP $TMP.*
 	rm -f $LOG.lock
 	# [ -f $LOG ] && chmod -f 666 $LOG*
 
@@ -113,6 +121,7 @@ yesno() {
     default=n
     choice="y/N"
     [ "$1" = "y" ] && default=y && choice="Y/n" && shift
+    [ "$1" = "-y" ] && default=y && choice="Y/n" && shift
     [ "$@" ] && message="$@" || message="Answer"
     message="$message ($choice) "
     read -p "$message" answer
