@@ -41,12 +41,18 @@ BASEDIR=$(dirname "$BINDIR")
 PATH=$BINDIR:$PATH
 
 help() {
-	echo "$PGM help"
-	echo "$HELP"
+	[ "$HELP" ] && echo "$HELP" || usage
 }
 
-USAGE="$PGM $SYNTAX"
 usage() {
+  if [ ! "$USAGE" ]
+  then
+    PAR=`echo $OPTS|sed 's/.://g'|grep -v "^$"|sed "s/\([a-zA-Z0-9]*\)/[-\\1]/g" `
+    PAROPT=`echo $OPTS | sed "s/-://" | sed 's/\(.\)/\\1\//g' \
+        | sed 's/\(.\)\/:\//[-\\1 <value>] /g' \
+        | sed "s/.\///g" `
+    USAGE=$(echo $PGM $PAR $PAROPT "[...]" | sed "s/  / /g")
+  fi
 	echo "usage: $USAGE"
 }
 
@@ -137,3 +143,63 @@ ucfirst() {
     lower=$(echo $@ | cut -c 2- | tr "[:upper:]" "[:lower:]")
     echo "$upper$lower"
 }
+
+[ ! "$OPTS" ]  && OPTS="hvq"
+PAR=`echo $OPTS|sed 's/.://g'|grep -v "^$"|sed "s/\([a-zA-Z0-9]*\)/[-\\1]/g" `
+PAROPT=`echo $OPTS | sed "s/-://" | sed 's/\(.\)/\\1\//g' \
+    | sed 's/\(.\)\/:\//[-\\1 <value>] /g' \
+    | sed "s/.\///g" `
+[ ! "$USAGE" ] && USAGE=$(echo $PGM $PAR $PAROPT "[<args>]" | sed "s/  / /g")
+[ ! "$HELP" ] && HELP="
+  -h, --help  help
+  -q  quiet
+  -v  verbose
+"
+echo "$HELP" | grep -q "[Uu]sage:" || HELP="$(usage)
+
+$HELP"
+
+if [ "$OPTSINHELPER" = "yes" ]
+then
+
+while getopts $OPTS PARAM
+  do
+    case $PARAM in
+    "?")
+      ERROR=1
+      ;;
+    -)
+      case $OPTARG in
+      help)
+        help; end
+        ;;
+      quiet)
+        STDOUT="/dev/null"
+        QUIET=yes
+        DEBUG=no
+        ;;
+      verbose)
+        STDERR="&1"
+        DEBUG=yes
+        ;;
+      esac
+      ;;
+    h)
+      help; end
+      ;;
+    v)
+      STDERR="&1"
+      DEBUG=yes
+      ;;
+    q)
+      STDOUT="/dev/null"
+      QUIET=yes
+      DEBUG=no
+      ;;
+  esac
+done 2>/dev/null
+
+  [ $ERROR ] && end $ERROR "$(usage)
+  type '$PGM --help' for more info"
+fi
+OPTIND=1
