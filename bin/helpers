@@ -138,6 +138,18 @@ yesno() {
     return 1
 }
 
+istrue() {
+  answer=$(echo $1 | tr "[:upper:]" "[:lower:]")
+  case $answer in
+    y|yes|o|oui|t|true)
+    log "answer $1 is true"
+    return
+    ;;
+  esac
+  log "answer $1 is false"
+  return -1
+}
+
 ucfirst() {
     upper=$(echo $@ | cut -c 1 | tr "[:lower:]" "[:upper:]")
     lower=$(echo $@ | cut -c 2- | tr "[:upper:]" "[:lower:]")
