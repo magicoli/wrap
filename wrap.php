@@ -1349,6 +1349,7 @@ if ($d)
 					$detailsRow=array_filter(str_getcsv($detailsString));
 					$detailsId=$detailsRow[0];
 					$details[$detailsId]=$detailsRow;
+					array_shift($details[$detailsId]);
 				}
 				break;
 
