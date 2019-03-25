@@ -84,7 +84,7 @@ log() {
 end() {
 	if [ "$1" ]
 		then
-		expr $1 + 0 >/dev/null 2>/dev/null && ERRNUM=$1 || ERRNUM=0
+		expr $1 + 0 >/dev/null 2>/dev/null && ERRNUM=$(($1 + 0)) && shift || ERRNUM=0
 	else
 		ERRNUM=0
 	fi
@@ -92,7 +92,7 @@ end() {
 	if [ "$ERRNUM" -ne 0 ]
 		then
 		# ERRNUM=`expr $ERRNUM + 0`
-		shift
+		# shift
 		[ "$#" -gt 0 ] && endMessage="$@" || endMessage=$ENDFAILED
 		log $ERRNUM "$endMessage"
 	else
