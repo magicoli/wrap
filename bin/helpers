@@ -214,4 +214,5 @@ done 2>/dev/null
   [ $ERROR ] && end $ERROR "$(usage)
   type '$PGM --help' for more info"
 fi
+OPTPROCESSED=$OPTIND
 OPTIND=1
