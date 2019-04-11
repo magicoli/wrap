@@ -1,4 +1,4 @@
-It's a W.R.A.P.
+# It's a W.R.A.P.
 
 Wrap is a basic csm, aimed to display mostly galleries of images or videos.
 The idea is to allow the website maintainer to push media in subfolders. 
