@@ -1,6 +1,6 @@
 # It's a W.R.A.P.
 
-Wrap is a basic csm, aimed to display mostly galleries of images or videos.
+Wrap is a basic CMS, aimed to display mostly galleries of images or videos.
 The idea is to allow the website maintainer to push media in subfolders. 
 The structure of the websites and the menus is detected automatically.
 
