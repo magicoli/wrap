@@ -42,6 +42,7 @@ do
   fi
 
   rsync -Wavz $remote/$castingdir/.sources/times $base/$castingdir/
+  rsync -Wavz $remote/$castingdir/.sources/.aliases $base/$castingdir/aliases
 
   [ $LOOP ] || break
   read -t $WAIT
