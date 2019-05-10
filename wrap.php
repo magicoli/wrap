@@ -904,7 +904,7 @@ if($addons['aloha'] && $wrap_editable && $editmode) {
 	function storePost() {
 		global $webroot, $directory, $pagecache;
 
-		file_put_contents ("$pagecache.${_POST[id]}", htmltotext($_POST['content']));
+		file_put_contents ("$pagecache.${_POST['id']}", htmltotext($_POST['content']));
 
 		// $_SESSION[$_POST['id']]=$_POST['content'];
 		exit;
@@ -1920,9 +1920,9 @@ if(is_array($playlistindex)) {
 	$playlistindex=array_values($playlistindex);
 }
 
-if(isset($REQUEST[id]))
+if(isset($REQUEST['id']))
 {
-	$showid=$REQUEST[id];
+	$showid=$REQUEST['id'];
 	$showfile=$playlistindex[$showid];
 }
 
@@ -2589,7 +2589,7 @@ if(is_array($names))
 					} else {
 						$inpageout="";
 						if($popupcenterheight) {
-							$constraint="style='position: relative; top: ${shown[margin]}px; width: ${shown[width]}px; height: ${shown[height]}px'";
+							$constraint="style='position: relative; top: ${shown['margin']}px; width: ${shown['width']}px; height: ${shown['height']}px'";
 						}
 						$popuphtml.="
 							<div class=large id=$i style='display: none; z-index: 9002;'>";
