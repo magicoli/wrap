@@ -10,7 +10,7 @@ if(preg_match("/^dev\.|^local\.|^preview\./", getenv("HTTP_HOST"))) {
 $timebegin=time();
 
 $libdir=dirname(__FILE__);
-$libdirurl=dirname($_SERVER[SCRIPT_NAME]);
+$libdirurl=dirname($_SERVER['SCRIPT_NAME']);
 $scriptname="wrap";
 
 $requires=array(
