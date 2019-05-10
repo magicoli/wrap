@@ -425,7 +425,7 @@ function reformatFile($file) {
 function debug($string, $style="new") {
 	global $br, $config, $session, $debug, $debugmode, $debuginfo;
 	#	$session[debug][]=$string;
-	if ($session['notloaded'] || $config[debug] || $debug || $_REQUEST[debug]==true) {
+	if ($session['notloaded'] || $config['debug'] || $debug || $_REQUEST['debug']==true) {
 		if($debugmode=="store") {
 			if($style=="new" || empty($debuginfo)) {
 				$debuginfo.="</p><p class=debug>";

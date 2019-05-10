@@ -1580,7 +1580,7 @@ if ($d)
 
 	$REQUEST=$_REQUEST;
 
-	if($REQUEST[action]=="popup")
+	if($REQUEST['action']=="popup")
 	{
 	$onload.="self.moveTo(0,0);self.resizeTo(screen.availWidth,screen.availHeight);self.titlebar=0;";
 	}
