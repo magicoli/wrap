@@ -3045,7 +3045,7 @@ if($facebooktags) {
 		}
 	}
 	if(!$oglock) {
-		if(preg_match("#[<\]img#", $about.$description)) {
+		if(preg_match("#<\\*img#", $about.$description)) {
 			$flatarray=preg_split("#<#", $about.$description);
 			foreach($flatarray as $flattext) {
 				if(preg_match("#^img #", $flattext)) {
@@ -3469,7 +3469,7 @@ else if($REQUEST['output']=="flv")
 	}
 
 	$finalpage=preg_replace("#<aside></aside>#", "", $finalpage);
-	$finalpage=preg_replace("#<div class=left>[:blank:]*</div>#", "", $finalpage);
+	$finalpage=preg_replace("#<div class=left>[[:blank:]]*</div>#", "", $finalpage);
 	$finalpage=clean_html_code($finalpage);
 	$finalpage=preg_replace("#\n#", " ", $finalpage);
 	$finalpage=preg_replace("#  *#", " ", $finalpage);

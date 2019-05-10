@@ -562,7 +562,7 @@ function removeChordPro($string) {
 	$string=preg_replace("#[\n ]*{t:[^}]*}[\n ]*<br>#", "", $string);
 	$string=preg_replace("#[\n ]*{c:([^}]*)}[\n ]*#", "<p class=author>\\1</p>", $string);
 	$string=preg_replace("#[\n ]*{key:([^}]*)}[\n ]*#", "", $string);
-	$string=preg_replace("#\[([A-G][a-z0-9#]*)\]#", "", $string);
+	$string=preg_replace(":\[([A-G][a-z0-9#]*)\]:", "", $string);
 	$string=preg_replace("#[\n ]*{t:[^}]*}[\n ]*<br>#", "", $string);
 	$string=preg_replace("#[\n ]*{[rR]}[\n ]*#", "<p class=chorus>", $string);
 	$string=preg_replace("#[\n ]*{[^}]*}[\n ]*#", "", $string);
@@ -584,7 +584,7 @@ function processChordPro($string) {
 	// bemol 9837
 	// becare 9838
 	// diese #9839;
-	$string=preg_replace("#\[([A-G])#([a-z0-9]*)\]#", "<span class=chord>\\1&#9839;\\2</span>", $string);
+	$string=preg_replace(":\[([A-G])#([a-z0-9]*)\]:", "<span class=chord>\\1&#9839;\\2</span>", $string);
 	$string=preg_replace("#\[([A-G])b([a-z0-9]*)\]#", "<span class=chord>\\1&#9837;\\2</span>", $string);
 	$string=preg_replace("#\[([A-G][a-z0-9]*)\]#", "<span class=chord>\\1</span>", $string);
 	$string=preg_replace("#[\n ]*{t:[^}]*}[\n ]*<br>#", "", $string);
