@@ -1648,7 +1648,7 @@ foreach($wrap_editable_parts as $part) {
 		// eval("if(!ereg(\" id='*$part'* \", \$$part)) \$$part=\"<h1 id='$part' class='$part'>\$$part</h1>\";");
 		break;
 		default:
-		eval("if(!ereg(\" id='*$part'* \", \$$part)) \$$part=\"<div id='$part' class='$part'>\$$part</div>\";");
+		eval("if(!preg_match(\"# id='*$part'* #\", \$$part)) \$$part=\"<div id='$part' class='$part'>\$$part</div>\";");
 	}
 	// switch($part) {
 	// 	// case "pagetitle":
