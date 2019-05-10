@@ -106,7 +106,7 @@ $fb_comments_width="auto";
 $facebooktags=true;
 $default_fb_app_id="217300954968904";
 $fbadmins="582749884";
-$defaultposter="$libdirurl/$scriptname-poster-black.jpg";
+$defaultposter=NULL;
 
 $logo="
 <div class=logo>
