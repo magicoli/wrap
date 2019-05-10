@@ -142,11 +142,11 @@ istrue() {
   answer=$(echo $1 | tr "[:upper:]" "[:lower:]")
   case $answer in
     y|yes|o|oui|t|true)
-    log "answer $1 is true"
+    # log "answer $1 is true"
     return
     ;;
   esac
-  log "answer $1 is false"
+  # log "answer $1 is false"
   return -1
 }
 
