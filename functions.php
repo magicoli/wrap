@@ -13,16 +13,16 @@ function localise($string) {
 };
 
 function HumanReadableFilesize($size) {
- 
+
     // Adapted from: http://www.php.net/manual/en/function.filesize.php
- 
+
     $mod = 1024;
- 
+
     $units = explode(' ','B KB MB GB TB PB');
     for ($i = 0; $size > $mod; $i++) {
         $size /= $mod;
     }
- 
+
     return round($size, 2) . ' ' . $units[$i];
 }
 
@@ -65,7 +65,7 @@ function parseFBEevents ($args) {
 	$monthsfr=array(
 		" janvier", " février", " mars", " avril", " mai", " juin", " juillet", " août", " septembre", " octobre", " novembre", " décembre");
 	$monthsnr=array("-01", "-02", "-03", "-04", "-05", "-06", "-07", "-08", "-09", "-10", "-11", "-12");
-	
+
 	$args=func_get_args();
 	eval("\$args=array(" . ereg_replace("\[fbevents:|\]$", "", $args[0][0]) . ");");
 	$eventsurl=$args[0];
@@ -73,20 +73,20 @@ function parseFBEevents ($args) {
 	$eventscount=$args[1];
 	$eventstitle=$args[2];
 	$contextopts = array(
-		'http'=> array( 
-			'method'=>   "GET", 
+		'http'=> array(
+			'method'=>   "GET",
 			'header'=>"Accept-language: fr",
-			'user_agent'=> $_SERVER['HTTP_USER_AGENT'] 
-		) 
+			'user_agent'=> $_SERVER['HTTP_USER_AGENT']
+		)
 	);
 	$context = stream_context_create( $contextopts );
 	$content=file_get_contents($eventsurl, false, $context);
 #	$content=utf8_encode($content);
 #	$eventsencoding=mb_detect_encoding($content);
 #	$content=mb_convert_encoding(
-#		$content, 'UTF-8', 
+#		$content, 'UTF-8',
 #	    mb_detect_encoding($content)
-#	); 
+#	);
 
 	$content=decode_unicode_url(str_replace("\u", "%u", $content));
 
@@ -98,7 +98,7 @@ function parseFBEevents ($args) {
 	$content=ereg_replace("<", "\n<", $content);
 	$content=ereg_replace("\n\n", "\n", $content);
 	$content=ereg_replace("^\n", "", $content);
-	
+
 	$lines=split("\n", $content);
 	foreach ($lines as $line) {
 		$line=ereg_replace("&nbsp[;]*", " ", $line);
@@ -126,9 +126,9 @@ function parseFBEevents ($args) {
 			}
 		}
 	}
-#	echo "$content"; 
+#	echo "$content";
 #	exit;
-	
+
 #	if(!empty($items))
 #	{
 	if(count($events))
@@ -171,15 +171,15 @@ function parseItunes ($args) {
 	$url=ereg_replace("album/", "$itunescountry/album/", $url);
 	$url=ereg_replace("\?.*", "", $url);
 	// $albumid=ereg_replace(".*/album/", "", $url);
-	// 
+	//
 	// echo "album id: $albumid<br>";
-	
+
 	$contextopts = array(
-		'http'=> array( 
-			'method'=>   "GET", 
+		'http'=> array(
+			'method'=>   "GET",
 			'header'=>"Accept-language: fr",
-			'user_agent'=> $_SERVER['HTTP_USER_AGENT'] 
-		) 
+			'user_agent'=> $_SERVER['HTTP_USER_AGENT']
+		)
 	);
 	$context = stream_context_create( $contextopts );
 	$content=file_get_contents("$url?l=fr", false, $context);
@@ -198,7 +198,7 @@ function parseItunes ($args) {
 	$albumlink=ereg_replace("\".*", "", ereg_replace(".*\"http://itunes.apple.com/[a-z]*/album/", "http://itunes.apple.com/$itunescountry/album/", $content));
 	$infos=ereg_replace("<a ", "<a target=itunes_store ", ereg_replace("</ul>.*", "", ereg_replace(".*<ul class=\"list\">", "", $content)));
 	// $albumlink=ereg_replace("\".*", "", ereg_replace("<ul role="presentation" class="list"><li><a href=\"", "", $content));
-	
+
 	$html="
 		<h1>$title</h1>
 		<h2><a href=\"$artistlink\" target=_blank>$artist</a></h2>
@@ -207,12 +207,12 @@ function parseItunes ($args) {
 		$ituneslink
 		$infos
 		";
-	
+
 	if($html) {
 		$html="<div class=itunes>$html</div>";
 	}
 	return "$html";
-	
+
 	$content=ereg_replace("<div id=\\\\\"events_show_past_link\\\\\".*", "", $content);
 	$content=ereg_replace("\\\\/", "/", $content);
 	$content=ereg_replace("\\\\", "", $content);
@@ -220,7 +220,7 @@ function parseItunes ($args) {
 	$content=ereg_replace("<", "\n<", $content);
 	$content=ereg_replace("\n\n", "\n", $content);
 	$content=ereg_replace("^\n", "", $content);
-	
+
 	$lines=split("\n", $content);
 	foreach ($lines as $line) {
 		$line=ereg_replace("&nbsp[;]*", " ", $line);
@@ -248,9 +248,9 @@ function parseItunes ($args) {
 			}
 		}
 	}
-#	echo "$content"; 
+#	echo "$content";
 #	exit;
-	
+
 #	if(!empty($items))
 #	{
 	if(count($events))
@@ -316,7 +316,7 @@ function parsePlaylists($args) {
 		}
 	}
 #	echo $sections[$section];
-	
+
 	return $html;
 }
 
@@ -328,7 +328,7 @@ function parseWeather ($args) {
 	$string=ereg_replace(',[ ]*', ',', $string);
 	$args=split(',', $string);
 	#http://weather.yahooapis.com/forecastrss?w=80897&u=c
-	
+
 	# yahoo						80897		615702
 	# weather.com				GPXX7711:1	FRXX0076:1
 	# World Weather Online		880019		803267
@@ -360,13 +360,13 @@ function parseWeather ($args) {
 			</div>";
 			$no="<div class=current>Actuel</div>";
 /*
-	 Current Conditions: 
-	Light Rain, 26 C 
-	 Forecast: 
-	Mon - Showers. High: 29 Low: 25 
-	Tue - Scattered Thunderstorms. High: 29 Low: 24 
+	 Current Conditions:
+	Light Rain, 26 C
+	 Forecast:
+	Mon - Showers. High: 29 Low: 25
+	Tue - Scattered Thunderstorms. High: 29 Low: 24
 
-	 Full Forecast at Yahoo! Weather 
+	 Full Forecast at Yahoo! Weather
 	(provided by The Weather (...)</div>
 	*/
 }
@@ -411,7 +411,7 @@ function reformatFile($file) {
 	if(substr_count($result, "<p") > substr_count($result, "</p")) {
 		$result.="</p>";
 	}
-	
+
 	if($result=="<p></p>") {
 		return;
 	} else {
@@ -493,7 +493,7 @@ function rewritelink()
 }
 
 function rewritelinkid($id)
-{	
+{
 	return rewritelink() . "?id=$id";
 }
 
@@ -539,9 +539,10 @@ function processtags($type, $data)
 		$html=$data;
 		while(list($key, $value)=each($type))
 		{
+			if(is_array($value)) continue;
 			$html=ereg_replace("\[$key\]", $value, $html);
 		}
-	} 
+	}
 	else if($format[$type])
 	{
 		if (is_string($data) && $data != "")
@@ -551,7 +552,7 @@ function processtags($type, $data)
 				$html=ereg_replace("\[$type\]", $data, $format[$type]);
 			}
 		}
-	}	
+	}
 	return $html;
 }
 
@@ -592,7 +593,7 @@ function processChordPro($string) {
 }
 
 function getPageSettings($thisdirectory, $store=false)
-{	
+{
 	global $webroot, $rootdir, $pagesettings, $directory, $subdirscan, $stripnumber, $headstyle, $ogstyle, $checktemplate, $wrap_editable_parts, $cacheroot;
 	// $thisdirectory=urldecode($thisdirectory);
 	$traces=debug_backtrace();
@@ -724,7 +725,7 @@ function getPageSettings($thisdirectory, $store=false)
 	if(!isset($noindex) && ereg("^_", basename($thisdirectory))) {
 		$noindex=true;
 	}
-	
+
 	$ignoreAdd=$ignore;
 
 	if($hidden) {
@@ -738,7 +739,7 @@ function getPageSettings($thisdirectory, $store=false)
 		unset($ignore);
 
 		$pagesettings[$thisdirectory]=get_defined_vars();
-		
+
 		unset($pagesettings[$thisdirectory]['pagesettings']);
 		unset($pagesettings[$thisdirectory]['store']);
 		if(ereg("^$thisdirectory/", "$directory/")) { $scanbelow=true; }
@@ -764,7 +765,7 @@ function getPageSettings($thisdirectory, $store=false)
 				$d = dir("$webroot/$thisdirectory");
 				if($d)
 				{
-					while($entry=$d->read()) 
+					while($entry=$d->read())
 					{
 						$sister=urldecode("$thisdirectory/$entry");
 						if(is_dir("$webroot/$sister") &! matchesIgnorePattern("$entry/"))
@@ -807,7 +808,7 @@ function matchesIgnorePattern($entry)
 {
 	global $ignore;
 	return matchesPattern($entry, $ignore);
-	
+
 	if(is_array($ignore))
 	{
 		reset($ignore);
@@ -843,14 +844,14 @@ function generateFileName($file)
 	global $stripnumber, $allowedvariants, $mimetypes;
 	$extension=strtolower(ereg_replace('^.*\.', '', $file));
 	$filetype=ereg_replace("/.*", "", $mimetypes[$extension]);
-	
+
 	$file=stripVariantSuffix($file);
 	// if($allowedvariants[$filetype]) {
 	// 	foreach($allowedvariants[$filetype] as $variant) {
 	// 		$file=ereg_replace("-$variant\.$extension$", ".$extension", $file);
 	// 	}
 	// }
-	
+
 	$name=titelize(ereg_replace('\.[a-zA_Z0-9]*$', '', urldecode(basename($file))));
 	// if($stripnumber)
 	// {
@@ -886,9 +887,9 @@ function generateFolderName($folder)
 	}
 
 	$pagetitle=titelize($foldername);
-	
+
 	return $pagetitle;
-}	
+}
 
 function fileToSimpleArray($file)
 {
@@ -1001,7 +1002,7 @@ function firstValidFile()
 		$file=cleanpath($file);
 		$libfile="$libdir/" . preg_replace(":^/lib/:", "", $file);
 		// debug("file: $libfile");
-		if (is_file("$webroot/$file") || is_file($libfile) || file_exists("$file")) 
+		if (is_file("$webroot/$file") || is_file($libfile) || file_exists("$file"))
 		{
 			// debug("found", " ");
 			## || file_exists("$aliasroot/$file")  disabled because of log bombing
@@ -1034,7 +1035,7 @@ function macRomanToIso($string)
 function mac_roman_to_iso($string)
 {
 	return strtr(
-		$string, 
+		$string,
 		"\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa1\xa4\xa6\xa7\xa8\xab\xac\xae\xaf\xb4\xbb\xbc\xbe\xbf\xc0\xc1\xc2\xc7\xc8\xca\xcb\xcc\xd6\xd8\xdb\xe1\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf1\xf2\xf3\xf4\xf8\xfc\xd2\xd3\xd4\xd5Ð",
 		"\xc4\xc5\xc7\xc9\xd1\xd6\xdc\xe1\xe0\xe2\xe4\xe3\xe5\xe7\xe9\xe8\xea\xeb\xed\xec\xee\xef\xf1\xf3\xf2\xf4\xf6\xf5\xfa\xf9\xfb\xfc\xb0\xa7\xb6\xdf\xae\xb4\xa8\xc6\xd8\xa5\xaa\xba\xe6\xf8\xbf\xa1\xac\xab\xbb\xa0\xc0\xc3\xf7\xff\xa4\xb7\xc2\xca\xc1\xcb\xc8\xcd\xce\xcf\xcc\xd3\xd4\xd2\xda\xdb\xd9\xaf\xb8\x22\x22\x27\x27-"
 	);
@@ -1107,28 +1108,28 @@ function clean_html_code($uncleanhtml)
 		//Removes all indentation
 		$currentuncleanhtml = preg_replace("/\t+/", "", $currentuncleanhtml);
 		$currentuncleanhtml = preg_replace("/^\s+/", "", $currentuncleanhtml);
-		
+
 		$replaceindent = "";
-		
+
 		//Sets the indentation from current indentlevel
 		for ($o = 0; $o < $indentlevel; $o++)
 		{
 			$replaceindent .= $indent;
 		}
-		
+
 		//If self-closing tag, simply apply indent
 		if (preg_match("/<(.+)\/>/", $currentuncleanhtml))
-		{ 
+		{
 			$cleanhtml_array[$uncleanhtml_key] = $replaceindent.$currentuncleanhtml;
 		}
 		//If doctype declaration, simply apply indent
 		else if (preg_match("/<!(.*)>/", $currentuncleanhtml))
-		{ 
+		{
 			$cleanhtml_array[$uncleanhtml_key] = $replaceindent.$currentuncleanhtml;
 		}
 		//If opening AND closing tag on same line, simply apply indent
 		else if (preg_match("/<[^\/](.*)>/", $currentuncleanhtml) && preg_match("/<\/(.*)>/", $currentuncleanhtml))
-		{ 
+		{
 			$cleanhtml_array[$uncleanhtml_key] = $replaceindent.$currentuncleanhtml;
 		}
 		//If closing HTML tag or closing JavaScript clams, decrease indentation and then apply the new level
@@ -1141,7 +1142,7 @@ function clean_html_code($uncleanhtml)
 		        $replaceindent .= $indent;
 		    }
 
-		    // fix for textarea whitespace and in my opinion nicer looking script tags	
+		    // fix for textarea whitespace and in my opinion nicer looking script tags
 		    if($currentuncleanhtml == '</textarea>' || $currentuncleanhtml == '</script>')
 		    {
 		        $cleanhtml_array[$uncleanhtml_key] = $cleanhtml_array[($uncleanhtml_key - 1)] . $currentuncleanhtml;
@@ -1152,12 +1153,12 @@ function clean_html_code($uncleanhtml)
 		        $cleanhtml_array[$uncleanhtml_key] = $replaceindent.$currentuncleanhtml;
 		    }
 		}
-		
+
 		//If opening HTML tag AND not a stand-alone tag, or opening JavaScript clams, increase indentation and then apply new level
 		else if ((preg_match("/<[^\/](.*)>/", $currentuncleanhtml) && !preg_match("/<(link|meta|base|br|img|hr)(.*)>/", $currentuncleanhtml)) || preg_match("/^(\s|\t)*\{{1}(\s|\t)*$/", $currentuncleanhtml))
 		{
 			$cleanhtml_array[$uncleanhtml_key] = $replaceindent.$currentuncleanhtml;
-			
+
 			$indentlevel++;
 			$replaceindent = "";
 			for ($o = 0; $o < $indentlevel; $o++)
@@ -1170,7 +1171,7 @@ function clean_html_code($uncleanhtml)
 		{$cleanhtml_array[$uncleanhtml_key] = $replaceindent.$currentuncleanhtml;}
 	}
 	//Return single string seperated by newline
-	return implode("\n", $cleanhtml_array);	
+	return implode("\n", $cleanhtml_array);
 }
 
 /**
@@ -1227,7 +1228,7 @@ function findVariants($file) {
 	if($files[$file]['variants']) {
 		return $files[$file]['variants'];
 	}
-	
+
 	if(is_array($allowedvariants[$filetype])) {
 		reset($allowedvariants[$filetype]);
 		foreach($allowedvariants[$filetype] as $variant) {
