@@ -3193,8 +3193,8 @@ if(($sitekeywords || $pagekeywords)) {
 	$cloud = $cloud[0];
 	$steps=5;
 	$i=0;
-	$count=count($cloud);
 	if(is_array($cloud)) {
+		$count=count($cloud);
 		foreach ($cloud as $word => $popular){
 			$p=ceil(($count - $i) * $steps / $count);
 	        $class = "cloud$p";

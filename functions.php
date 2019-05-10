@@ -687,12 +687,12 @@ function getPageSettings($thisdirectory, $store=false)
 		}
 	}
 
-	if($stopnavigation && preg_match(cleanpath("^/$thisdirectory/"), "/$directory/")
+	if($stopnavigation && preg_match("#" . cleanpath("^/$thisdirectory/") . "#", "/$directory/")
 	&& $thisdirectory != $directory) {
 		$isroot=true;
 	}
 	if($isroot) {
-		if (preg_match(cleanpath("^/$thisdirectory/"), "/$directory/")) {
+		if (preg_match("#" . cleanpath("^/$thisdirectory/") . "#", "/$directory/")) {
 			$rootdir=$thisdirectory;
 			$pagesettings=array();
 		} else {
@@ -729,7 +729,7 @@ function getPageSettings($thisdirectory, $store=false)
 	$ignoreAdd=$ignore;
 
 	if($hidden) {
-		if (preg_match(cleanpath("^/$thisdirectory/"), "/$directory/")) {
+		if (preg_match("#" . cleanpath("^/$thisdirectory/") . "#", "/$directory/")) {
 			unset($hidden);
 		}
 	}
