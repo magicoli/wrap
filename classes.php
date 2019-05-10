@@ -19,12 +19,12 @@ class item {
 			}
 			else
 			{
-				$this->url="$protocol://$hostname/" . ereg_replace('^/', '', $file);
+				$this->url="$protocol://$hostname/" . preg_replace('#^/#', '', $file);
 			}
 		}
-		$this->hostname=ereg_replace('/.*', '', ereg_replace('^[a-z]*://', '', $this->url));
-		$this->directory=ereg_replace('^/', '', dirname(ereg_replace('^[a-z]*://[^/]*/', '', $file)));
-		$this->filename=basename(ereg_replace('^[a-z]*://[^/]*/', '', $file));
+		$this->hostname=preg_replace('#/.*#', '', preg_replace('#^[a-z]*://#', '', $this->url));
+		$this->directory=preg_replace('#^/#', '', dirname(preg_replace('#^[a-z]*://[^/]*/#', '', $file)));
+		$this->filename=basename(preg_replace('#^[a-z]*://[^/]*/#', '', $file));
 		$this->localfile=urldecode("$webroot/$this->directory/$this->filename");
 		$this->name=generateFileName($file);
 		$atoms=parseAtom($this->localfile);
@@ -67,7 +67,7 @@ class item {
 			if($value)
 			{
 				$return .= "<div class=info_$key>" 
-				. ereg_replace("\n", "</div><div class=info_$key>", $value)
+				. preg_replace("#\n#", "</div><div class=info_$key>", $value)
 				. "</div>";
 			}
 		}

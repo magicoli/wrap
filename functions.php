@@ -67,7 +67,7 @@ function parseFBEevents ($args) {
 	$monthsnr=array("-01", "-02", "-03", "-04", "-05", "-06", "-07", "-08", "-09", "-10", "-11", "-12");
 
 	$args=func_get_args();
-	eval("\$args=array(" . ereg_replace("\[fbevents:|\]$", "", $args[0][0]) . ");");
+	eval("\$args=array(" . preg_replace("#\[fbevents:|\]$#", "", $args[0][0]) . ");");
 	$eventsurl=$args[0];
 	$eventsurl="${eventsurl}?v=app_2344061033";
 	$eventscount=$args[1];
@@ -90,37 +90,37 @@ function parseFBEevents ($args) {
 
 	$content=decode_unicode_url(str_replace("\u", "%u", $content));
 
-	$content=ereg_replace(".*<div id=\\\\\"future_events\\\\\">", "", $content);
-	$content=ereg_replace("<div id=\\\\\"events_show_past_link\\\\\".*", "", $content);
-	$content=ereg_replace("\\\\/", "/", $content);
-	$content=ereg_replace("\\\\", "", $content);
-	$content=ereg_replace(">", ">\n", $content);
-	$content=ereg_replace("<", "\n<", $content);
-	$content=ereg_replace("\n\n", "\n", $content);
-	$content=ereg_replace("^\n", "", $content);
+	$content=preg_replace("#.*<div id=\\\\\"future_events\\\\\">#", "", $content);
+	$content=preg_replace("#<div id=\\\\\"events_show_past_link\\\\\".*#", "", $content);
+	$content=preg_replace("#\\\\/#", "/", $content);
+	$content=preg_replace("#\\\\#", "", $content);
+	$content=preg_replace("#>#", ">\n", $content);
+	$content=preg_replace("#<#", "\n<", $content);
+	$content=preg_replace("#\n\n#", "\n", $content);
+	$content=preg_replace("#^\n#", "", $content);
 
-	$lines=split("\n", $content);
+	$lines=preg_split("#\n#", $content);
 	foreach ($lines as $line) {
-		$line=ereg_replace("&nbsp[;]*", " ", $line);
-		if(ereg(" class=", $line))
+		$line=preg_replace("#&nbsp[;]*#", " ", $line);
+		if(preg_match("# class=#", $line))
 		{
-			$class=ereg_replace(".* class=\\\"([a-zA-Z0-9_]*)\\\".*", "\\1", $line);
+			$class=preg_replace("#.* class=\\\"([a-zA-Z0-9_]*)\\\".*#", "\\1", $line);
 			if($class=="partyrow") {
-				$eventid=ereg_replace(".* id=\\\"eventrow_([a-zA-Z0-9_]*)\\\".*", "\\1", $line);
+				$eventid=preg_replace("#.* id=\\\"eventrow_([a-zA-Z0-9_]*)\\\".*#", "\\1", $line);
 			}
-		} else if(! ereg("^<", $line)) {
+		} else if(! preg_match("#^<#", $line)) {
 			if($line=="Où :") {
 				$class="place";
-			} else if(ereg("Quand.*:", $line)) {
+			} else if(preg_match("#Quand.*:#", $line)) {
 				$class="datelong";
 			} else if($line!="") {
 				if($eventid) {
 					$events[$eventid][$class]=$line;
 					if($class="datelong") {
-						$date=ereg_replace(" de [0-9]*:[0-9]*.*", "", $line);
+						$date=preg_replace("# de [0-9]*:[0-9]*.*#", "", $line);
 						$date=str_replace($monthsfr, $monthsnr, $date);
 						$events[$eventid]['date']=$date;
-						$events[$eventid]['time']=ereg_replace(".* de ([0-9]*:[0-9]*) .*", "\\1", $line);
+						$events[$eventid]['time']=preg_replace("#.* de ([0-9]*:[0-9]*) .*#", "\\1", $line);
 					}
 				}
 			}
@@ -165,12 +165,12 @@ function parseItunes ($args) {
 	global $br, $config, $session, $debug, $debugmode, $debuginfo;
 	// $monthsnr=array("-01", "-02", "-03", "-04", "-05", "-06", "-07", "-08", "-09", "-10", "-11", "-12");
 	$args=func_get_args();
-	$url=ereg_replace("\[itunes:|\]$", "", $args[0][0]);
+	$url=preg_replace("#\[itunes:|\]$#", "", $args[0][0]);
 	$itunescountry="be";
-	$url=ereg_replace("/[a-z]*/album/", "/album/", $url);
-	$url=ereg_replace("album/", "$itunescountry/album/", $url);
-	$url=ereg_replace("\?.*", "", $url);
-	// $albumid=ereg_replace(".*/album/", "", $url);
+	$url=preg_replace("#/[a-z]*/album/#", "/album/", $url);
+	$url=preg_replace("#album/#", "$itunescountry/album/", $url);
+	$url=preg_replace("#\?.*#", "", $url);
+	// $albumid=preg_replace("#.*/album/#", "", $url);
 	//
 	// echo "album id: $albumid<br>";
 
@@ -185,19 +185,19 @@ function parseItunes ($args) {
 	$content=file_get_contents("$url?l=fr", false, $context);
 	$content=decode_unicode_url(str_replace("\u", "%u", $content));
 
-	if(! ereg("<div class=\"padder\">", $content)) {
+	if(! preg_match("#<div class=\"padder\">#", $content)) {
 		return;
 	}
 
-	$content=ereg_replace(".*<div class=\"padder\">", "", $content);
-	$title=ereg_replace("</h1>.*", "", ereg_replace(".*<h1>", "", $content));
-	$artist=ereg_replace("</h2>.*", "", ereg_replace(".*<h2>", "", $content));
-	$artistlink=ereg_replace("/us/", "/", ereg_replace("\".*", "", ereg_replace(".*href=\"", "", $artist)));
-	$artist=ereg_replace("<[^>]*>", "", $artist);
-	$artwork=ereg_replace("</div>.*", "", ereg_replace(".*<div class=\"artwork\">", "", $content));
-	$albumlink=ereg_replace("\".*", "", ereg_replace(".*\"http://itunes.apple.com/[a-z]*/album/", "http://itunes.apple.com/$itunescountry/album/", $content));
-	$infos=ereg_replace("<a ", "<a target=itunes_store ", ereg_replace("</ul>.*", "", ereg_replace(".*<ul class=\"list\">", "", $content)));
-	// $albumlink=ereg_replace("\".*", "", ereg_replace("<ul role="presentation" class="list"><li><a href=\"", "", $content));
+	$content=preg_replace("#.*<div class=\"padder\">#", "", $content);
+	$title=preg_replace("#</h1>.*#", "", preg_replace("#.*<h1>#", "", $content));
+	$artist=preg_replace("#</h2>.*#", "", preg_replace("#.*<h2>#", "", $content));
+	$artistlink=preg_replace("#/us/#", "/", preg_replace("#\".*#", "", preg_replace("#.*href=\"#", "", $artist)));
+	$artist=preg_replace("#<[^>]*>#", "", $artist);
+	$artwork=preg_replace("#</div>.*#", "", preg_replace("#.*<div class=\"artwork\">#", "", $content));
+	$albumlink=preg_replace("#\".*#", "", preg_replace("#.*\"http://itunes.apple.com/[a-z]*/album/#", "http://itunes.apple.com/$itunescountry/album/", $content));
+	$infos=preg_replace("#<a #", "<a target=itunes_store ", preg_replace("#</ul>.*#", "", preg_replace("#.*<ul class=\"list\">#", "", $content)));
+	// $albumlink=preg_replace("#\".*#", "", preg_replace("#<ul role=#"presentation" class="list"><li><a href=\"", "", $content));
 
 	$html="
 		<h1>$title</h1>
@@ -213,36 +213,36 @@ function parseItunes ($args) {
 	}
 	return "$html";
 
-	$content=ereg_replace("<div id=\\\\\"events_show_past_link\\\\\".*", "", $content);
-	$content=ereg_replace("\\\\/", "/", $content);
-	$content=ereg_replace("\\\\", "", $content);
-	$content=ereg_replace(">", ">\n", $content);
-	$content=ereg_replace("<", "\n<", $content);
-	$content=ereg_replace("\n\n", "\n", $content);
-	$content=ereg_replace("^\n", "", $content);
+	$content=preg_replace("#<div id=\\\\\"events_show_past_link\\\\\".*#", "", $content);
+	$content=preg_replace("#\\\\/#", "/", $content);
+	$content=preg_replace("#\\\\#", "", $content);
+	$content=preg_replace("#>#", ">\n", $content);
+	$content=preg_replace("#<#", "\n<", $content);
+	$content=preg_replace("#\n\n#", "\n", $content);
+	$content=preg_replace("#^\n#", "", $content);
 
-	$lines=split("\n", $content);
+	$lines=preg_split("#\n#", $content);
 	foreach ($lines as $line) {
-		$line=ereg_replace("&nbsp[;]*", " ", $line);
-		if(ereg(" class=", $line))
+		$line=preg_replace("#&nbsp[;]*#", " ", $line);
+		if(preg_match("# class=#", $line))
 		{
-			$class=ereg_replace(".* class=\\\"([a-zA-Z0-9_]*)\\\".*", "\\1", $line);
+			$class=preg_replace("#.* class=\\\"([a-zA-Z0-9_]*)\\\".*#", "\\1", $line);
 			if($class=="partyrow") {
-				$eventid=ereg_replace(".* id=\\\"eventrow_([a-zA-Z0-9_]*)\\\".*", "\\1", $line);
+				$eventid=preg_replace("#.* id=\\\"eventrow_([a-zA-Z0-9_]*)\\\".*#", "\\1", $line);
 			}
-		} else if(! ereg("^<", $line)) {
+		} else if(! preg_match("#^<#", $line)) {
 			if($line=="Où :") {
 				$class="place";
-			} else if(ereg("Quand.*:", $line)) {
+			} else if(preg_match("#Quand.*:#", $line)) {
 				$class="datelong";
 			} else if($line!="") {
 				if($eventid) {
 					$events[$eventid][$class]=$line;
 					if($class="datelong") {
-						$date=ereg_replace(" de [0-9]*:[0-9]*.*", "", $line);
+						$date=preg_replace("# de [0-9]*:[0-9]*.*#", "", $line);
 						$date=str_replace($monthsfr, $monthsnr, $date);
 						$events[$eventid]['date']=$date;
-						$events[$eventid]['time']=ereg_replace(".* de ([0-9]*:[0-9]*) .*", "\\1", $line);
+						$events[$eventid]['time']=preg_replace("#.* de ([0-9]*:[0-9]*) .*#", "\\1", $line);
 					}
 				}
 			}
@@ -286,10 +286,10 @@ function parseItunes ($args) {
 function parseFromTag ($args) {
 	$values=func_get_args();
 	$string=$values[0][0];
-	$string=eregi_replace("\[rss:(.*)\]", "\\1", $string);
-	$string=ereg_replace('"', '', $string);
-	$string=ereg_replace(',[ ]*', ',', $string);
-	$args=split(',', $string);
+	$string=preg_replace("#\[rss:(.*)\]#i", "\\1", $string);
+	$string=preg_replace('#"#', '', $string);
+	$string=preg_replace('#,[ ]*#', ',', $string);
+	$args=preg_split('#,#', $string);
 	$result=parseRDFtoVar($args[0],$args[1],$args[2],$args[3], $args[4]);
 	if ($result)
 	{
@@ -304,15 +304,15 @@ function parsePlaylists($args) {
 	if(!is_array($args)) {
 		return;
 	}
-	$params=split(",",$args[1]);
+	$params=preg_split("#,#",$args[1]);
 	$section=$params[0];
 	if($section=="*") $section="untitled";
 	if(isset($sections[$section])) {
 		$html=$sections[$section];
-		$html=ereg_replace("<h2 .*</h2>", "", $html);
+		$html=preg_replace("#<h2 .*</h2>#", "", $html);
 		unset($sections[$section]);
 		if(isset($params[1])) {
-			$html=ereg_replace("<div class=[']*section[']* ", "<div class='section' style='$params[1]'", $html);
+			$html=preg_replace("#<div class=[']*section[']* #", "<div class='section' style='$params[1]'", $html);
 		}
 	}
 #	echo $sections[$section];
@@ -323,10 +323,10 @@ function parsePlaylists($args) {
 function parseWeather ($args) {
 	$values=func_get_args();
 	$string=$values[0][0];
-	$string=eregi_replace("\[weather:(.*)\]", "\\1", $string);
-	$string=ereg_replace('"', '', $string);
-	$string=ereg_replace(',[ ]*', ',', $string);
-	$args=split(',', $string);
+	$string=preg_replace("#\[weather:(.*)\]#i", "\\1", $string);
+	$string=preg_replace('#"#', '', $string);
+	$string=preg_replace('#,[ ]*#', ',', $string);
+	$args=preg_split('#,#', $string);
 	#http://weather.yahooapis.com/forecastrss?w=80897&u=c
 
 	# yahoo						80897		615702
@@ -336,10 +336,10 @@ function parseWeather ($args) {
 		$result=parseRDFtoVar("http://weather.yahooapis.com/forecastrss?w=80897&u=c");
 		if ($result)
 		{
-			$city=ereg_replace(".*Conditions for ([^,]*),.*", "\\1", $result);
-			$current=ereg_replace(".*Current Conditions[^0-9]*([0-9]*).*", "\\1", $result);
-			$max=ereg_replace(".*High: ([-0-9]*).*", "\\1", $result);
-			$min=ereg_replace(".*Low: ([-0-9]*).*", "\\1", $result);
+			$city=preg_replace("#.*Conditions for ([^,]*),.*#", "\\1", $result);
+			$current=preg_replace("#.*Current Conditions[^0-9]*([0-9]*).*#", "\\1", $result);
+			$max=preg_replace("#.*High: ([-0-9]*).*#", "\\1", $result);
+			$min=preg_replace("#.*Low: ([-0-9]*).*#", "\\1", $result);
 			$html.="
 				<div class=values>
 					<div class=city>$city</div>
@@ -375,34 +375,34 @@ function reformatFile($file) {
 	if(count($lines) > 0) {
 		$formattedText=implode("<br>", $lines);
 		$formattedText=trim($formattedText);
-		$formattedText=ereg_replace("\r\n", "\n", $formattedText);
-		$formattedText=eregi_replace("\n\<br\>\n\<br\>", "</p>\n<p>", $formattedText);
-		$formattedText=eregi_replace("(\<div[^\<\>]*\>)\n\<br\>", "\\1\n", $formattedText);
-		$formattedText=eregi_replace("(\<br[^\<\>]*\>)<div", "<div", $formattedText);
-		$formattedText=eregi_replace("(\<[/]*[ph][0-9]*[^\<\>]*\>)\n\<br\>", "\\1\n", $formattedText);
-		$formattedText=eregi_replace("\<br\>(\<[/]*div)", "\\1", $formattedText);
-		$formattedText=eregi_replace("\<br\>(\<[/]*[ph])", "\\1", $formattedText);
-		$formattedText=eregi_replace("(\<[/]*ul[^\<\>]*\>)\n\<br\>", "\\1\n", $formattedText);
-		$formattedText=eregi_replace("\<br\>(\<[/]*ul)", "\\1", $formattedText);
-		$formattedText=eregi_replace("(\<[/]*ol[^\<\>]*\>)\n\<br\>", "\\1\n", $formattedText);
-		$formattedText=eregi_replace("\<br\>(\<[/]*ol)", "\\1", $formattedText);
-		$formattedText=eregi_replace("(\<[/]*li[^\<\>]*\>)[\n\t ]*\<br\>", "\\1\n", $formattedText);
-		$formattedText=eregi_replace("\<br\>[ \t]*(\<[/]*li)", "\\1", $formattedText);
-		$formattedText=eregi_replace("(\<[/]*t[rdh][^\<\>]*\>)[\n\t ]*\<br\>", "\\1\n", $formattedText);
-		$formattedText=eregi_replace("\<br\>[ \t]*(\<[/]*t[rdh])", "\\1", $formattedText);
-		$formattedText=eregi_replace("<p>[\n]*(\<h[0-9][^\<\>]*\>)", "\\1", $formattedText);
-		$formattedText=eregi_replace("(\</h[0-9][^\<\>]*\>)[\n]*</p>", "\\1", $formattedText);
-		$formattedText=eregi_replace("<p>\n\n*", "<p>", $formattedText);
-		$formattedText=eregi_replace("\n\n*</p>", "</p>", $formattedText);
-		$formattedText=eregi_replace("<div>", "<div>\n", $formattedText);
-		$formattedText=eregi_replace("\n*</div>", "</div>", $formattedText);
+		$formattedText=preg_replace("#\r\n#", "\n", $formattedText);
+		$formattedText=preg_replace("#\n\<br\>\n\<br\>#i", "</p>\n<p>", $formattedText);
+		$formattedText=preg_replace("#(\<div[^\<\>]*\>)\n\<br\>#i", "\\1\n", $formattedText);
+		$formattedText=preg_replace("#(\<br[^\<\>]*\>)<div#i", "<div", $formattedText);
+		$formattedText=preg_replace("#(\<[/]*[ph][0-9]*[^\<\>]*\>)\n\<br\>#i", "\\1\n", $formattedText);
+		$formattedText=preg_replace("#\<br\>(\<[/]*div)#i", "\\1", $formattedText);
+		$formattedText=preg_replace("#\<br\>(\<[/]*[ph])#i", "\\1", $formattedText);
+		$formattedText=preg_replace("#(\<[/]*ul[^\<\>]*\>)\n\<br\>#i", "\\1\n", $formattedText);
+		$formattedText=preg_replace("#\<br\>(\<[/]*ul)#i", "\\1", $formattedText);
+		$formattedText=preg_replace("#(\<[/]*ol[^\<\>]*\>)\n\<br\>#i", "\\1\n", $formattedText);
+		$formattedText=preg_replace("#\<br\>(\<[/]*ol)#i", "\\1", $formattedText);
+		$formattedText=preg_replace("#(\<[/]*li[^\<\>]*\>)[\n\t ]*\<br\>#i", "\\1\n", $formattedText);
+		$formattedText=preg_replace("#\<br\>[ \t]*(\<[/]*li)#i", "\\1", $formattedText);
+		$formattedText=preg_replace("#(\<[/]*t[rdh][^\<\>]*\>)[\n\t ]*\<br\>#i", "\\1\n", $formattedText);
+		$formattedText=preg_replace("#\<br\>[ \t]*(\<[/]*t[rdh])#i", "\\1", $formattedText);
+		$formattedText=preg_replace("#<p>[\n]*(\<h[0-9][^\<\>]*\>)#i", "\\1", $formattedText);
+		$formattedText=preg_replace("#(\</h[0-9][^\<\>]*\>)[\n]*</p>#i", "\\1", $formattedText);
+		$formattedText=preg_replace("#<p>\n\n*#i", "<p>", $formattedText);
+		$formattedText=preg_replace("#\n\n*</p>#i", "</p>", $formattedText);
+		$formattedText=preg_replace("#<div>#i", "<div>\n", $formattedText);
+		$formattedText=preg_replace("#\n*</div>#i", "</div>", $formattedText);
 	}
-	$lines=split("\n", $formattedText);
+	$lines=preg_split("#\n#", $formattedText);
 	$lastline=count($lines) - 1;
-	if(!ereg("^<p[ >]|^<div[ >]|^<h[0-9]*[ >]", $lines[0])) {
+	if(!preg_match("#^<p[ >]|^<div[ >]|^<h[0-9]*[ >]#", $lines[0])) {
 		$lines[0]="<p>" . $lines[0];
 	}
-	if(ereg("^<p>", $lines[$lastline]) &! ereg("</p>$", $lastline)) {
+	if(preg_match("#^<p>#", $lines[$lastline]) &! preg_match("#</p>$#", $lastline)) {
 		$lines[$lastline].="</p>";
 	}
 #	 . "</p>Voilà";
@@ -443,7 +443,7 @@ function debug($string, $style="new") {
 
 function is_external($file)
 {
-	if (ereg('^[a-z]*://', $file))
+	if (preg_match('#^[a-z]*://#', $file))
 	{
 		return true;
 	}
@@ -460,7 +460,7 @@ function is_playable($file)
 	reset($playable);
 	while(list($key, $extention)=each($playable))
 	{
-		if(ereg("$extention$", $file))
+		if(preg_match("#$extention$#", $file))
 		{
 			return true;
 		}
@@ -478,7 +478,7 @@ function is_downloadable($file)
 	reset($downloadable);
 	while(list($key, $extention)=each($downloadable))
 	{
-		if(ereg("$extention$", $file))
+		if(preg_match("#$extention$#", $file))
 		{
 			return true;
 		}
@@ -488,7 +488,7 @@ function is_downloadable($file)
 
 function rewritelink()
 {
-	$request = cleanpath(ereg_replace('\?.*', '', getenv('REQUEST_URI')));
+	$request = cleanpath(preg_replace('#\?.*#', '', getenv('REQUEST_URI')));
 	return $request;
 }
 
@@ -499,32 +499,32 @@ function rewritelinkid($id)
 
 function urlsafe($string)
 {
-	return ereg_replace("%2F", "/", rawurlencode(ereg_replace('//', '/', $string)));
+	return preg_replace("#%2F#", "/", rawurlencode(preg_replace('#//#', '/', $string)));
 }
 
 function quotesafe($string)
 {
-	return ereg_replace('"', '&quot;', $string);
+	return preg_replace('#"#', '&quot;', $string);
 }
 
 function htmlsafe($string)
 {
 	// return htmlentities(utf8_decode($string));
-	$string=ereg_replace("&", "&amp;", $string);
+	$string=preg_replace("#&#", "&amp;", $string);
 	return $string;
 }
 
 function xmlsafe($string)
 {
 	// return htmlentities(utf8_decode($string));
-#	$string=ereg_replace("<?*>", " ", $htmlsafe($string));
-	$string=ereg_replace('<br>', '<br/>', $string);
-	$string=ereg_replace('<br/>', ' <br/>', $string);
+#	$string=preg_replace("#<?*>#", " ", $htmlsafe($string));
+	$string=preg_replace('#<br>#', '<br/>', $string);
+	$string=preg_replace('#<br/>#', ' <br/>', $string);
 #	$string=htmlentities(utf8_decode($string));
 #	$string=htmlentities(utf8_decode($string));
-#	$string=ereg_replace("\\\'", "",trim($string));
-#	$string=ereg_replace("\'", "",trim($string));
-#	$string=ereg_replace("<br>", " ",trim($string));
+#	$string=preg_replace("#\\\'#", "",trim($string));
+#	$string=preg_replace("#\'#", "",trim($string));
+#	$string=preg_replace("#<br>#", " ",trim($string));
 #	$string=htmlsafe($string);
 	return $string;
 }
@@ -539,17 +539,17 @@ function processtags($type, $data)
 		$html=$data;
 		while(list($key, $value)=each($type))
 		{
-			if(is_array($value)) continue;
-			$html=ereg_replace("\[$key\]", $value, $html);
+			if(!is_string($value)) continue;
+			$html=preg_replace("#\[$key\]#", $value, $html);
 		}
 	}
 	else if($format[$type])
 	{
 		if (is_string($data) && $data != "")
 		{
-			if (ereg("\[$type\]", $format[$type]))
+			if (preg_match("#\[$type\]#", $format[$type]))
 			{
-				$html=ereg_replace("\[$type\]", $data, $format[$type]);
+				$html=preg_replace("#\[$type\]#", $data, $format[$type]);
 			}
 		}
 	}
@@ -557,38 +557,38 @@ function processtags($type, $data)
 }
 
 function removeChordPro($string) {
-	$string=ereg_replace("{sot}", "", $string);
-	$string=ereg_replace("{eot}", "", $string);
-	$string=ereg_replace("[\n ]*{t:[^}]*}[\n ]*<br>", "", $string);
-	$string=ereg_replace("[\n ]*{c:([^}]*)}[\n ]*", "<p class=author>\\1</p>", $string);
-	$string=ereg_replace("[\n ]*{key:([^}]*)}[\n ]*", "", $string);
-	$string=ereg_replace("\[([A-G][a-z0-9#]*)\]", "", $string);
-	$string=ereg_replace("[\n ]*{t:[^}]*}[\n ]*<br>", "", $string);
-	$string=ereg_replace("[\n ]*{[rR]}[\n ]*", "<p class=chorus>", $string);
-	$string=ereg_replace("[\n ]*{[^}]*}[\n ]*", "", $string);
-	$string=ereg_replace("<p><p(>| [^>]*)>", "<p\\1>", $string);
-	$string=ereg_replace("<p(>| [^>]*)><br>", "<p\\1>", $string);
-	$string=ereg_replace("<br></p>", "</p>", $string);
-	$string=ereg_replace("</p><br><p(>| [^>]*)>", "<p\\1>", $string);
+	$string=preg_replace("#{sot}#", "", $string);
+	$string=preg_replace("#{eot}#", "", $string);
+	$string=preg_replace("#[\n ]*{t:[^}]*}[\n ]*<br>#", "", $string);
+	$string=preg_replace("#[\n ]*{c:([^}]*)}[\n ]*#", "<p class=author>\\1</p>", $string);
+	$string=preg_replace("#[\n ]*{key:([^}]*)}[\n ]*#", "", $string);
+	$string=preg_replace("#\[([A-G][a-z0-9#]*)\]#", "", $string);
+	$string=preg_replace("#[\n ]*{t:[^}]*}[\n ]*<br>#", "", $string);
+	$string=preg_replace("#[\n ]*{[rR]}[\n ]*#", "<p class=chorus>", $string);
+	$string=preg_replace("#[\n ]*{[^}]*}[\n ]*#", "", $string);
+	$string=preg_replace("#<p><p(>| [^>]*)>#", "<p\\1>", $string);
+	$string=preg_replace("#<p(>| [^>]*)><br>#", "<p\\1>", $string);
+	$string=preg_replace("#<br></p>#", "</p>", $string);
+	$string=preg_replace("#</p><br><p(>| [^>]*)>#", "<p\\1>", $string);
 	return $string;
 }
 
 function processChordPro($string) {
-	$string=ereg_replace("{sot}", "<pre>", $string);
-	$string=ereg_replace("{eot}", "</pre>", $string);
-	$string=ereg_replace("[\n ]*{t:[^}]*}[\n ]*<br>", "", $string);
-	$string=ereg_replace("[\n ]*{c:([^}]*)}[\n ]*", "<p class=author>\\1</p>", $string);
-	$string=ereg_replace("[\n ]*{key:([^}]*)}[\n ]*", "<p class=key>" . localise("Key") . ": \\1</p>", $string);
-	// $string=ereg_replace("{t:[^}]*}\n*</p>\n*", "", $string);
-	// $string=ereg_replace("{t:[^}]*}\n*", "", $string);
+	$string=preg_replace("#{sot}#", "<pre>", $string);
+	$string=preg_replace("#{eot}#", "</pre>", $string);
+	$string=preg_replace("#[\n ]*{t:[^}]*}[\n ]*<br>#", "", $string);
+	$string=preg_replace("#[\n ]*{c:([^}]*)}[\n ]*#", "<p class=author>\\1</p>", $string);
+	$string=preg_replace("#[\n ]*{key:([^}]*)}[\n ]*#", "<p class=key>" . localise("Key") . ": \\1</p>", $string);
+	// $string=preg_replace("#{t:[^}]*}\n*</p>\n*#", "", $string);
+	// $string=preg_replace("#{t:[^}]*}\n*#", "", $string);
 	// bemol 9837
 	// becare 9838
 	// diese #9839;
-	$string=ereg_replace("\[([A-G])#([a-z0-9]*)\]", "<span class=chord>\\1&#9839;\\2</span>", $string);
-	$string=ereg_replace("\[([A-G])b([a-z0-9]*)\]", "<span class=chord>\\1&#9837;\\2</span>", $string);
-	$string=ereg_replace("\[([A-G][a-z0-9]*)\]", "<span class=chord>\\1</span>", $string);
-	$string=ereg_replace("[\n ]*{t:[^}]*}[\n ]*<br>", "", $string);
-	$string=ereg_replace("</p><br><p", "<p", $string);
+	$string=preg_replace("#\[([A-G])#([a-z0-9]*)\]#", "<span class=chord>\\1&#9839;\\2</span>", $string);
+	$string=preg_replace("#\[([A-G])b([a-z0-9]*)\]#", "<span class=chord>\\1&#9837;\\2</span>", $string);
+	$string=preg_replace("#\[([A-G][a-z0-9]*)\]#", "<span class=chord>\\1</span>", $string);
+	$string=preg_replace("#[\n ]*{t:[^}]*}[\n ]*<br>#", "", $string);
+	$string=preg_replace("#</p><br><p#", "<p", $string);
 	return $string;
 }
 
@@ -598,10 +598,10 @@ function getPageSettings($thisdirectory, $store=false)
 	// $thisdirectory=urldecode($thisdirectory);
 	$traces=debug_backtrace();
 	$callline=$traces[0]['line'];
-	$thisdirectory=ereg_replace("[\?\$].*", "", $thisdirectory);
+	$thisdirectory=preg_replace("#[\?\$].*#", "", $thisdirectory);
 	$thisdirectory=cleanpath($thisdirectory);
-	$thisdirectory=ereg_replace("^/*", "", $thisdirectory);
-	$thisdirectory=ereg_replace("/*$", "", $thisdirectory);
+	$thisdirectory=preg_replace("#^/*#", "", $thisdirectory);
+	$thisdirectory=preg_replace("#/*$#", "", $thisdirectory);
 	$parent=dirname($thisdirectory);
 	if($parent==".") $parent="";
 	if($parent!=$thisdirectory && $pagesettings[$parent]['stopnavigation']) {
@@ -622,7 +622,7 @@ function getPageSettings($thisdirectory, $store=false)
 
 	if(is_file($playlist))
 	{
-		$playlisttype=ereg_replace(".*\.", "", "$playlist");
+		$playlisttype=preg_replace("#.*\.#", "", "$playlist");
 		switch ($playlisttype) {
 			case "php":
 			include_once($playlist);
@@ -665,13 +665,13 @@ function getPageSettings($thisdirectory, $store=false)
 		if(empty($pagetitle)) {
 			$pagetitle="&nbsp;";
 		}
-		$pagetitle=ereg_replace("</*p[^>]*>", "", $pagetitle);
-		$pagetitle=ereg_replace("^\n*", "", $pagetitle);
-		$pagetitle=ereg_replace("\n*$", "", $pagetitle);
+		$pagetitle=preg_replace("#</*p[^>]*>#", "", $pagetitle);
+		$pagetitle=preg_replace("#^\n*#", "", $pagetitle);
+		$pagetitle=preg_replace("#\n*$#", "", $pagetitle);
 	}
 
-	if(!ereg("^$rootdir/", "$thisdirectory/")) {
-		if($isroot && ereg($thisdirectory,$directory) &! $rootdir) {
+	if(!preg_match("#^$rootdir/#", "$thisdirectory/")) {
+		if($isroot && preg_match("#$thisdirectory#",$directory) &! $rootdir) {
 			$store=true;
 		} else if(! $root) {
 			$store=true;
@@ -682,30 +682,30 @@ function getPageSettings($thisdirectory, $store=false)
 	if(is_file("$webroot/$thisdirectory/browser.html"))
 	{
 		$template=cleanpath("$webroot/$thisdirectory/browser.html");
-		if(ereg("^$thisdirectory", "$directory")) {
+		if(preg_match("#^$thisdirectory#", "$directory")) {
 			$checktemplate["./"]=$template;
 		}
 	}
 
-	if($stopnavigation && ereg(cleanpath("^/$thisdirectory/"), "/$directory/")
+	if($stopnavigation && preg_match(cleanpath("^/$thisdirectory/"), "/$directory/")
 	&& $thisdirectory != $directory) {
 		$isroot=true;
 	}
 	if($isroot) {
-		if (ereg(cleanpath("^/$thisdirectory/"), "/$directory/")) {
+		if (preg_match(cleanpath("^/$thisdirectory/"), "/$directory/")) {
 			$rootdir=$thisdirectory;
 			$pagesettings=array();
 		} else {
 			return;
 		}
 	}
-	if(ereg("\|", $thisdirectory)) {
+	if(preg_match("#\|#", $thisdirectory)) {
 		$handleastitle=true;
 	}
 	if($handleastitle) {
 		$menutitle=firstValidValue($menutitle, $pagetitle, " ");
-		$pagetitle=$menutitle . "[" . ereg_replace("\|", "", $thisdirectory). "]";
-		// $menutitle=firstValidValue($menutitle, "sep[" . ereg_replace("\|", "", $thisdirectory). "]");
+		$pagetitle=$menutitle . "[" . preg_replace("#\|#", "", $thisdirectory). "]";
+		// $menutitle=firstValidValue($menutitle, "sep[" . preg_replace("#\|#", "", $thisdirectory). "]");
 		$store=true;
 	}
 	$pagetitle=firstValidValue($pagetitle, generateFolderName($thisdirectory));
@@ -717,24 +717,24 @@ function getPageSettings($thisdirectory, $store=false)
 	$headstyle=$saved_headstyle;
 
 
-	$level=substr_count(ereg_replace("^$rootdir/", "", $thisdirectory), "/") + 1;
+	$level=substr_count(preg_replace("#^$rootdir/#", "", $thisdirectory), "/") + 1;
 	if($thisdirectory==$rootdir) {
 		$level=1;
 	}
 
-	if(!isset($noindex) && ereg("^_", basename($thisdirectory))) {
+	if(!isset($noindex) && preg_match("#^_#", basename($thisdirectory))) {
 		$noindex=true;
 	}
 
 	$ignoreAdd=$ignore;
 
 	if($hidden) {
-		if (ereg(cleanpath("^/$thisdirectory/"), "/$directory/")) {
+		if (preg_match(cleanpath("^/$thisdirectory/"), "/$directory/")) {
 			unset($hidden);
 		}
 	}
 
-	if(ereg("^\.", "$thisdirectory")) $store=false;
+	if(preg_match("#^\.#", "$thisdirectory")) $store=false;
 	if($store) {
 		unset($ignore);
 
@@ -742,9 +742,9 @@ function getPageSettings($thisdirectory, $store=false)
 
 		unset($pagesettings[$thisdirectory]['pagesettings']);
 		unset($pagesettings[$thisdirectory]['store']);
-		if(ereg("^$thisdirectory/", "$directory/")) { $scanbelow=true; }
-		if(ereg("^$directory/", "$thisdirectory/")) { $scanbelow=true; }
-		if(ereg("^$directory/.*/", "$thisdirectory/")) { $scanbelow=false; }
+		if(preg_match("#^$thisdirectory/#", "$directory/")) { $scanbelow=true; }
+		if(preg_match("#^$directory/#", "$thisdirectory/")) { $scanbelow=true; }
+		if(preg_match("#^$directory/.*/#", "$thisdirectory/")) { $scanbelow=false; }
 		if("$thisdirectory/"=="$rootdir/") { $scanbelow=true; }
 		if($directory==$rootdir && $thisdirectory != $rootdir) $scanbelow=false;
 		if($stopnavigation) {
@@ -789,14 +789,14 @@ function titelize($string)
 {
 	global $capitalizetitle, $stripnumber;
 
-	$string=ereg_replace('([a-z])([A-Z0-9])', '\\1 \\2', $string);
-	$string=ereg_replace('([0-9])([a-zA-Z])', '\\1 \\2', $string);
-	$string=ereg_replace('_', ' ', $string);
-	$string=trim(ereg_replace('  ', ' ', $string));
-	$string=ereg_replace('^0*', '', $string);
+	$string=preg_replace('#([a-z])([A-Z0-9])#', '\\1 \\2', $string);
+	$string=preg_replace('#([0-9])([a-zA-Z])#', '\\1 \\2', $string);
+	$string=preg_replace('#_#', ' ', $string);
+	$string=trim(preg_replace('#  #', ' ', $string));
+	$string=preg_replace('#^0*#', '', $string);
 	if($stripnumber)
 	{
-		$string=ereg_replace('^[0-9]*[-\. ]', '', $string);
+		$string=preg_replace('#^[0-9]*[-\. ]#', '', $string);
 	}
 	if(!isset($capitalizetitle) || $capitalizetitle) {
 		$string=ucfirst($string);
@@ -814,7 +814,7 @@ function matchesIgnorePattern($entry)
 		reset($ignore);
 		while(list($key, $pattern)=each($ignore))
 		{
-			if(ereg("^$pattern$", $entry))
+			if(preg_match("#^$pattern$#", $entry))
 			{
 				return true;
 			}
@@ -830,7 +830,7 @@ function matchesPattern($entry, $patterns)
 		reset($patterns);
 		while(list($key, $pattern)=each($patterns))
 		{
-			if(ereg("^$pattern$", $entry))
+			if(preg_match("#^$pattern$#", $entry))
 			{
 				return true;
 			}
@@ -842,20 +842,20 @@ function matchesPattern($entry, $patterns)
 function generateFileName($file)
 {
 	global $stripnumber, $allowedvariants, $mimetypes;
-	$extension=strtolower(ereg_replace('^.*\.', '', $file));
-	$filetype=ereg_replace("/.*", "", $mimetypes[$extension]);
+	$extension=strtolower(preg_replace('#^.*\.#', '', $file));
+	$filetype=preg_replace("#/.*#", "", $mimetypes[$extension]);
 
 	$file=stripVariantSuffix($file);
 	// if($allowedvariants[$filetype]) {
 	// 	foreach($allowedvariants[$filetype] as $variant) {
-	// 		$file=ereg_replace("-$variant\.$extension$", ".$extension", $file);
+	// 		$file=preg_replace("#-$variant\.$extension$#", ".$extension", $file);
 	// 	}
 	// }
 
-	$name=titelize(ereg_replace('\.[a-zA_Z0-9]*$', '', urldecode(basename($file))));
+	$name=titelize(preg_replace('#\.[a-zA_Z0-9]*$#', '', urldecode(basename($file))));
 	// if($stripnumber)
 	// {
-	// 	$name=ereg_replace('^[0-9]*[-\. ]', '', $name);
+	// 	$name=preg_replace('#^[0-9]*[-\. ]#', '', $name);
 	// }
 	return $name;
 }
@@ -872,9 +872,9 @@ function generateFolderName($folder)
 			return "$sitetitle";
 		}
 		$foldername=$hostname;
-		$foldername=ereg_replace('\.[a-zA-Z]*$', '', $foldername);
-		$foldername=ereg_replace('^www\.', '', $foldername);
-		$foldername=ereg_replace('\.', ' ', $foldername);
+		$foldername=preg_replace('#\.[a-zA-Z]*$#', '', $foldername);
+		$foldername=preg_replace('#^www\.#', '', $foldername);
+		$foldername=preg_replace('#\.#', ' ', $foldername);
 	}
 
 	if(!$foldername)
@@ -883,7 +883,7 @@ function generateFolderName($folder)
 	}
 	if($stripnumber)
 	{
-		$foldername=ereg_replace('^[0-9]*[-\. ]', '', $foldername);
+		$foldername=preg_replace('#^[0-9]*[-\. ]#', '', $foldername);
 	}
 
 	$pagetitle=titelize($foldername);
@@ -913,12 +913,12 @@ function parseAtom($file)
 		//	echo "$execReturn: /usr/local/bin/AtomicParsley '$file' -t<br>";
 		while(list($key, $line)=each($output))
 		{
-			if(ereg("Atom.*contains:", $line))
+			if(preg_match("#Atom.*contains:#", $line))
 			{
-				//		$lineparts=split(':', $outputlines);
-				$split=split('"', $line);
+				//		$lineparts=preg_split('#:#', $outputlines);
+				$split=preg_split('#"#', $line);
 				$arg=$split[1];
-				$value=ereg_replace('.*contains:', '', $line);
+				$value=preg_replace('#.*contains:#', '', $line);
 				$return[$arg]=$value;
 				$lastarg=$arg;
 			}
@@ -942,8 +942,8 @@ function parseAtom($file)
 		//	echo "$execReturn: /usr/local/bin/AtomicParsley '$file' -t<br>";
 		while(list($key, $line)=each($output))
 		{
-			//		$lineparts=split(':', $outputlines);
-			$split=split(':', trim($line));
+			//		$lineparts=preg_split('#:#', $outputlines);
+			$split=preg_split('#:#', trim($line));
 			$arg=strtolower(array_shift($split));
 			$value=join(":", $split);
 			$return[$arg]=$value;
@@ -1060,36 +1060,36 @@ function fix_newlines_for_clean_html($fixthistext)
 }
 
 function cleanpath($string, $removetrailing=false) {
-	$string=ereg_replace("//*", "/", $string);
+	$string=preg_replace("#//*#", "/", $string);
 	if($removetrailing) {
-		$string=ereg_replace("/$", "", $string);
+		$string=preg_replace("#/$#", "", $string);
 	}
 	return $string;
 }
 function htmltotext($string) {
-	$string=ereg_replace("\n", " ", $string);
-	$string=ereg_replace("  *", " ", $string);
-	// $string=ereg_replace("> ", ">", $string);
-	// $string=ereg_replace(" <", "<", $string);
-	$string=ereg_replace("> *<", "><", $string);
-	$string=ereg_replace("^ ", "", $string);
-	$string=ereg_replace("<p></p>", "", $string);
-	$string=ereg_replace("</p><p>", "\n\n", $string);
-	$string=ereg_replace("<p>", "\n\n", $string);
-	$string=ereg_replace("</p>", "\n\n", $string);
-	$string=ereg_replace("<br>", "\n", $string);
-	$string=ereg_replace("(<h[0-9]>)", "\n\\1", $string);
-	$string=ereg_replace("(</h[0-9]>)", "\\1\n\n", $string);
-	$string=ereg_replace("</li><li>", "</li>\n<li>", $string);
-	$string=ereg_replace("</li></ul>", "</li></ul>\n\n", $string);
-	$string=ereg_replace("<ul><li>", "\n\n<ul><li>", $string);
-	$string=ereg_replace("<div>", "\n\n<div>", $string);
-	$string=ereg_replace("</div>", "</div>\n\n", $string);
-	$string=ereg_replace(" *\n", "\n", $string);
-	$string=ereg_replace("\n *", "\n", $string);
-	$string=ereg_replace("\n\n\n\n*", "\n\n", $string);
-	$string=ereg_replace("^\n*", "", $string);
-	$string=ereg_replace("\n*$", "", $string);
+	$string=preg_replace("#\n#", " ", $string);
+	$string=preg_replace("#  *#", " ", $string);
+	// $string=preg_replace("#> #", ">", $string);
+	// $string=preg_replace("# <#", "<", $string);
+	$string=preg_replace("#> *<#", "><", $string);
+	$string=preg_replace("#^ #", "", $string);
+	$string=preg_replace("#<p></p>#", "", $string);
+	$string=preg_replace("#</p><p>#", "\n\n", $string);
+	$string=preg_replace("#<p>#", "\n\n", $string);
+	$string=preg_replace("#</p>#", "\n\n", $string);
+	$string=preg_replace("#<br>#", "\n", $string);
+	$string=preg_replace("#(<h[0-9]>)#", "\n\\1", $string);
+	$string=preg_replace("#(</h[0-9]>)#", "\\1\n\n", $string);
+	$string=preg_replace("#</li><li>#", "</li>\n<li>", $string);
+	$string=preg_replace("#</li></ul>#", "</li></ul>\n\n", $string);
+	$string=preg_replace("#<ul><li>#", "\n\n<ul><li>", $string);
+	$string=preg_replace("#<div>#", "\n\n<div>", $string);
+	$string=preg_replace("#</div>#", "</div>\n\n", $string);
+	$string=preg_replace("# *\n#", "\n", $string);
+	$string=preg_replace("#\n *#", "\n", $string);
+	$string=preg_replace("#\n\n\n\n*#", "\n\n", $string);
+	$string=preg_replace("#^\n*#", "", $string);
+	$string=preg_replace("#\n*$#", "", $string);
 	return $string;
 }
 function clean_html_code($uncleanhtml)
@@ -1205,14 +1205,14 @@ function user_agent() {
 
 function stripVariantSuffix($file) {
 	global $mimetypes, $allowedvariants;
-	$extension=strtolower(ereg_replace('^.*\.', '', $file));
-	$filetype=ereg_replace("/.*", "", $mimetypes[$extension]);
+	$extension=strtolower(preg_replace('#^.*\.#', '', $file));
+	$filetype=preg_replace("#/.*#", "", $mimetypes[$extension]);
 
 	if(is_array($allowedvariants[$filetype])) {
 		reset($allowedvariants[$filetype]);
 
 		foreach($allowedvariants[$filetype] as $variant) {
-			$file=ereg_replace("-$variant\.$extension$", ".$extension", $file);
+			$file=preg_replace("#-$variant\.$extension$#", ".$extension", $file);
 		}
 	}
 	return $file;
@@ -1220,8 +1220,8 @@ function stripVariantSuffix($file) {
 
 function findVariants($file) {
 	global $webroot, $aliasroot, $mimetypes, $allowedvariants, $files;
-	$extension=strtolower(ereg_replace('^.*\.', '', $file));
-	$filetype=ereg_replace("/.*", "", $mimetypes[$extension]);
+	$extension=strtolower(preg_replace('#^.*\.#', '', $file));
+	$filetype=preg_replace("#/.*#", "", $mimetypes[$extension]);
 
 	$file=stripVariantSuffix($file);
 
@@ -1233,10 +1233,10 @@ function findVariants($file) {
 		reset($allowedvariants[$filetype]);
 		foreach($allowedvariants[$filetype] as $variant) {
 			$foundvariants[$variant]=firstValidFile(
-				ereg_replace("\.$extension$", "-$variant.$extension", $file),
-				ereg_replace("\.$extension$", "-$variant.mov", $file),
-				ereg_replace("\.$extension$", "-$variant.mp4", $file),
-				ereg_replace("\.$extension$", "-$variant.m4v", $file)
+				preg_replace("#\.$extension$#", "-$variant.$extension", $file),
+				preg_replace("#\.$extension$#", "-$variant.mov", $file),
+				preg_replace("#\.$extension$#", "-$variant.mp4", $file),
+				preg_replace("#\.$extension$#", "-$variant.m4v", $file)
 			);
 			if($foundvariants[$variant]=="") {
 				unset($foundvariants[$variant]);
