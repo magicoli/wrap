@@ -1466,7 +1466,7 @@ if ($d)
 						$foundsomethingtoplay=true;
 					}
 				}
-				$if=count($index);
+				// $if=count($index);
 				$index[]=$file;
 				$playlistindex[]=$file;
 				// echo "$if: $index[$if]<br>";
@@ -1659,7 +1659,7 @@ foreach($wrap_editable_parts as $part) {
 	// eval("\$$part=ereg_replace('\[', '&#91;', \$$part);");
 }
 
-if(count($subdirs) > $maxchilds)
+if(is_array($subdirs) && count($subdirs) > $maxchilds)
 {
 	$menuchilds=false;
 }
@@ -2220,7 +2220,7 @@ if(is_array($names))
 			$itemlinkout="</a>";
 		}
 
-		if (count($downloadFiles[$file]) > 1) {
+		if (is_array($downloadFiles[$file]) && count($downloadFiles[$file]) > 1) {
 			$buttonlinks = "
 				<div class='links'>";
 			reset($downloadFiles[$file]);
