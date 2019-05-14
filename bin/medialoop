@@ -18,7 +18,7 @@ do
   [ $count -ge $min2copy ] && echo "$count enough to copy" \
   || read -p "." -t 1 && i=$min2thumb && count=$min2copy \
   || [ $count -gt 0 -a ! -f "$source"/tmp/php* ] \
-  && echo "$count files and transfer ended" && i=$min2thumb && mediacopy
+  && echo "$count files and transfer ended" && i=$min2thumb && mediacopy && read -t 5
 
   rmdir ../originals.* 2>/dev/null
 
