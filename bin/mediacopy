@@ -31,7 +31,7 @@ lastalias=$(
 		ls *.mov 2>/dev/null
 		#	cat .aliases 2>/dev/null | cut -f 2
 	) \
-	| cut -d "." -f 1 | sort -n | tail -1  | sed "s/^$/0/" \
+	| cut -d "." -f 1 | sort | tail -1  | sed "s/^$/0/" \
 	| grep [0-9] || echo 0
 )
 s=$(($lastalias + 1))
