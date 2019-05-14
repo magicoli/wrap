@@ -1,5 +1,6 @@
 #!/bin/bash
 
+extensions='\.(MTS|MPG|MOV|MP4)$'
 min2copy=5
 min2thumb=10
 
@@ -12,14 +13,15 @@ echo "source $source"
 while true
 do
   i=$(($i + 1))
-  count=$(ls "$source"/*.MTS "$source"/*.MOV 2>/dev/null | wc -l)
+  ls "$source" | egrep -i "$extensions" 2>/dev/null | sort -n > $TMP.files
+  count=$(cat $TMP.files 2>/dev/null | wc -l)
   [ $count -ge $min2copy ] && echo "$count enough to copy" \
   || read -p "." -t 1 && i=$min2thumb && count=$min2copy \
   || [ $count -gt 0 -a ! -f "$source"/tmp/php* ] \
-  && echo "$count and transfer ended" && i=$min2thumb && mediacopy
+  && echo "$count files and transfer ended" && i=$min2thumb && mediacopy
 
   rmdir ../originals.* 2>/dev/null
-  
+
   if [ $i -ge $min2thumb ]
   then
     echo
