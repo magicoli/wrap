@@ -14,7 +14,7 @@ list=$1
 
 [ "$2" ] && method=$2
 
-echo "method: $method" >&2
+# echo "method: $method" >&2
 
 cat "$list" \
 	| sed -e "s:#.*::" -e "s://.*::" \
@@ -72,10 +72,10 @@ do
 
 	[ ! -f "$thumb" ] \
 		&& qt-thumbnails.sh $posargs "$source" \
-		&& cp -p ".browsercache/$thumbnr-thumb.jpg" "$thumb"
+		&& cp -p ".browsercache/$thumbnr-thumb.jpg" "$thumb" 2>/dev/null
 	[ ! -f "$large" ] \
 		&& qt-thumbnails.sh -l $posargs "$source" \
-		&& cp -p ".browsercache/$thumbnr-large.jpg" "$large"
+		&& cp -p ".browsercache/$thumbnr-large.jpg" "$large" 2>/dev/null
 
 done >&2
 
