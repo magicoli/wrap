@@ -152,7 +152,8 @@ cat $list | sed -e "s://.*::" -e "s:#.*::" \
 | grep -v "^$" | egrep "^[0-9]" | \
 while read index name
 do
-	echo "$index" | grep -q "[^0-9,-]" && echo "Wrong index: in '$index $name'" >&2 && begin= && showname= && theend= && continue
+	# echo "$index" | grep -q "[^0-9,-]" && echo "Wrong index: in '$index $name'" >&2 && begin= && showname= && theend= && continue
+	echo "$index" | grep -q "[^0-9,-]" && end 1 "Wrong index: in '$index $name'"
 
 	if [ $begin -a "$showname" ]
 	then
