@@ -162,7 +162,7 @@ else
     sources=$@
 fi
 
-for app in MP4Box avconv ffmpeg catmovie 
+for app in MP4Box ffmpeg avconv catmovie 
 do
     which $app | grep -q $app || continue
 #    case $app in
