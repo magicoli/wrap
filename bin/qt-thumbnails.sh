@@ -50,7 +50,8 @@ do
 	elif [ -f "$param" ]
 		then
 		echo "$param" >> $TMP.movies
-	else
+	elif [ "$param" ]
+    then
 		echo "$param ignored" >&2
 	fi
 done
