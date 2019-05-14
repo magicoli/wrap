@@ -7,7 +7,7 @@ MOVEPREFIX=../.originals
 [ -f $(dirname "$0")/casting-helpers ] && . $(dirname "$0")/casting-helpers || exit 1
 
 if [ "$1" = "-l" ]
-	then
+then
 	method=link
 	shift
 else
@@ -16,18 +16,18 @@ fi
 
 if [ "$MOVEORIGINALS" = "yes" ]
 then
-    [ ! "$MOVEPREFIX" ] && MOVEPREFIX=moved
-    lastmove=$(ls -d "$MOVEPREFIX".* | sed "s/.*\.//" | sort -n | tail -1 | grep "[0-9]" || echo 0)
-    movedir=$MOVEPREFIX.$(($lastmove + 1))
-    mkdir -p "$movedir" || end 1 "Could not create moved directory $movedir"
-    log 1 "Will move originals to $movedir"
+	[ ! "$MOVEPREFIX" ] && MOVEPREFIX=moved
+	lastmove=$(ls -d "$MOVEPREFIX".* | sed "s/.*\.//" | sort -n | tail -1 | grep "[0-9]" || echo 0)
+	movedir=$MOVEPREFIX.$(($lastmove + 1))
+	mkdir -p "$movedir" || end 1 "Could not create moved directory $movedir"
+	log 1 "Will move originals to $movedir"
 fi
 
 lastalias=$(
-    (
-	ls *.mov 2>/dev/null
-#	cat .aliases 2>/dev/null | cut -f 2
-    ) \
+	(
+		ls *.mov 2>/dev/null
+		#	cat .aliases 2>/dev/null | cut -f 2
+	) \
 	| cut -d "." -f 1 | sort -n | tail -1  | sed "s/^$/0/" \
 	| grep [0-9] || echo 0
 )
@@ -41,60 +41,58 @@ delta=$((lastalias - $lastimport))
 
 if [ ! "$@" ]
 then
-    director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1); 
-    sources=~/castings/$director/upload/server/php/files/
+	director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1);
+	sources=~/castings/$director/upload/server/php/files/
 fi
 
 for source in $sources "$@"
 do
-    [ ! -d "$source" ] && echo "ignoring $source" >&2 && continue
-    echo checkpoint $source >&2
-    echo "$source" | sed "s%/$%%"
+	[ ! -d "$source" ] && echo "ignoring $source" >&2 && continue
+	echo checkpoint $source >&2
+	echo "$source" | sed "s%/$%%"
 done | while read source
 do
-    pwd | xargs basename | egrep "^\.*sources[0-9]*$" || exit 2
+	pwd | xargs basename | egrep "^\.*sources[0-9]*$" || exit 2
 
-    echo "source: $source"
-    echo "method: $method"
-    
-    ls "$source/"*.MPG "$source/"*.MP4 "$source/"*.MOV "$source/"*.MTS 2>/dev/null > $TMP.movies
-    cat $TMP.movies | wc -l | sed "s/$/ movies/"
+	echo "source: $source"
+	echo "method: $method"
 
-    cat $TMP.movies | sort -n | while read file
-    do
-	i=$(($i + 1))
-#	j=$(($s + $i))
-#	j=$(basename "$file" | sed "s/\..*$//" | sed "s/[^0-9]//" | sed "s/^0*//" | sed "s/^$/0/")
-#	j=$(($s + $j))
-	
-	alias=$i.mov
-#	qt-thumbnailswide.sh -l -1 "$alias"
-	egrep "^$file " .aliases 2>/dev/null && echo "$file already there" && continue
-	[ -f "$alias" ] && echo "duplicate $alias for" $(basename $file) && end
+	ls "$source/"*.MPG "$source/"*.MP4 "$source/"*.MOV "$source/"*.MTS 2>/dev/null > $TMP.movies
+	cat $TMP.movies | wc -l | sed "s/$/ movies/"
 
-#	if [ ! -f $alias ]
-#	then
-	if [ "$MOVEORIGINALS" = "yes" ]
-	then
-	    mv -v "$file" "$movedir/" || end 1 "error moving $file to $movedir"
-	    origin="$movedir/$(basename "$file")"
-	else
-	    origin="$file"
-	fi
-	if [ "$method" = "copy" ]
-	then
-	    printf "$origin "
-	    cp -l "$origin" $alias \
-		&& printf "$origin\t$alias\n" >> .aliases \
-		&& printf " > $alias "
-	else
-	    ln -s "$origin" $alias \
-		&& printf "$origin\t$alias\n" >> .aliases \
-		&& printf " > $alias "
-	fi
-	qt-thumbnailswide.sh -l -$THUMBOFFSET "$alias"
-	echo files: $(ls *.mov | wc -l)
-    done
+	cat $TMP.movies | sort -n | while read file
+	do
+		i=$(($i + 1))
+		#	j=$(($s + $i))
+		#	j=$(basename "$file" | sed "s/\..*$//" | sed "s/[^0-9]//" | sed "s/^0*//" | sed "s/^$/0/")
+		#	j=$(($s + $j))
+
+		alias=$i.mov
+		#	qt-thumbnailswide.sh -l -1 "$alias"
+		egrep "^$file " .aliases 2>/dev/null && echo "$file already there" && continue
+		[ -f "$alias" ] && echo "duplicate $alias for" $(basename $file) && end
+
+		if [ "$MOVEORIGINALS" = "yes" ]
+		then
+			mv -v "$file" "$movedir/" || end 1 "error moving $file to $movedir"
+			origin="$movedir/$(basename "$file")"
+		else
+			origin="$file"
+		fi
+		if [ "$method" = "copy" ]
+		then
+			printf "$origin "
+			cp -l "$origin" $alias \
+			&& printf "$origin\t$alias\n" >> .aliases \
+			&& printf " > $alias "
+		else
+			ln -s "$origin" $alias \
+			&& printf "$origin\t$alias\n" >> .aliases \
+			&& printf " > $alias "
+		fi
+		qt-thumbnailswide.sh -l -$THUMBOFFSET "$alias"
+		echo files: $(ls *.mov | wc -l)
+	done
 done
 
 movietime $(ls *.mov | sort -n) | tee times | tail -2
