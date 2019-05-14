@@ -17,7 +17,7 @@ list=$1
 # echo "method: $method" >&2
 
 cat "$list" \
-	| sed -e "s:#.*::" -e "s://.*::" \
+	| sed -e "s:#.*::" \
  	| sed "s/[[:blank:]][[:blank:]]*/ /g" | egrep "[A-Za-z]" | while read index name
 do
 	echo "$index" | egrep "[#/]" && continue
