@@ -27,7 +27,9 @@ do
     echo
     [ "$director" = "bobines" ] && rethumb
     rm ../.browsercache/* 2>/dev/null
-    batchthumbs liste > ../playlist.php 2>/dev/null
+    batchthumbs liste > ../playlist.php.$$ 2>/dev/null \
+    && mv ../playlist.php.$$ ../playlist.php \
+    || rm ../playlist.php.$$
     i=0
   fi
 done
