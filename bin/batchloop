@@ -31,7 +31,7 @@ do
 	batchthumbs liste $method > ../playlist.php.$$ 2>/dev/null \
 	&& mv ../playlist.php.$$ ../playlist.php \
 	|| rm ../playlist.php.$$
-	du -sch ../*.mp4 | sort -h | cut -f 2 | tail -20 | xargs movietime | grep ":.*:" sort -nk3 | egrep -B5 --color "[0-9][0-9][0-9][0-9][0-9]* *$"
+	du -sch ../*.mp4 | sort -h | cut -f 2 | tail -20 | xargs movietime | grep ":.*:" | sort -nk3 | egrep -B5 --color "[0-9][0-9][0-9][0-9][0-9]* *$"
 	echo
 	read -t 10
 done
