@@ -9,6 +9,7 @@ PGM=`basename "$0"`
 TMP=/tmp/$PGM.$$
 TURBO=true
 EXT=mp4
+DEBUG=yes
 
 [ -f $(dirname "$0")/casting-helpers ] && . $(dirname "$0")/casting-helpers || exit 1
 
@@ -41,6 +42,8 @@ index2list()
 		i=$(echo $index | cut -d- -f 1)
 		[ ! "$i" ] && i=0
 		j=$(echo $index | cut -d- -f 2)
+		echo "$i" | grep -q "[^0-9,-]" && end 1 "var i $i is not a number"
+		echo "$j" | grep -q "[^0-9,-]" && end 1 "var i $j is not a number"
 		if [ "$i" -le "$j" ]
 		then
 			while [ $i -le $j ]
@@ -106,9 +109,10 @@ makemovie()
 	first=$(index2list $index | head -1)
 	for nr in $(index2list $index)
 	do
+		cp ignore .ignore.$$
 		if [ $nr -ne $first ]
 		then
-			grep -q "^$nr\." ignore 2>/dev/null && continue
+			grep -q "^$nr\." .ignore.$$ 2>/dev/null && continue
 		fi
 		printf " $nr"
 		echo "$convertfolder/$nr.mp4" >> $TMP.sources
@@ -127,6 +131,7 @@ makemovie()
 				rm -f "$convertfolder/$nr.mp4"
 			}
 		fi
+		rm .ignore.$$
 	done
 	printf "\n"
 	sources=$(cat $TMP.sources | tr "\n" " ")
@@ -148,16 +153,17 @@ makemovie()
 	fi
 }
 
-cat $list | sed -e "s://.*::" -e "s:#.*::" \
-| grep -v "^$" | egrep "^[0-9]" | \
-while read index name
+cat $list | sed -e "s://.*::" -e "s:#.*::" | egrep "^[0-9]" \
+| while read index name
 do
+	log "index '$index' name '$name'"
 	# echo "$index" | grep -q "[^0-9,-]" && echo "Wrong index: in '$index $name'" >&2 && begin= && showname= && theend= && continue
 	echo "$index" | grep -q "[^0-9,-]" && end 1 "Wrong index '$index': in '$index $name'"
 
 	if [ $begin -a "$showname" ]
 	then
 		theend=$(echo $index | sed "s/[^0-9].*//")
+		[ $theend -gt $begin ] || end 1 "end $theend lower than begin $begin"
 		# echo pending $begin-$(($theend - 1)) $showname
 		makemovie $begin-$(($theend - 1)) $showname
 		showname=
@@ -169,6 +175,7 @@ do
 	then
 		# echo "proceed now $index $name"
 		[ ! "$name" ] && continue
+		log "makemovie $index $name"
 		makemovie $index $name
 		continue
 	else
@@ -178,5 +185,5 @@ do
 		fi
 		continue
 	fi
-	echo "processed $index $name"
+	log "processed $index $name"
 done

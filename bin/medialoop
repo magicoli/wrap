@@ -12,7 +12,7 @@ echo "source $source"
 
 while true
 do
-  cp .liste.$$
+  cp liste .liste.$$
   i=$(($i + 1))
   ls "$source" | egrep -i "$extensions" 2>/dev/null | sort -n > $TMP.files
   count=$(cat $TMP.files 2>/dev/null | wc -l)
