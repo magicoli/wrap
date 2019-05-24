@@ -12,6 +12,7 @@ echo "source $source"
 
 while true
 do
+  cp .liste.$$
   i=$(($i + 1))
   ls "$source" | egrep -i "$extensions" 2>/dev/null | sort -n > $TMP.files
   count=$(cat $TMP.files 2>/dev/null | wc -l)
@@ -27,9 +28,12 @@ do
     echo
     [ "$director" = "bobines" ] && rethumb
     rm ../.browsercache/* 2>/dev/null
-    batchthumbs liste > ../playlist.php.$$ 2>/dev/null \
+    batchthumbs .liste.$$ > ../playlist.php.$$ 2>/dev/null \
     && mv ../playlist.php.$$ ../playlist.php \
     || rm ../playlist.php.$$
     i=0
   fi
+  rm .liste.$$
+  echo
+  read -t 5
 done
