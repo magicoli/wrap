@@ -116,6 +116,6 @@ do
 	rmdir "$movedir" 2>/dev/null
 done
 
-movietime $(ls *.mov 2>/dev/null | sort -n) | tee times | tail -2
+movietime $(ls *.mov 2>/dev/null | sort -n) | tee times.$$ | tail -2; mv times.$$ times
 
 end
