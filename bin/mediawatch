@@ -1,6 +1,6 @@
 #!/bin/bash
 
-director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1); 
+director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1);
 export PATH=$PATH:$(basename "$0")
 which helpers && . $(which helpers) || exit 1
 
@@ -35,7 +35,7 @@ do
         && phptmp=$sources/tmp \
         || phptmp=~/domains/wrap.magiiic.media/tmp
     echo "$phptmp"
-    ls -lrt $phptmp | egrep '[[:blank:]]php' | tail -1
+    ls -lrt $phptmp | egrep '[[:blank:]]php'
     date
 read -t 1
 done
