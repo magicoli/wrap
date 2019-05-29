@@ -36,7 +36,7 @@ else
     SAY=echo
 fi
 
-BINDIR=$(dirname "$0")
+echo "$0" | grep -q "^/" && BINDIR=$(dirname "$0") || BINDIR=$(dirname $(realpath "$0"))
 BASEDIR=$(dirname "$BINDIR")
 PATH=$BINDIR:$PATH
 
