@@ -9,6 +9,8 @@ echo "director: $director"
 source=~/castings/$director/upload/server/php/files/
 [ ! -d "$source" ] && echo "source $source MISSING" >&2 && exit 1
 echo "source $source"
+PGM=$(basename $0)
+TMP=/tmp/$PGM.$$
 
 while true
 do
