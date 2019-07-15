@@ -24,16 +24,16 @@ mkdir -p "$WEBDIR/.browsercache"
 
 while true
 do
-	cp liste .liste.$$
+	cp liste $TMP.liste
 	# scratchmove --mp4 ./ $dest/
-	batchff .liste.$$
+	batchff $TMP.liste
 	# batchthumbs liste $method > $TMP.playlist
 	# mv $TMP.playlist $WEBDIR/playlist.php
-	batchthumbs .liste.$$ $method > ../playlist.php.$$ 2>/dev/null \
-	&& mv ../playlist.php.$$ ../playlist.php \
-	|| rm ../playlist.php.$$
-	du -sch ../*.mp4 | sort -h | cut -f 2 | tail -20 | xargs movietime | grep ":.*:" | sort -nk3 | egrep -B5 --color "[0-9][0-9][0-9][0-9][0-9]* *$"
-	rm .liste.$$
+	batchthumbs $TMP.liste $method > $TMP.playlist 2>/dev/null \
+	&& mv $TMP.playlist ../playlist.php \
+	|| rm $TMP.playlist
+	du -sch ../*.mp4 2>/dev/null | sort -h | cut -f 2 | tail -20 | xargs movietime | grep ":.*:" | sort -nk3 | egrep -B5 --color "[0-9][0-9][0-9][0-9][0-9]* *$"
+	rm $TMP.liste
 	echo
 	read -t 10
 done
