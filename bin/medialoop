@@ -20,7 +20,7 @@ do
   count=$(cat $TMP.files 2>/dev/null | wc -l)
   [ $count -ge $min2copy ] && echo "$count enough to copy" \
   || read -p "." -t 1 && i=$min2thumb && count=$min2copy \
-  || [ $count -gt 0 -a ! -f "$(ls "$source"/tmp/php* | head -1)" ] \
+  || [ $count -gt 0 -a ! -f "$(ls "$source"/tmp/php* 2>/dev/null | head -1)" ] \
   && echo "$count files and transfer ended" && i=$min2thumb && mediacopy && read -t 5
 
   rmdir ../originals.* 2>/dev/null
