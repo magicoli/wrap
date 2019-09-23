@@ -4,7 +4,17 @@ PGM=`basename "$0"`
 TMP="/tmp/$PGM.$$"
 
 echo "<?php"
-printf "\$reserve=array(\n"
+
+if [ "$1" = "-s" ]
+then
+	printf "\$customnames=array(\n"
+	mode=source
+	sort=true
+	shift
+else
+	printf "\$reserve=array(\n"
+	sort=false
+fi
 
 if [ "$1" ]
 	then
@@ -12,7 +22,7 @@ if [ "$1" ]
 	do
 		if [ -f "$param" ]
 			then
-			sort=false
+			# sort=false
 			cat "$param" | cut -d '"' -f 2 \
 				| sed "s|$| //|" \
 				| sed "s|[[:blank:]]*//|.mp4 //|" \
@@ -33,7 +43,7 @@ else
 	sort=true
 	ls *.mov *.mp4 *.m4v *.mp3 *.mpg *.jpg *.pdf 2>/dev/null | grep -v "\-large."\
 		| grep -v "\-dv."
-fi | while read name
+fi | grep -v "^qt-thumbnails" | while read name
 do
 	unset info
 	info=$(echo "$name" | grep "//" | sed "s|[^/]*//[[:blank:]]*||" | sed "s| */[/ ]*| |" | sed "s|^| // |")
@@ -60,7 +70,18 @@ do
 	unset infohtml
 	unset infocomment
 	[ "$info" ] && infohtml=" <span class=info>$info</span>"  && infocomment=$(webnormalize " // $info");
-	printf "\t\"$file\" => '$name$infohtml',$infocomment\n"
+	if [ "$mode" = "source" ]
+	then
+		nr="$name"
+		mp4=../.mp4/$(basename "$file" .mov).mp4
+		[ -f "$mp4" ] && file=$mp4 && res="" || res="(HD)"
+		name=$(egrep "^$nr[[:blank:],-]" liste | sed "s/[0-9,-]*[[:blank:]][[:blank:]]*//")
+		time=$(grep "^$nr.mov" times | cut -d " " -f 2 | sed "s/00://" | sed "s/:/\\\\'/")
+		printf "\t\"$file\" => '$nr - $name $res $time',\n"
+		# printf "\t\"$file\" => '$name$infohtml',$infocomment\n"
+	else
+		printf "\t\"$file\" => '$name$infohtml',$infocomment\n"
+	fi
 done > "$TMP.playlist"
 
 if [ "$sort" = "true" ]
