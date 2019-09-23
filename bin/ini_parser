@@ -31,7 +31,7 @@ ini_parser ()
     ini[${#ini[*]} + 1]='}'    # add the last brace
     eval "$(echo "${ini[*]}")" # eval the result
 }
- 
+
 ini_writer ()
 {
     IFS=' '$'\n'
@@ -57,10 +57,10 @@ ini_writer ()
 #   [sec2]
 #   var2='something'
 # ini.parser 'myfile.ini'
- 
+
 # enable section called 'sec2' (in the file [sec2]) for reading
 # ini.section.sec2
- 
+
 # read the content of the variable called 'var2' (in the file
 # var2=XXX). If your var2 is an array, then you can use
 # ${var[index]}
