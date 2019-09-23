@@ -6,7 +6,7 @@ group=5
 cat liste | grep -i [a-z] | while read index foo
 do
   nr=$(echo $index | sed "s/[^0-9].*//")
-  grep -q "^$nr.mov" .rethumbed 2>/dev/null && echo "$nr already seen" && continue
+  grep -q "^$nr.mov" .rethumbed 2>/dev/null && continue
   grep "^$nr.mov" times | while read f f duration
   do
     echo "$foo" | grep -q "," \
