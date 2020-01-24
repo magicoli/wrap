@@ -168,6 +168,8 @@ do
 		$exportcommand "$TMP.$extension" $resizeparam $exportparams "$dir/$TMP-large.jpg" >/dev/null 2>/dev/null
 		if [ $? -eq 0 ]
 			then
+        # Watermark
+        # convert .browsercache/$large  -fill "#ccc" -undercolor "#0008" -gravity south -pointsize 48 -annotate +0+24  "$nr - $name" .browsercache/$watermark
 			mv "$dir/$TMP-large.jpg" "$large" \
 				&& printf "L"
 		else
@@ -178,6 +180,7 @@ do
 	else
 		printf "l"
 	fi
+
 
 	rm -f "$TMP.$extension" "$dir/$TMP.jpg"
 	echo
