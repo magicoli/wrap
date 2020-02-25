@@ -1,6 +1,6 @@
 #!/bin/bash
 
-extensions='\.(MTS|MPG|MOV|MP4)$'
+extensions='\.(MTS|MPG|MOV|MP4|\.MXF)$'
 min2copy=5
 min2thumb=10
 
