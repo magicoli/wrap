@@ -21,7 +21,7 @@ do
     clear
     echo $sources
     ls -lrt $sources \
-        | egrep '\.MTS|\.MPG|\.MOV|\.MP4' \
+        | egrep '\.MTS|\.MPG|\.MOV|\.MP4|\.MXF' \
 		> $TMP.bydate
     lines=$(($(tput lines) - 6))
     [ $lines -gt 0 ] && tail -$lines $TMP.bydate

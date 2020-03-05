@@ -1,6 +1,6 @@
 #!/bin/sh
 
-extensions='\.(MTS|MPG|MOV|MP4)$'
+extensions='\.(MTS|MPG|MOV|MP4|MXF)$'
 THUMBOFFSET=0
 MOVEORIGINALS=yes
 MOVEPREFIX=../.originals
@@ -36,7 +36,8 @@ lastalias=$(
 )
 s=$(($lastalias + 1))
 log "start with $s"
-lastimport=$(cat .aliases 2>/dev/null | cut -f 1 | sort -n | tail -1 | cut -d "." -f 1 | sed -e "s/[^0-9]//g" -e "s/^0*//" | grep [0-9] || echo 0)
+lastimport=$(cat .aliases 2>/dev/null | cut -f 1 | sort -n | tail -1 | sed "s/_.*CANON\././" | cut -d "." -f 1 | sed -e "s/[^0-9]//g" -e "s/^0*//" | grep [0-9] || echo 0)
+echo "last impport: $lastimport" >&2
 
 #i=$(ls *.mov 2>/dev/null | cut -d "." -f 1 | sort -n | tail -1  | sed "s/^$/0/")
 i=$lastalias
@@ -60,12 +61,12 @@ do
 	log "source: $source"
 
 	# ls "$source/"*.MPG "$source/"*.MP4 "$source/"*.MOV "$source/"*.MTS 2>/dev/null > $TMP.movies
-	l=$( ( [ -f .last ] && cat .last || echo 0 ) | cut -d . -f 1 | sed "s/^[a-zA-Z]*0*\([0-9\]\)/\\1/" | sort -n | tail -1)
+	l=$( ( [ -f .last ] && cat .last || echo 0 ) | sed "s/_.*CANON//" | cut -d . -f 1 | sed -e "s/^[a-zA-Z]*0*\([0-9\]\)/\\1/" -e "s/[^0-9]//g" | sort -n | tail -1)
 
 	# cd "$source" || break
 	ls "$source" | egrep -i "$extensions" 2>/dev/null | sort -n | while read file
   do
-    n=$(echo $file | cut -d . -f 1 | sed "s/^[a-zA-Z]*0*\([0-9\]\)/\\1/")
+    n=$(echo $file | sed "s/_.*CANON//" | cut -d . -f 1 | sed "s/^[a-zA-Z]*0*\([0-9\]\)/\\1/" | sed "s/[^0-9]//g")
     [ $n -eq $l ] && echo "$file" && continue
     p=$(($n -1)); [ $p -eq $l ] && echo "$file" || break
     l=$n
