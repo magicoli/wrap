@@ -156,6 +156,28 @@ ucfirst() {
     echo "$upper$lower"
 }
 
+convertsecs() {
+ ((h=${1}/3600))
+ # [ $h -gt 0 ] && printf "$%02d:" $h
+ ((m=(${1}%3600)/60))
+ # [ $m -gt 0 ] && printf "$%02d:" $m
+ ((s=${1}%60))
+ printf "%02d:%02d:%02d\n" $h $m $s | sed -e "s/^00://g" -e "s/^00:0*\([0-9][0-9]*\)/\\1 seconds/g" -e "s/^1 seconds/1 second/"
+}
+
+countdown() {
+  [ "$1" ] && secs=$1 && shift || secs=5
+  [ "$1" ] && msg=$@ || msg=Countdown
+  while [ $secs -gt 0 ]
+  do
+    time=$(convertsecs $secs)
+    printf "\r\033[K$msg $time"
+    secs=$(($secs - 1))
+    read -t 1 && return
+  done
+  printf "\r\033[K"
+}
+
 [ ! "$OPTS" ]  && OPTS="hvq"
 PAR=`echo $OPTS|sed 's/.://g'|grep -v "^$"|sed "s/\([a-zA-Z0-9]*\)/[-\\1]/g" `
 PAROPT=`echo $OPTS | sed "s/-://" | sed 's/\(.\)/\\1\//g' \
