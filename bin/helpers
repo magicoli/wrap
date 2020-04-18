@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright 2015 Olivier van Helden <olivier@van-helden.net>
 # Released under GNU Affero GPL v3.0 license
@@ -157,12 +157,13 @@ ucfirst() {
 }
 
 convertsecs() {
- ((h=${1}/3600))
- # [ $h -gt 0 ] && printf "$%02d:" $h
- ((m=(${1}%3600)/60))
- # [ $m -gt 0 ] && printf "$%02d:" $m
- ((s=${1}%60))
- printf "%02d:%02d:%02d\n" $h $m $s | sed -e "s/^00://g" -e "s/^00:0*\([0-9][0-9]*\)/\\1 seconds/g" -e "s/^1 seconds/1 second/"
+  d=$(($1/86400))
+  [ $d = 1 ] && days="$d day "
+  [ $d -gt 1 ] && days="$d days "
+  h=$(($1%86400/3600))
+  m=$(($1%3600/60))
+  s=$(($1%60))
+  printf "$days%02d:%02d:%02d\n" $h $m $s | sed -e "s/^00://g" -e "s/^00:0*\([0-9][0-9]*\)/\\1 seconds/g" -e "s/^[01] seconds/1 second/" -e "s/ 00:00:00$//"
 }
 
 countdown() {
