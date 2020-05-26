@@ -1,0 +1,121 @@
+
+body, p  { font-size: 12px; font-family: "Helvetica Neue", "Helvetica", Verdana, Arial, Helvetica, Geneva, Swiss, SunSans-Regular; margin: 20px 0px 0px }
+a:link { color: #333; text-decoration: none }
+a:visited { color: #333; text-decoration: none }
+a:hover { color: #900; font-weight: bold; text-decoration: underline }
+.logo { text-align: right }
+.movielinks  { font-size: 10px }
+.moviename   { font-size: 12px }
+.pagetitle   { color: #fff; font-weight: bold; font-size: 24px; margin: 0px 0px 0px 10px }
+.navigation  { color: #fff; font-size: 11px; margin: 0px 0px 0px 5px }
+.navigation a:link { color: #fff}
+.navigation a:visited { color: #fff }
+.navigation a:hover { color: #fff }
+.navigation a:active { color: #fff }
+
+
+.playlist {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.playall {
+    display: block;
+    margin: 1em 0;
+}
+
+.item, .thumbframe {
+    width: auto;
+    display: inline-block;
+}
+.thumbframe {
+    width: auto;
+    height: 300px;
+}
+.item {
+    display: inline-block;
+    font-size: 8pt;
+  /*height: 150px;*/
+    text-indent: 0px;
+    padding: 0px;
+    margin: 0 0 5px 0;
+    vertical-align: top;
+    text-align: center;
+    height: 160px;
+}
+
+.thumbframe, .thumb {
+    padding: 0;
+    margin: 0;
+    border: none;
+    vertical-align: middle;
+}
+
+div.thumb img {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+
+.playlist .item {
+    width: auto;
+}
+
+div.thumbframe, div.thumb {
+    width: auto;
+    height: auto;
+    background: none;
+}
+
+div.thumb img.thumb {
+    display: inline-block;
+    height: 120px;
+    vertical-align: middle;
+}
+
+.thumbframe {
+    position: relative;
+}
+.item .name {
+    position: relative;
+    font-size: 1.1em;
+/*    top: -20px;*/
+    height: 20px;
+    width: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+/*    display: none;*/
+}
+.item:hover .name {
+    display: block;
+}
+.item .description {
+    background: white;
+    margin: 0;
+    padding-top: 5px;
+}
+.playlist .item .description p {
+    margin: 0;
+    font-style: italic;
+}
+.item > a {
+    display: block;
+}
+a.itemlink:link, a.itemlink:visited, a.itemlink:active {
+    text-decoration: none;
+}
+td.left .download .thumb {
+  max-width: 2em:
+}
+@media print {
+    .item {
+	max-width: 30%;
+    }
+    .item .download {
+	display: none;
+    }
+}

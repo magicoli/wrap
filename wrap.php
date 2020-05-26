@@ -6,25 +6,12 @@
  */
 
 define('DEBUG', true);
-ini_set("error_reporting",  E_ALL & ~E_NOTICE & ~E_DEPRECATED);
-
-$protocol=preg_replace("/:.*/", "", getenv("SCRIPT_URI"));
-
-if(preg_match("/^dev\.|^local\.|^preview\./", getenv("HTTP_HOST"))) {
-	ini_set("display_errors", true);
-	$localserver=true;
-}
-
-$timebegin=time();
-
-$libdir=dirname(__FILE__);
-$libdirurl=dirname($_SERVER['SCRIPT_NAME']);
-$scriptname="wrap";
 
 ini_set( "include_path", __DIR__ );
 // ini_set( "include_path", __DIR__ . "/inc" );
 ini_set( "include_path", __DIR__ . "/contrib" );
 
+require_once('inc/init.php');
 require_once('inc/functions.php');
 
 @include_once('Mobile_Detect.php');
@@ -345,12 +332,11 @@ $session['notloaded']=true;
 #################
 ## Fetch session variables
 
-$hostname=getenv('HTTP_HOST');
-$domain = preg_replace("(^preview\.|^wrap\.|^dev\.|^www\.)", "", $hostname);
-$webroot=getenv('DOCUMENT_ROOT');
+// $hostname=getenv('HTTP_HOST');
+// $domain = preg_replace("(^preview\.|^wrap\.|^dev\.|^www\.)", "", $hostname);
 $useragent=user_agent();
-$scriptroot=dirname(getenv('SCRIPT_FILENAME'));
-$scriptfilename=basename(getenv('SCRIPT_FILENAME'));
+// $scriptroot=dirname(getenv('SCRIPT_FILENAME'));
+// $scriptfilename=basename(getenv('SCRIPT_FILENAME'));
 
 if(!isset($_SESSION['source_referer']))
 {
@@ -358,14 +344,13 @@ if(!isset($_SESSION['source_referer']))
 }
 $referer=$_SESSION['source_referer'];
 // open_basedir
+
 $cacheroot=firstWritableFolder(
-	dirname($webroot) . "/tmp",
-	"$scriptroot/wrap/cache",
-	dirname($scriptroot) . "/cache/wrap",
-	"$webroot/wrap/cache",
+	// sys_get_temp_dir (),
+	dirname(DOCUMENT_ROOT) . "/tmp",
+	dirname(DOCUMENT_ROOT) . "/cache",
+	DOCUMENT_ROOT ."/cache",
 	dirname($scriptroot) . "/tmp",
-	"$webroot/cache",
-	"/tmp/wrap",
 	"/tmp"
 );
 
@@ -391,7 +376,7 @@ $directory=preg_replace('#^/*#', '', urldecode(dirname($uri . "remove.php")));
 // $directoryclean=preg_replace('#//*$#', '/', $directoryclean);
 $directoryclean=cleanpath("/$directory/");
 
-$hash_path=base64_encode(cleanpath("$webroot/$directory", true));
+$hash_path=base64_encode(cleanpath(DOCUMENT_ROOT . "/$directory", true));
 $pagecache="$cacheroot/wrap_$hash_path";
 
 foreach ($forbidden as $pattern) {
@@ -410,7 +395,7 @@ $foldername=basename($directory);
 
 $facebookapi=true;
 
-if(!is_file("$libdir/facebook-php-sdk/facebook.php")) {
+if(!is_file(__DIR__ . "facebook-php-sdk/facebook.php")) {
 	$facebookapi=false;
 }
 if (!function_exists('curl_init')) {
@@ -447,7 +432,7 @@ if (!function_exists('hash_hmac')) {
 }
 
 if($facebookapi) {
-	include_once("$libdir/facebook-php-sdk/facebook.php");
+	include_once(__DIR__ . "facebook-php-sdk/facebook.php");
 }
 
 if(!function_exists("base64urldecode")) {
@@ -485,21 +470,30 @@ if($_POST['signed_request'] || $_REQUEST['force']=="facebook") {
 
 $path=preg_split('#/#', preg_replace('#/$#', '', $uri));
 
-if(is_file("$libdir/css/browser.css")) {
+if(is_file(__DIR__ . "css/browser.css")) {
 	$combinedcss.="
-		<link href='$libdirurl/css/browser.css' rel='stylesheet' media='all'>";
-	$inpagecss.=file_get_contents("$libdir/css/browser.css");
+		<link href='" . BASE_URL . "/css/browser.css' rel='stylesheet' media='all'>";
+	$inpagecss.=file_get_contents(__DIR__ . "css/browser.css");
 }
-// if(is_file("$libdir/css/$scriptname.css")) {
+if(is_file(__DIR__ . "/lib/browser.css")) {
+	$combinedcss.="
+		<link href='" . BASE_URL . "/css/browser.css' rel='stylesheet' media='all'>";
+	$inpagecss.=file_get_contents(__DIR__ . "/css/browser.css");
+}
+
+// if(is_file(__DIR__ . "css/$scriptname.css")) {
 // 	$combinedcss.="
-// 		<link href='$libdirurl/css/$scriptname.css' rel='stylesheet' media='all'>";
-// 	$inpagecss.=file_get_contents("$libdir/css/$scriptname.css");
+// 		<link href='" . BASE_URL . "/css/$scriptname.css' rel='stylesheet' media='all'>";
+// 	$inpagecss.=file_get_contents(__DIR__ . "css/$scriptname.css");
 // }
+//
+add_css(BASE_URI . "/css/wrap.css");
+add_css(BASE_URI . "/css/browser.css");
 
 if(is_array($path))
 {
-	$prefsfolders=array($scriptroot, "$webroot/lib");
-	$prefsfolder=$webroot;
+	$prefsfolders=array($scriptroot, DOCUMENT_ROOT . "/lib");
+	$prefsfolder=DOCUMENT_ROOT;
 	if($includeparentstyle) {
 		while(list($key, $value)=each($path))
 		{
@@ -554,24 +548,14 @@ if(is_array($path))
 
 		getPageSettings("$currenturl", true);
 
-		if($pagesettings[$currenturl]['isroot']) {
-			if(!$includeparentstyle) {
-				unset($combinedcss);
-			}
-		}
+		// if($pagesettings[$currenturl]['isroot']) {
+		// 	if(!$includeparentstyle) {
+		// 		unset($combinedcss);
+		// 	}
+		// }
 
-		if(is_file("$webroot/$currenturl/browser.css")) {
-#			$browsercss=$siteurl . preg_replace("#//#", "/", "/${currenturl}/browser.css");
-			$browsercss=preg_replace("#//#", "/", "/${currenturl}/browser.css");
-			$combinedcss.="
-				<link href='$browsercss' rel='stylesheet' media='all'>";
-			$inpagecss.=file_get_contents("$webroot/$currenturl/browser.css");
-		}
-		if(is_file("$webroot/$currenturl/browser-mobile.css")) {
-			$browsermobile=preg_replace("#//#", "/", "/${currenturl}/browser-mobile.css");
-			$combinedmobilecss.="
-				<link href='$combinedmobilecss' rel='stylesheet' media='all'>";
-		}
+		add_css("/$currenturl/browser.css");
+		add_css("/$currenturl/wrap.css");
 	}
 }
 else
@@ -901,7 +885,7 @@ if($addons['aloha'] && $wrap_editable && $editmode) {
 	* Will store the posted content into currently active session.
 	*/
 	function storePost() {
-		global $webroot, $directory, $pagecache;
+		global $directory, $pagecache;
 
 		file_put_contents ("$pagecache.${_POST['id']}", htmltotext($_POST['content']));
 
@@ -1030,9 +1014,9 @@ if ($menutop && $rootdir==$directory) {
 	$showdirectories=false;
 }
 
-// if(is_file("$webroot/$directory/playlist.php"))
+// if(is_file(DOCUMENT_ROOT . "/$directory/playlist.php"))
 // {
-// 	include("$webroot/$directory/playlist.php");
+// 	include(DOCUMENT_ROOT . "/$directory/playlist.php");
 // }
 if(is_array($pagesettings[$directory])) {
 	foreach($pagesettings[$directory] as $pagevar => $pagevalue) {
@@ -1076,7 +1060,7 @@ if ($navigation)
 		$parentdir=dirname($directory);
 	}
 
-	$d = dir("$webroot/$parentdir");
+	$d = dir(DOCUMENT_ROOT . "/$parentdir");
 
 
 	if ($d)
@@ -1102,7 +1086,7 @@ if ($navigation)
 		while($entry=$d->read())
 		{
 			$sister=preg_replace("#^[\.]*/#", "", "$parentdir/$entry");
-			if(is_dir("$webroot/$sister") &! matchesIgnorePattern("$entry/"))
+			if(is_dir(DOCUMENT_ROOT . "/$sister") &! matchesIgnorePattern("$entry/"))
 			{
 				// $pathparams=getPageSettings("$sister");
 				// echo "sister $sister: " . $pagesettings[$sister]['pagetitle'] . "<br>";
@@ -1220,8 +1204,8 @@ if($output=="iPhone") {
 ## Fetching content
 
 
-$d = dir("$webroot/$directory");
-// echo "$webroot/$directory";
+$d = dir(DOCUMENT_ROOT . "/$directory");
+// echo DOCUMENT_ROOT . "/$directory";
 if ($d)
 {
 
@@ -1234,7 +1218,7 @@ if ($d)
 
 		$file=preg_replace('#^/#', '', "$directory/$entry");
 
-		if(is_dir("$webroot/$file"))
+		if(is_dir(DOCUMENT_ROOT . "/$file"))
 		{
 			if(!$hideotherfolders) {
 				$includethisfile=false;
@@ -1271,7 +1255,7 @@ if ($d)
 		{
 			case "_links.txt":
 			case "links.txt":
-			$fileArray=fileToSimpleArray("$webroot/$directory/$entry");
+			$fileArray=fileToSimpleArray(DOCUMENT_ROOT . "/$directory/$entry");
 			if (is_array($fileArray))
 			{
 				while(list($thisurl, $site)=each($fileArray))
@@ -1324,7 +1308,7 @@ if ($d)
 				break;
 			case "_about.html":
 			case "about.html":
-				$fileArray = file("$webroot/$directory/$entry");
+				$fileArray = file(DOCUMENT_ROOT . "/$directory/$entry");
 				if(count($fileArray) > 0)
 				{
 					$about=implode("\n", $fileArray);
@@ -1343,7 +1327,7 @@ if ($d)
 
 				case "_trombi.csv":
 				case "_details.csv":
-				$detailsFile = file("$webroot/$directory/$entry");
+				$detailsFile = file(DOCUMENT_ROOT . "/$directory/$entry");
 				foreach($detailsFile as $detailsString) {
 					$detailsRow=array_filter(str_getcsv($detailsString));
 					$detailsId=$detailsRow[0];
@@ -1431,10 +1415,10 @@ if ($d)
 					$playlistindex[]=$file;
 					continue;
 				}
-				else if (is_dir("$webroot/$directory/$checkfile")) {
+				else if (is_dir(DOCUMENT_ROOT . "/$directory/$checkfile")) {
 					$subdir="$directory/$checkfile";
 				}
-				else if(is_dir("$webroot/$checkfile")) {
+				else if(is_dir(DOCUMENT_ROOT . "/$checkfile")) {
 					$subdir=$checkfile;
 				}
 				else {
@@ -1442,12 +1426,12 @@ if ($d)
 					if($possiblevariants) {
 						$file=current($possiblevariants);
 					} else
-					if (is_file("$webroot/$directory/$checkfile"))
+					if (is_file(DOCUMENT_ROOT . "/$directory/$checkfile"))
 					{
 						$file="$directory/$checkfile";
 						// $checkfile=preg_replace("#//#", "/", "$directory/$checkfile");
 					}
-					else if(is_file("$webroot/$checkfile"))
+					else if(is_file(DOCUMENT_ROOT . "/$checkfile"))
 					{
 						$file=$checkfile;
 					}
@@ -1565,7 +1549,7 @@ if ($d)
 	}
 
 	## Add intro movie if defined and exists
-	if(is_file("$webroot/$playListIntro"))
+	if(is_file(DOCUMENT_ROOT . "/$playListIntro"))
 	{
 		$items[]="$playListIntro";
 	}
@@ -1669,24 +1653,27 @@ if($parentlink)
 
 if(isset($pagetemplate)) {
 	if(preg_match("#^/#", $pagetemplate)) {
-		$checktemplate[]=cleanpath("$webroot/$rootdir/$pagetemplate");
+		$checktemplate[]=cleanpath(DOCUMENT_ROOT . "/$rootdir/$pagetemplate");
 		if($includeparentstyle &! empty($rooddir)) {
-			$checktemplate[]=cleanpath("$webroot/$pagetemplate");
+			$checktemplate[]=cleanpath(DOCUMENT_ROOT . "/$pagetemplate");
 		}
 	} else {
-		$checktemplate[]=cleanpath("$webroot/$directory/$pagetemplate");
+		$checktemplate[]=cleanpath(DOCUMENT_ROOT . "/$directory/$pagetemplate");
 	}
 }
 
 if($includeparentstyle) {
 	if($rootdir != "") {
-		$checktemplate[]=cleanpath("$webroot/$rootdir/browser.html");
+		$checktemplate[]=cleanpath(DOCUMENT_ROOT . "/$rootdir/browser.html");
 	}
-	$checktemplate[]="$webroot/browser.html";
+	$checktemplate[]=DOCUMENT_ROOT . "/browser.html";
 }
 
-$checktemplate[]="browser.html";
 $checktemplate[]=preg_replace("#\.php$#", ".html", $scriptfilename);
+$checktemplate[]="themes/$theme/browser.html";
+$checktemplate[]="themes/default/browser.html";
+$checktemplate[]="themes/minimal/browser.html";
+$checktemplate[]="browser.html";
 
 $pagetemplate=firstValidFile($checktemplate);
 
@@ -1703,7 +1690,7 @@ $pagetemplate=firstValidFile($checktemplate);
 ## Stop here if underconstuction
 
 if ($underconstruction) {
-	include("$libdir/underconstruction.php");
+	include(__DIR__ . "underconstruction.php");
 	exit;
 }
 
@@ -1865,7 +1852,7 @@ if (is_array($names))
 		if($downloadAllowed == true)
 		{
 			$downloadFiles[$file][$extension]["file"]="$filesafe";
-			$downloadFiles[$file][$extension]["link"]="/lib/download.php?f=" . $downloadFiles[$file][$extension]["file"];
+			$downloadFiles[$file][$extension]["link"] = BASE_URL . "/download.php?f=" . $downloadFiles[$file][$extension]["file"];
 			if(is_array($allowedvariants[$filetype]))
 			{
 				reset($allowedvariants[$filetype]);
@@ -1874,7 +1861,7 @@ if (is_array($names))
 					if ($foundvariants[$type] && $foundvariants[$type] != "$file")
 					{
 						$downloadFiles[$file][$type][file]="/" . urlsafe($foundvariants[$type]);
-						$downloadFiles[$file][$type][link]="/lib/download.php?f=" . $downloadFiles[$file][$type][file];
+						$downloadFiles[$file][$type][link] = BASE_URL . "/download.php?f=" . $downloadFiles[$file][$type][file];
 					}
 				}
 			}
@@ -2077,7 +2064,7 @@ if($facebooklinksend) {
 //		reset($items);
 $i=0;
 $title="notitle";
-$namescount=count($names);
+( $names ) and $namescount=count($names);
 $sections=array();
 $section="untitled";
 if(is_array($names))
@@ -2122,10 +2109,10 @@ if(is_array($names))
 		$postername=preg_replace("#\.$extension$#", "-poster", basename($file));
 		$thumbpng=preg_replace("#\.$extension$#", "-thumb.png", basename($file));
 		$filename=preg_replace("#\.$extension$#", "", basename($file));
-		if(file_exists("$webroot/$file")) {
-			$filetime=date ("D, d M Y H:i:s O", filemtime("$webroot/$file"));
-			$filetimeshort=date ("d-m-Y H:i", filemtime("$webroot/$file"));
-			$filesize=filesize("$webroot/$file");
+		if(file_exists(DOCUMENT_ROOT . "/$file")) {
+			$filetime=date ("D, d M Y H:i:s O", filemtime(DOCUMENT_ROOT . "/$file"));
+			$filetimeshort=date ("d-m-Y H:i", filemtime(DOCUMENT_ROOT . "/$file"));
+			$filesize=filesize(DOCUMENT_ROOT . "/$file");
 			$filesizeh=HumanReadableFilesize($filesize);
 		}
 		$filetype=preg_replace("#/.*#", "", $mimetypes[$extension]);
@@ -2136,7 +2123,7 @@ if(is_array($names))
 			unset($video_sources);
  			foreach ($html5_playable as $ext) {
 				$altfile=preg_replace("/\.$extension$/", ".$ext", $file);
-				if(is_file("$webroot/$altfile")) {
+				if(is_file(DOCUMENT_ROOT . "/$altfile")) {
 					$safealtfile=preg_replace("#//#", "/", "/" . urlsafe($altfile));
 					$video_sources.="<source src='" . preg_replace("#//#", "/", "/" . urlsafe($altfile))
 						. "' type='" . $mimetypes[$ext] . "' />\n";
@@ -2145,7 +2132,7 @@ if(is_array($names))
 
 			unset($video_tracks);
 			$vtt=preg_replace("/\.$extension$/", ".vtt", $file);
-			if(is_file("$webroot/$vtt")) {
+			if(is_file(DOCUMENT_ROOT . "/$vtt")) {
 				$video_tracks.="<track kind='subtitles' src='" . preg_replace("#//#", "/", "/" . urlsafe($vtt))					. "' default></track>";
 				// srclang='en' label='English'
 			}
@@ -2236,7 +2223,7 @@ if(is_array($names))
 			$downloadfile="$filesafe";
 			$buttonlinks =  "
 				<div class='links'>
-				<a class='link' href='/lib/download.php?f=$downloadfile'>$extension</a>
+				<a class='link' href='" . BASE_URL . "download.php?f=$downloadfile'>$extension</a>
 				</div>
 				";
 		}
@@ -2373,9 +2360,9 @@ if(is_array($names))
 		} else {
 			$thumbcode="";
 		}
-		if(file_exists("$webroot/$file")) {
-			// $hash=sha1_file("$webroot/$file");
-			$hash=sha1("$webroot/$file");
+		if(file_exists(DOCUMENT_ROOT . "/$file")) {
+			// $hash=sha1_file(DOCUMENT_ROOT . "/$file");
+			$hash=sha1(DOCUMENT_ROOT . "/$file");
 			$hashindex[$hash]=$i;
 		}
 
@@ -2447,13 +2434,13 @@ if(is_array($names))
 			if (is_downloadable($file) || $downloadOnly)
 			{
 				//				$img=preg_replace("#\.pdf\$#", ".jpg", $file);
-				$item .= "
-						<a class=itemlink href='/lib/download.php?f=$filesafe'>
+				$downloads .= "
+						<a class=itemlink href='" . BASE_URL . "download.php?f=$filesafe'>
 							<div class=download>
 								<div class=thumbframe>
 									$thumbcode
 								</div>";
-				$otherinfo="
+				$downloads .= "
 								<div class=description>
 									<div class='file'>" . basename ($file) . "</div>
 									<div class='short'>" . htmlsafe($short) . "</div>
@@ -2462,6 +2449,7 @@ if(is_array($names))
 								</div>
 							</div>
 						</a>";
+						continue;
 			}
 			else if (preg_match('#doc$#', $file))
 			{
@@ -2490,12 +2478,12 @@ if(is_array($names))
 			{
 				//				$img=preg_replace("#\.wav\$#", ".jpg", $file);
 				$item .= "
-						<a href='/lib/download.php?f=$filesafe'>
+						<a href='" . BASE_URL . "download.php?f=$filesafe'>
 							$thumbcode
 							<div class='name'>$name</div>
 						</a>
 						<div class='short'>" . htmlsafe($short) . "</div>
-						<a href='/lib/download.php?f=$filesafe'>
+						<a href='" . BASE_URL . "download.php?f=$filesafe'>
 							<div class='links'>download</div>
 						</a>";
 			}
@@ -2521,7 +2509,7 @@ if(is_array($names))
 					$large="$file";
 				}
 
-				else if (is_file("$webroot/$large"))
+				else if (is_file(DOCUMENT_ROOT . "/$large"))
 				{
 					$itemurl=urlsafe("/$large");
 					# . "' target='_blank";
@@ -2548,7 +2536,7 @@ if(is_array($names))
 				}
 
 				if($popup && $popable[$filetype] || $inpage) {
-					// $original=getimagesize("$webroot/$file");
+					// $original=getimagesize(DOCUMENT_ROOT . "/$file");
 					if($original)
 					{
 						$original['width']=$original[0];
@@ -3242,7 +3230,7 @@ if($REQUEST['output']=="rss" && $podcast)
 	. "<channel>"
 	. "<title>$globaltitle $pagetitle</title>"
 	. "<description>$pagetitle</description>"
-	. "<link>$protocol//" . $hostname . rewritelink() . "</link>"
+	. "<link>$prot$finalpageocol//" . $hostname . rewritelink() . "</link>"
 	. "<language>en-us</language>"
 	. "<copyright>Copyright 2008</copyright>"
 	. "<lastBuildDate>$lastBuildDate</lastBuildDate>"
@@ -3296,6 +3284,7 @@ else if($REQUEST['output']=="flv")
 	{
 		$head.="		<link rel='alternate' type='application/rss+xml' title='RSS' href='/$directory/?output=rss'>\n";
 	}
+
 	if($pagetemplate && is_file($pagetemplate))
 	{
 		//	include($pagetemplate);
@@ -3345,7 +3334,7 @@ else if($REQUEST['output']=="flv")
 	}
 	if(!preg_match("#browser[0-9]*.js#", $layout))
 	{
-		$layout=preg_replace('#</head>#i', "<script type='text/javascript' src='$libdirurl/$scriptname.js'></script></head>", $layout);
+		$layout=preg_replace('#</head>#i', "<script type='text/javascript' src='" . BASE_URL . "/$scriptname.js'></script></head>", $layout);
 	}
 	switch ($videofallback) {
 		case "jwplayer":
@@ -3380,6 +3369,9 @@ else if($REQUEST['output']=="flv")
 	} else {
 		unset($debuginfo);
 	}
+
+	($downloads) && $downloads="<div class=downloads id=downloads><hr>$downloads</div>";
+
 	$finalpage=processtags(get_defined_vars(), $layout);
 	// if(!$keeptags) {
 		$finalpage=processtags(get_defined_vars(), $finalpage);
@@ -3411,7 +3403,7 @@ else if($REQUEST['output']=="flv")
 	$finalpage=preg_replace_callback("|\[weather:([^\[]*)\]|", "parseWeather", $finalpage);
 	if(preg_match("#\[shop:#", $finalpage)) {
 		$shop=preg_replace("#.*\[shop:([^\[]*)\].*#", "\\1", $finalpage);
-		require_once ("$libdir/shop/shop.php");
+		require_once (__DIR__ . "shop/shop.php");
 		$finalpage=preg_replace("#\[shop:([^\[]*)\]#", $session['shop']['form'], $finalpage);
 		$finalpage=preg_replace('#</head>#i', $session['shop']['csslink'] . "\n</head>", $finalpage);
 	}

@@ -594,7 +594,7 @@ function processChordPro($string) {
 
 function getPageSettings($thisdirectory, $store=false)
 {
-	global $webroot, $rootdir, $pagesettings, $directory, $subdirscan, $stripnumber, $headstyle, $ogstyle, $checktemplate, $wrap_editable_parts, $cacheroot;
+	global $rootdir, $pagesettings, $directory, $subdirscan, $stripnumber, $headstyle, $ogstyle, $checktemplate, $wrap_editable_parts, $cacheroot;
 	// $thisdirectory=urldecode($thisdirectory);
 	$traces=debug_backtrace();
 	$callline=$traces[0]['line'];
@@ -613,8 +613,8 @@ function getPageSettings($thisdirectory, $store=false)
 	}
 
 	$playlist=firstValidFile(
-		"$webroot/$thisdirectory/_page.conf.plist",
-		"$webroot/$thisdirectory/playlist.php"
+		DOCUMENT_ROOT . "/$thisdirectory/_page.conf.plist",
+		DOCUMENT_ROOT . "/$thisdirectory/playlist.php"
 		);
 
 	$saved_ogstyle=$ogstyle;
@@ -638,11 +638,11 @@ function getPageSettings($thisdirectory, $store=false)
 		unset ($key, $value, $plist, $plistarray, $playlisttype);
 	}
 
-	$hash_path=base64_encode(cleanpath("$webroot/$directory", true));
+	$hash_path=base64_encode(cleanpath(DOCUMENT_ROOT . "/$directory", true));
 	$pagecache="$cacheroot/wrap_$hash_path";
 
 	$part="pagetitle";
-	$part_file="$webroot/$thisdirectory/_${part}.txt";
+	$part_file=DOCUMENT_ROOT . "/$thisdirectory/_${part}.txt";
 
 	eval("
 	if(file_exists(\"$part_file\")) {
@@ -679,9 +679,9 @@ function getPageSettings($thisdirectory, $store=false)
 			$store=false;
 		}
 	}
-	if(is_file("$webroot/$thisdirectory/browser.html"))
+	if(is_file(DOCUMENT_ROOT . "/$thisdirectory/browser.html"))
 	{
-		$template=cleanpath("$webroot/$thisdirectory/browser.html");
+		$template=cleanpath(DOCUMENT_ROOT . "/$thisdirectory/browser.html");
 		if(preg_match("#^$thisdirectory#", "$directory")) {
 			$checktemplate["./"]=$template;
 		}
@@ -756,19 +756,19 @@ function getPageSettings($thisdirectory, $store=false)
 			if($customfolders) {
 				foreach($customfolders as $subkey => $subvalue) {
 					$sister="$thisdirectory/$subkey";
-					if(file_exists("$webroot/$sister")) {
+					if(file_exists(DOCUMENT_ROOT . "/$sister")) {
 						$sisters[$sister]=$sister;
 					}
 				}
 			}
 			if(!$hideotherfolders) {
-				$d = dir("$webroot/$thisdirectory");
+				$d = dir(DOCUMENT_ROOT . "/$thisdirectory");
 				if($d)
 				{
 					while($entry=$d->read())
 					{
 						$sister=urldecode("$thisdirectory/$entry");
-						if(is_dir("$webroot/$sister") &! matchesIgnorePattern("$entry/"))
+						if(is_dir(DOCUMENT_ROOT . "/$sister") &! matchesIgnorePattern("$entry/"))
 						{
 							$sisters[$sister]=$sister;
 						}
@@ -969,7 +969,7 @@ function firstValidValue()
 }
 
 function firstWritableFolder() {
-	global $webroot, $aliasroot, $debug, $debuginfo;
+	global $aliasroot, $debug, $debuginfo;
 	$values=func_get_args();
 	if(is_array($values[0])) {
 		$folders=$values[0];
@@ -989,7 +989,7 @@ function firstWritableFolder() {
 
 function firstValidFile()
 {
-	global $webroot, $aliasroot, $libdir, $debug, $debuginfo;
+	global $aliasroot, $libdir, $debug, $debuginfo;
 	$values=func_get_args();
 	if(is_array($values[0])) {
 		$files=$values[0];
@@ -1002,7 +1002,7 @@ function firstValidFile()
 		$file=cleanpath($file);
 		$libfile="$libdir/" . preg_replace(":^/lib/:", "", $file);
 		// debug("file: $libfile");
-		if (is_file("$webroot/$file") || is_file($libfile) || file_exists("$file"))
+		if (is_file(DOCUMENT_ROOT . "/$file") || is_file($libfile) || file_exists("$file"))
 		{
 			// debug("found", " ");
 			## || file_exists("$aliasroot/$file")  disabled because of log bombing
@@ -1219,7 +1219,7 @@ function stripVariantSuffix($file) {
 }
 
 function findVariants($file) {
-	global $webroot, $aliasroot, $mimetypes, $allowedvariants, $files;
+	global $aliasroot, $mimetypes, $allowedvariants, $files;
 	$extension=strtolower(preg_replace('#^.*\.#', '', $file));
 	$filetype=preg_replace("#/.*#", "", $mimetypes[$extension]);
 
@@ -1261,13 +1261,17 @@ function findVariants($file) {
 	}
 }
 
+function add_css($uri) {
+	global $combinedcss;
+	if(preg_match("#^https*://#", $uri)) {
+		$cssurl=$uri;
+	} else if(is_file(DOCUMENT_ROOT . "/$uri")) {
+		$cssurl = preg_replace('#//*#', '/', "$uri");
+		$localfile = DOCUMENT_ROOT . "$uri";
+	}
+	if($cssurl) $combinedcss.="\n		<link href='$cssurl' rel='stylesheet' media='all'>";
+	if($localfile) $inpagecss.=file_get_contents($localfile);
+}
+
 #################
 ## Classes definitions
-
-
-
-
-
-
-
-?>

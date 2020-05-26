@@ -3,7 +3,7 @@ body {
 /*	font-family: "ITC Berkeley Oldstyle", "Berkeley", "ITC Garamond", "Garamond", "Adobe Garamond Pro", "Times", "Times New Roman", Serif;*/
 	text-align: center;
 	margin: 20px;
-/*	background-color: #F00;*/
+	background-color: #DDD;
 	font-size: 10pt;
 }
 
@@ -51,7 +51,7 @@ img {
 .container .inner {
     padding: 10px;
 }
-div.logo {
+.logo {
 	position: relative;
 	top: 0;
 	right: 0;
@@ -143,10 +143,6 @@ a {
 	width: 100%;
 	height: 420px;
 }
-object.player, embed.player {
-	background: url(/lib/wrap/images/loading.gif);
-	background-position:center center;
-}
 
 
 .playlist {
@@ -155,17 +151,10 @@ object.player, embed.player {
 	margin-right: auto;
 	text-align: left;
 }
-.playlist .item {
-	page-break-inside:avoid;
-	page-break-before: auto;
-	page-break-after: auto;
-}
+
 .item, .thumbframe {
 	width: auto;
 	display: inline-block;
-}
-.item .details {
-	display: none;
 }
 .thumbframe {
 	width: auto;
@@ -182,7 +171,9 @@ object.player, embed.player {
 	text-align: center;
 	height: 160px;
 }
-
+.item .details {
+	display: none;
+}
 .thumbframe, .thumb {
 	padding: 0;
 	margin: 0;
@@ -230,8 +221,10 @@ div.thumb img.thumb {
     display: block;
     color: #666;
     font-size: 0.8em;
-    font-style: italic;
+    font-style:italic;
+	background: white;
 }
+
 .item:hover .name {
 	display: block;
 }
@@ -276,7 +269,7 @@ div.large {
 	bottom: 0;
 	margin: 30px auto;
 
-	width: 100%;
+	width: 100%
 	/* max-width: 960px; */
 	height: 600px;
 	max-width: 100%;
@@ -580,6 +573,27 @@ font-family: "ITC Berkeley Oldstyle", "Berkeley", "ITC Garamond", "Garamond", "A
 	display: none;
 }
 
+td.left {
+	padding-right: 15px;
+}
+td.left hr {
+	opacity: 0.25;
+	margin: 15px 0;
+}
+.left .downloads .download {
+	display: block;
+	clear: both;
+	padding: 0.5em 0;
+}
+.left .downloads .thumbframe {
+	float: left;
+	padding-right: 0.5em;
+}
+.left .downloads img.thumb {
+	width: 48px;
+}
+
+
 @media print {
 	html, body, page {
 		height: 100%;
@@ -612,6 +626,14 @@ font-family: "ITC Berkeley Oldstyle", "Berkeley", "ITC Garamond", "Garamond", "A
 		padding: 0;
 /*		margin: 0;*/
 	}
+	.nav .parent:after {
+		counter-increment: page;
+		content: " (page " counter(page) ")";
+	}
+	td.logo {
+		width: auto !important;
+		white-space: nowrap !important;
+	}
 	#blanket,
 	#blanketfix,
 	.playall {
@@ -633,7 +655,33 @@ font-family: "ITC Berkeley Oldstyle", "Berkeley", "ITC Garamond", "Garamond", "A
 	.playlist {
 	    width: inherit;
 	}
-	.item {
+	.playlist .item {
+		position: relative;
+		display: block;
+		clear: both;
+		page-break-inside:avoid;
+		page-break-before: auto;
+		page-break-after: auto;
+		max-width: 100%;
+		height: 125px;
+		/* min-height: 125px; */
+	}
+	.item .thumbframe {
+		margin-right: 1em;
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+	.item .name,
+	.item .details {
+		display: block !important;
+		text-align: left;
+		margin-left: 240px;
+	}
+	.item .details {
+	}
+	.item .download {
+	    display: none;
 	}
 	.item .name {
 		width: 220px;
@@ -645,5 +693,13 @@ font-family: "ITC Berkeley Oldstyle", "Berkeley", "ITC Garamond", "Garamond", "A
 	width: 100%;
 	position: absolute;
 	bottom: 0px;
+	left: 0px;
+	right: 0px;
 	}
+	tfoot div.logo {
+		position: fixed;
+		top:  95%;
+		right: 0;
+	}
+
 }
