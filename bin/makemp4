@@ -1,6 +1,6 @@
 #!/bin/sh
 
-[ "$convertfolder" ] && destfolder="$convertfolder" || destfolder=. 
+[ "$convertfolder" ] && destfolder="$convertfolder" || destfolder=.
 # [ "$scale" ] || size=480x270
 [ "$scale" ] || scale=-1:360
 [ "$videorate" ] || videorate=800k
@@ -19,7 +19,7 @@ PATH=$(dirname "$0"):$PATH
 which ffmpeg | grep -q ffmpeg || alias ffmpeg=avconv
 ffmpeg -version >/dev/null 2>/dev/null || exit $?
 
-for app in /usr/bin/avconv avconv ffmpeg MP4Box catmovie 
+for app in /usr/bin/avconv avconv ffmpeg MP4Box catmovie
 do
     which $app | grep -q $app || continue
 #    case $app in
@@ -119,7 +119,7 @@ unit=$(echo "$videorate" | sed "s/[0-9]//g")
 rate=$(echo "$videorate" | sed "s/[^0-9]//g")
 buffer=$(($rate * 2))$unit
 
-[ "$ERROR" ] && { 
+[ "$ERROR" ] && {
     usage
     end $ERROR "error $ERROR, type '$PGM --help' for more info"
 }
@@ -191,7 +191,7 @@ do
     [ ! "$vcodec" ] && end 1 "no suitable video codec"
     log "vcodec: $vcodec"
 
-    case $os in 
+    case $os in
 	# Darwin)
 	*)
 	    acodec="$acodec -strict experimental"
@@ -214,7 +214,7 @@ do
 	done
     fi
 
-	command="$command -vcodec $vcodec $profile $preset -vb $videorate -maxrate $videorate -bufsize $buffer -vf scale=$convertsize -threads auto -pix_fmt yuv420p -acodec $acodec -ab $audiorate"
+	command="$command -ac 2 -vcodec $vcodec $profile $preset -vb $videorate -maxrate $videorate -bufsize $buffer -vf scale=$convertsize -threads auto -pix_fmt yuv420p -acodec $acodec -ab $audiorate"
 
     # command="$command -acodec $acodec -ab 160000 -s $convertsize -vcodec libx264 -coder 1 -flags +loop $osparams -me_method umh -subq 8 -me_range 16 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 2 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -bf 3 -refs 5 $directpred 3 -trellis 1 -wpredp 2 -coder 0 -bf 0 -refs 1 -level 30 -maxrate 10000000 -bufsize 10000000 -wpredp 0 -b $videorate -threads 0 -f mp4"
     command="$command $tmpfile"
