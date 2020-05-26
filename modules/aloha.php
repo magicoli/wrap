@@ -2,23 +2,22 @@
 ## Aloha integration
 
 if($addons['aloha'] && $wrap_editable && $editmode) {
-	$disabledplugins='
-		<script type="text/javascript" src="/lib/aloha/plugins/com.gentics.aloha.plugins.Abbr/plugin.js"></script>
-		<script type="text/javascript" src="/lib/aloha/plugins/com.gentics.aloha.plugins.HighlightEditables/plugin.js"></script>
-	';
-	$head.='<script type="text/javascript" src="/lib/aloha/aloha.js"></script>
-	<script type="text/javascript" src="/lib/aloha/plugins/uk.co.magiiic.AutoSave/plugin.js"></script>
-	<script type="text/javascript" src="/lib/aloha/plugins/com.gentics.aloha.plugins.Format/plugin.js"></script>
-	<script type="text/javascript" src="/lib/aloha/plugins/com.gentics.aloha.plugins.Link/LinkList.js"></script>
-	<script type="text/javascript" src="/lib/aloha/plugins/com.gentics.aloha.plugins.Link/delicious.js"></script>
-	<script type="text/javascript" src="/lib/aloha/plugins/com.gentics.aloha.plugins.Link/plugin.js"></script>
-	<script type="text/javascript" src="/lib/aloha/plugins/com.gentics.aloha.plugins.LinkChecker/plugin.js"></script>
-	<script type="text/javascript" src="/lib/aloha/plugins/com.gentics.aloha.plugins.List/plugin.js"></script>
-	<script type="text/javascript" src="/lib/aloha/plugins/com.gentics.aloha.plugins.Paste/plugin.js"></script>
-	<script type="text/javascript" src="/lib/aloha/plugins/com.gentics.aloha.plugins.Paste/wordpastehandler.js"></script>
-	<script type="text/javascript" src="/lib/aloha/plugins/com.gentics.aloha.plugins.TOC/plugin.js"></script>
-	<script type="text/javascript" src="/lib/aloha/plugins/com.gentics.aloha.plugins.Table/plugin.js"></script>
-	';
+  // add_js (BASE_URI . "/contrib/aloha/plugins/com.gentics.aloha.plugins.Abbr/plugin.js");
+  // add_js (BASE_URI . "/contrib/aloha/plugins/com.gentics.aloha.plugins.HighlightEditables/plugin.js");
+
+	add_js (BASE_URI . "/contrib/aloha/aloha.js");
+	add_js (BASE_URI . "/contrib/aloha/plugins/uk.co.magiiic.AutoSave/plugin.js");
+	add_js (BASE_URI . "/contrib/aloha/plugins/com.gentics.aloha.plugins.Format/plugin.js");
+	add_js (BASE_URI . "/contrib/aloha/plugins/com.gentics.aloha.plugins.Link/LinkList.js");
+	add_js (BASE_URI . "/contrib/aloha/plugins/com.gentics.aloha.plugins.Link/delicious.js");
+	add_js (BASE_URI . "/contrib/aloha/plugins/com.gentics.aloha.plugins.Link/plugin.js");
+	add_js (BASE_URI . "/contrib/aloha/plugins/com.gentics.aloha.plugins.LinkChecker/plugin.js");
+	add_js (BASE_URI . "/contrib/aloha/plugins/com.gentics.aloha.plugins.List/plugin.js");
+	add_js (BASE_URI . "/contrib/aloha/plugins/com.gentics.aloha.plugins.Paste/plugin.js");
+	add_js (BASE_URI . "/contrib/aloha/plugins/com.gentics.aloha.plugins.Paste/wordpastehandler.js");
+	add_js (BASE_URI . "/contrib/aloha/plugins/com.gentics.aloha.plugins.TOC/plugin.js");
+	add_js (BASE_URI . "/contrib/aloha/plugins/com.gentics.aloha.plugins.Table/plugin.js");
+
 	$head.="<script type=\"text/javascript\">
 	$(document).ready(function() {";
 
