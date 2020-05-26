@@ -44,7 +44,7 @@ function toggle(div_id) {
 	video_id = 'video_' + div_id;
 	el = document.getElementById(div_id);
 	// video = document.getElementById(video_id);
-	if ( el.style.display == 'none' ) {	
+	if ( el.style.display == 'none' ) {
 		el.style.display = 'block';
 		// video.play();
 	}
@@ -103,7 +103,7 @@ function switchSrc(div_id, src){
 	}
 	el = document.getElementById(div_id);
 	if(el) {
-		el.src=src;		
+		el.src=src;
 	}
 	return;
 }
@@ -241,7 +241,7 @@ function popup(windowname) {
 	videoSaveState(windowname);
 	toggle('blanket');
 	toggle('blanketfix');
-	videotoggle(windowname);	
+	videotoggle(windowname);
 	toggle(windowname);
 }
 
@@ -254,14 +254,14 @@ function popOn(windowname) {
 	videoRewind(windowname);
 	windowShow(windowname);
 	// videoRestoreState(windowname);
-	videoPlay(windowname);	
+	videoPlay(windowname);
 }
 
 function popOff(windowname) {
 	// blanket_size(windowname);
 	// window_pos(windowname);
 	videoSaveState(windowname);
-	videoPause(windowname);	
+	videoPause(windowname);
 	windowHide('blanket');
 	windowHide('blanketfix');
 	windowHide(windowname);
@@ -272,17 +272,17 @@ function moveObject(div_id, x) {
 	el.style.left = x;
 }
 
-function textediv_id(div_id) { 
-   if (!div_id) div_id = document.getElementById('scroll'); 
-   if (div_id) { 
-      if(poscurrent < ( - div_id.offsetWidth) ){ 
-         poscurrent = posinitial; 
-                } else { 
-         poscurrent+= -1; // pixel par deplacement 
-      } 
-      div_id.style.left = poscurrent+"px"; 
-   } 
-} 
+function textediv_id(div_id) {
+   if (!div_id) div_id = document.getElementById('scroll');
+   if (div_id) {
+      if(poscurrent < ( - div_id.offsetWidth) ){
+         poscurrent = posinitial;
+                } else {
+         poscurrent+= -1; // pixel par deplacement
+      }
+      div_id.style.left = poscurrent+"px";
+   }
+}
 
 function canPlayVideo(object) {
 	if(typeof(object)!='object') return false;
@@ -305,8 +305,8 @@ function getFileExtension(filename) {
 	var dot = filename.lastIndexOf(".");
 	if( dot == -1 ) return "";
 	var extension = filename.substr(dot + 1,filename.length);
-	return extension; 
-} 
+	return extension;
+}
 
 function firefoxFixVideo(object) {
 	if(!object) {
@@ -315,7 +315,7 @@ function firefoxFixVideo(object) {
 	tagname=object.tagName.toLowerCase();
 	if(tagname != 'video') {
 		return;
-	} 
+	}
 	if(canPlayVideo(object)) {
 		return;
 	}
@@ -360,4 +360,3 @@ function addfeedback(feedbacktext) {
 }
 
 document.onLoad=firefoxFixAll();
-

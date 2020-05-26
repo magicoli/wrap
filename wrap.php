@@ -31,14 +31,14 @@ $popuphide=array("social", "about", "playlists");
 #onClick='windowHide("playlists"); popOn("0");'>
 #onClick='windowHide("pagetitle");windowHide("about");windowHide("playlists"); popOn("0");'>
 
-$buttonprevious="&lt;";
-$buttonnext="&gt;";
+$buttonprevious="&#x23EE;";
+$buttonnext="&#x23ED;";
 $buttonbegin="&lt;&lt;";
 $buttonfirst="|&lt;";
 $buttonlast="&gt;|";
 $buttonpause="||";
 $buttonplay="&#9658;";
-$buttonclose="<b>X</b>";
+$buttonclose="&#x23CF;";
 
 $levelisetitles=true;
 
@@ -2085,7 +2085,7 @@ if(is_array($names))
 			}
 
 			if(!$inpage) {
-				$itemlink="<a href='javascript:'"
+				$itemlink="<a href='#'"
 					. " class=itemlink"
 					. " title='$namesafe'"
 					. " alt='$namesafe'"
@@ -2096,7 +2096,7 @@ if(is_array($names))
 
 					switch($largelinktype) {
 						case "close":
-						$largelink="<a href='javascript:' "
+						$largelink="<a href='#' "
 							. " class=large"
 							. " title='$namesafe'"
 							. " onClick='$windowshow popOff(\"$i\");'"
@@ -2104,7 +2104,7 @@ if(is_array($names))
 						$largelinkout="</a>";
 						break;
 						case "next":
-						$largelink="<a href='javascript:' "
+						$largelink="<a href='#' "
 							. " class=large"
 							. " title='$namesafe'"
 							. " onClick='popOff(\"$i\");popOn(\"$next\");'"
@@ -2150,7 +2150,7 @@ if(is_array($names))
 		if($files[$file]['variants'] && count($files[$file]['variants']) > 1) {
 			reset($files[$file]['variants']);
 			foreach($files[$file]['variants'] as $varianttype => $variant) {
-				$variants.="<a class=variant href='javascript:' onClick='switchSrc(\"$i\", \"/$variant\");'>$varianttype</a>";
+				$variants.="<a class=variant href='#' onClick='switchSrc(\"$i\", \"/$variant\");'>$varianttype</a>";
 			}
 			$variants = "<div class='variants' id='variants_$i'>$variants</div>";
 		}
@@ -2161,18 +2161,18 @@ if(is_array($names))
 				<div class='nav' id='nav_$i'>";
 			if ($popupnav) {
 				$popupnavhtml .= "
-					<a class=previous id='prev_$i' href='javascript:' onClick='popOff(\"$i\"); popOn(\"$previous\");'>$buttonprevious</a>";
+					<a class='button previous' id='prev_$i' href='#' onClick='popOff(\"$i\"); popOn(\"$previous\");'>$buttonprevious</a>";
 				if($filetype=='video' && $controls=='false') {
 					$popupnavhtml .= "
-						<a class=begin id='begin_$i' href='javascript:' onClick='videoRewind(\"$i\");'>$buttonbegin</a>
-						<a class=pause id='pause_$i' href='javascript:' onClick='videoPause(\"$i\");'>$buttonpause</a>
-						<a class=play id='play_$i' href='javascript:' onClick='videoPlay(\"$i\");'>$buttonplay</a>";
+						<a class='button begin' id='begin_$i' href='#' onClick='videoRewind(\"$i\");'>$buttonbegin</a>
+						<a class='button pause' id='pause_$i' href='#' onClick='videoPause(\"$i\");'>$buttonpause</a>
+						<a class='button play' id='play_$i' href='#' onClick='videoPlay(\"$i\");'>$buttonplay</a>";
 				}
 				$popupnavhtml .= "
-					<a class=close id='close_$i' href='javascript:' onClick='popOff(\"$i\");$windowshow;'>$buttonclose</a>";
+					<a class='button close' id='close_$i' href='#' onClick='popOff(\"$i\");$windowshow;'>$buttonclose</a>";
 //				if(!preg_match("#^s:#", $index[$next])) {
 					$popupnavhtml .= "
-							<a class=next id='next_$i' href='javascript:' onClick='popOff(\"$i\"); popOn(\"$next\");'>$buttonnext</a>";
+							<a class='button next' id='next_$i' href='#' onClick='popOff(\"$i\"); popOn(\"$next\");'>$buttonnext</a>";
 //				}
 				$popupnavhtml .= $buttonlinks;
 			}

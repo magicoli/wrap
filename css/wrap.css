@@ -262,13 +262,14 @@ a.itemlink:link, a.itemlink:visited, a.itemlink:active {
 	z-index: 5;
 }
 
-div.large {
+div.large
+ {
 	position: absolute;
 	left: 0;
 	right: 0;
 	top: 0;
 	bottom: 0;
-	margin: 30px auto;
+	margin: 1em auto;
 
 	width: 100%
 	/* max-width: 960px; */
@@ -278,7 +279,8 @@ div.large {
 	text-align: center;
 }
 
-img.large {
+img.large
+ {
 	position: absolute;
 	top: 0;
 	bottom: 0;
@@ -291,28 +293,44 @@ img.large {
 }
 .large .nav {
 /*	font-family: Arial, Helvetica, sans-serif;*/
+clear: both;
+padding-top: 1em;
 }
-.large .nav .close, .large .nav .next, .large .nav .previous {
+.large .nav a.button {
+	text-decoration: none;
+	font-size: 1.5em;
+	display: block;
+	line-height: 1em;
+	/* background-color: #eee; */
+	/* border: solid 1px #ccc; */
+	/* border-radius: 5px; */
+	/* padding: 8px 10px 10px; */
+}
+.large .nav a.button:hover {
+	/* background-color: #ccc; */
+}
+.large .nav .close,
+.large .nav .next,
+.large .nav .previous {
 	position: absolute;
-	bottom: 100%;
 	width: auto;
 	margin: 0 auto;
-	padding: 7px 0;
 	text-align: left;
 	z-index: 6;
 }
 .large .nav .next {
 	text-align: right;
-	bottom: -30px;
+	bottom: 0;
 	right: 0;
 }
 .large .nav .previous {
 	text-align: left;
-	top: 100%;
+	bottom: 0;
 	left: 0;
 }
 .large .nav .close {
 	text-align: right;
+	top: 0;
 	right: 0;
 }
 
@@ -344,7 +362,7 @@ img.large {
 }
 .large .info {
 	position: absolute;
-	top: 100%;
+	bottom: 0;
 	width: 100%;
 	margin: 0 auto;
 	padding: 7px 0;
@@ -352,7 +370,8 @@ img.large {
 
 .large video {
 	width: 100%;
-	max-height: 640px;
+	max-height: 90%;
+	margin: auto;
 }
 .large .info .largename {
 	text-align: center;
