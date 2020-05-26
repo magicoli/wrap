@@ -1264,14 +1264,31 @@ function findVariants($file) {
 function add_css($uri) {
 	global $combinedcss;
 	if(preg_match("#^https*://#", $uri)) {
-		$cssurl=$uri;
+		$include_uri=$uri;
 	} else if(is_file(DOCUMENT_ROOT . "/$uri")) {
-		$cssurl = preg_replace('#//*#', '/', "$uri");
+		$include_uri = preg_replace('#//*#', '/', "$uri");
 		$localfile = DOCUMENT_ROOT . "$uri";
 	}
-	if($cssurl) $combinedcss.="\n		<link href='$cssurl' rel='stylesheet' media='all'>";
-	if($localfile) $inpagecss.=file_get_contents($localfile);
+	if($include_uri) {
+		$combinedcss.="\n		<link href='$include_uri' rel='stylesheet' media='all'>";
+		if($localfile) $inpagecss.=file_get_contents($localfile);
+		return true;
+	}
+	return false;
 }
 
+function add_js($uri) {
+	global $headers;
+	if(preg_match("#^https*://#", $uri)) {
+		$include_uri = $uri;
+	} else if(is_file(DOCUMENT_ROOT . "/$uri")) {
+		$include_uri = preg_replace('#//*#', '/', "$uri");
+	}
+	if($include_uri) {
+		$headers[$uri] = "<script src='$include_uri' type='text/javascript'></script>";
+		return true;
+	}
+	return false;
+}
 #################
 ## Classes definitions
