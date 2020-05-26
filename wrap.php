@@ -489,6 +489,7 @@ if(is_file(__DIR__ . "/lib/browser.css")) {
 //
 add_css(BASE_URI . "/css/wrap.css");
 add_css(BASE_URI . "/css/browser.css");
+add_js(BASE_URI . "/js/wrap.js");
 
 if(is_array($path))
 {
@@ -597,9 +598,9 @@ if($fb_app_id) {
 } else {
 	$fb_param_appid=$default_fb_app_id;
 }
-$fb_init="<div style=\"margin-top: 0px\" id=\"fb-root\"></div><script src=\"$protocol://connect.facebook.net/fr_FR/all.js#appId=$fb_param_appid&amp;xfbml=1\"></script>";
 
 if($facebooked || $facebookapp) {
+	$fb_init="<div style=\"margin-top: 0px\" id=\"fb-root\"></div><script src=\"$protocol://connect.facebook.net/fr_FR/all.js#appId=$fb_param_appid&amp;xfbml=1\"></script>";
 	$bodyclasses[]="simplified";
 	$fbtweak="
 	<div id=\"fb-root\"></div>
@@ -2814,11 +2815,12 @@ if(!empty($sections[$section])) {
 //$playlist = processtags('playlist', $playlist);
 
 if ($slideshow &! empty($gallery)) {
-	$head.="		<script src='/lib/mootools-1.2.1-core-yc.js' type='text/javascript'></script>
-		<script src='/lib/mootools-1.2-more.js' type='text/javascript'></script>
-		<script src='/lib/jd.gallery.js' type='text/javascript'></script>
-		<link rel='stylesheet' href='/lib/jd.layout.cssz' type='text/css' media='screen' charset='utf-8' />
-		<link rel='stylesheet' href='/lib/jd.gallery.css' type='text/css' media='screen' charset='utf-8' />\n";
+	add_js ( BASE_URI . '/contrib/mootools-1.2.1-core-yc.js' );
+	add_js ( BASE_URI . '/contrib/mootools-1.2-more.js' );
+	add_js ( BASE_URI . '/contrib/jd.gallery.js' );
+	// add_css('/contrib/jd.layout.css');
+	add_css(BASE_URI . '/contrib/jd.gallery.js');
+
 	$mediaplayer .= "
 		<script type='text/javascript'>
 		function startGallery() {
@@ -3378,9 +3380,13 @@ else if($REQUEST['output']=="flv")
 	// }
 	$finalpage=processChordPro($finalpage);
 
+	if(is_array($headers)) {
+		$finalpage=preg_replace("#</head>#i", join("", $headers) . "</head>", $finalpage);
+
+	}
 	if(is_array($bodyclasses)) {
 	    $bodyclass="class=\"" . implode(" ", $bodyclasses) . "\"";
-		$finalpage=preg_replace("#<body#", "<body $bodyclass ", $finalpage);
+			$finalpage=preg_replace("#<body#", "<body $bodyclass ", $finalpage);
 	}
 
 	if (! $pageid) {
