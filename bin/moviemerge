@@ -162,7 +162,7 @@ else
     sources=$@
 fi
 
-for app in MP4Box ffmpeg avconv catmovie 
+for app in MP4Box ffmpeg avconv catmovie
 do
     which $app | grep -q $app || continue
 #    case $app in
@@ -192,7 +192,7 @@ case $method in
 	    if [ ! -f "$ts" ]
 	    then
 		log making intermediate for $source
-		$app -i $source -c copy -bsf:v h264_mp4toannexb -f mpegts $ts 2>/dev/null
+		$app -i $source -c copy -ac 2 -bsf:v h264_mp4toannexb -f mpegts $ts 2>/dev/null
 	    fi
 	    [ ! -f "$ts" ] && end 3 "could not make intermediate for $source"
 	    log "$source $ts"
