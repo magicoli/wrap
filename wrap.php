@@ -21,29 +21,15 @@ $libdir=dirname(__FILE__);
 $libdirurl=dirname($_SERVER['SCRIPT_NAME']);
 $scriptname="wrap";
 
-ini_set("include_path", __DIR__);
-ini_set("include_path", __DIR__ . "/contrib");
+ini_set( "include_path", __DIR__ );
+// ini_set( "include_path", __DIR__ . "/inc" );
+ini_set( "include_path", __DIR__ . "/contrib" );
 
-$requires=array(
-	"functions.php",
-);
-foreach ($requires as $require) {
-	if (is_file($require)) {
-		require_once($require);
-	}
-}
+require_once('inc/functions.php');
 
-$includes=array(
-	"rssfeed.php",
-	"cfpropertylist/CFPropertyList.php",
-	"Mobile_Detect.php",
-);
-
-foreach ($includes as $include) {
-	// if (is_file($include)) {
-		@include_once($include);
-	// }
-}
+@include_once('Mobile_Detect.php');
+// "rssfeed.php",
+// "cfpropertylist/CFPropertyList.php",
 
 $largelinktype="next";
 $debugmode="store";
