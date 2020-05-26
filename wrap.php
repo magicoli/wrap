@@ -31,14 +31,15 @@ $popuphide=array("social", "about", "playlists");
 #onClick='windowHide("playlists"); popOn("0");'>
 #onClick='windowHide("pagetitle");windowHide("about");windowHide("playlists"); popOn("0");'>
 
-$buttonprevious="&#x23EE;";
-$buttonnext="&#x23ED;";
-$buttonbegin="&lt;&lt;";
-$buttonfirst="|&lt;";
-$buttonlast="&gt;|";
-$buttonpause="||";
-$buttonplay="&#9658;";
-$buttonclose="&#x23CF;";
+$buttons['previous']="&#x25C0;"; # rewind "&#x23EA;"
+$buttons['next']="&#x25B6;"; # fast forward "&#x23E9;"
+$buttons['begin']="&lt;&lt;";
+$buttons['first']="&#x23EE;";
+$buttons['last']="&#x23ED;";
+$buttons['pause']="&#x23F8;";
+$buttons['play']="&#9658;";
+// $buttons['close']="&#x23CF;"; # EJECT
+$buttons['close']="&#x274c;";
 
 $levelisetitles=true;
 
@@ -2161,18 +2162,18 @@ if(is_array($names))
 				<div class='nav' id='nav_$i'>";
 			if ($popupnav) {
 				$popupnavhtml .= "
-					<a class='button previous' id='prev_$i' href='#' onClick='popOff(\"$i\"); popOn(\"$previous\");'>$buttonprevious</a>";
+					<a class='button previous' id='prev_$i' href='#' onClick='popOff(\"$i\"); popOn(\"$previous\");'>${buttons['previous']}</a>";
 				if($filetype=='video' && $controls=='false') {
 					$popupnavhtml .= "
-						<a class='button begin' id='begin_$i' href='#' onClick='videoRewind(\"$i\");'>$buttonbegin</a>
-						<a class='button pause' id='pause_$i' href='#' onClick='videoPause(\"$i\");'>$buttonpause</a>
-						<a class='button play' id='play_$i' href='#' onClick='videoPlay(\"$i\");'>$buttonplay</a>";
+						<a class='button begin' id='begin_$i' href='#' onClick='videoRewind(\"$i\");'>${buttons['begin']}</a>
+						<a class='button pause' id='pause_$i' href='#' onClick='videoPause(\"$i\");'>${buttons['pause']}</a>
+						<a class='button play' id='play_$i' href='#' onClick='videoPlay(\"$i\");'>${buttons['play']}</a>";
 				}
 				$popupnavhtml .= "
-					<a class='button close' id='close_$i' href='#' onClick='popOff(\"$i\");$windowshow;'>$buttonclose</a>";
+					<a class='button close' id='close_$i' href='#' onClick='popOff(\"$i\");$windowshow;'>${buttons['close']}</a>";
 //				if(!preg_match("#^s:#", $index[$next])) {
 					$popupnavhtml .= "
-							<a class='button next' id='next_$i' href='#' onClick='popOff(\"$i\"); popOn(\"$next\");'>$buttonnext</a>";
+							<a class='button next' id='next_$i' href='#' onClick='popOff(\"$i\"); popOn(\"$next\");'>${buttons['next']}</a>";
 //				}
 				$popupnavhtml .= $buttonlinks;
 			}
