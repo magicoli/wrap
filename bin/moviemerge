@@ -180,7 +180,8 @@ case $method in
 	    for source in $sources
 	    do
 		printf " -cat $source"
-	    done
+  done	command="$app -i concat:\"$inter\" -c copy -ac 2 -bsf:a aac_adtstoasc $output"
+
 	    printf " -new $output"
 	)
 	;;
@@ -192,7 +193,7 @@ case $method in
 	    if [ ! -f "$ts" ]
 	    then
 		log making intermediate for $source
-		$app -i $source -c copy -bsf:v h264_mp4toannexb -f mpegts $ts 2>/dev/null
+		$app -i $source -c copy -ac 2 -bsf:v h264_mp4toannexb -f mpegts $ts 2>/dev/null
 	    fi
 	    [ ! -f "$ts" ] && end 3 "could not make intermediate for $source"
 	    log "$source $ts"
@@ -200,7 +201,8 @@ case $method in
 		&& inter="$inter|$ts" \
 		|| inter=$ts
 	done
-	command="$app -i concat:\"$inter\" -c copy -ac 2 -bsf:a aac_adtstoasc $output"
+  # command="$app -i concat:\"$inter\" -c copy -ac 2 -bsf:a aac_adtstoasc $output"
+  command="$app -i concat:\"$inter\" -c copy -bsf:a aac_adtstoasc -ac 2 $output"
         log "command: $command"
 	;;
     *)
