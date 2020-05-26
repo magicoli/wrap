@@ -1,9 +1,16 @@
+[unreleased]
+* convert obsolete ereg_* function to preg
+* use include path, insted of hard paths
+* silent includes insted of file_exists checks
+* external includes in contrib/ folder
+* only try to detect mobile if Mobile_Detect class is present
+
 1.11
 - CHANGELOG & README files
 - handle .tar, .gz and .tar extensions as downloadable
 - added [video:] tag
 - wrap.php: allow one simple text line in links.txt, not converted as link
-- added info from comment additions in playlist 
+- added info from comment additions in playlist
 
 1.10
 New features:

@@ -1,5 +1,13 @@
 <?php
+/*
+ * W.R.A.P.
+ * Version: 2.0-dev
+ *
+ */
+
+define('DEBUG', true);
 ini_set("error_reporting",  E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+
 $protocol=preg_replace("/:.*/", "", getenv("SCRIPT_URI"));
 
 if(preg_match("/^dev\.|^local\.|^preview\./", getenv("HTTP_HOST"))) {
@@ -13,6 +21,9 @@ $libdir=dirname(__FILE__);
 $libdirurl=dirname($_SERVER['SCRIPT_NAME']);
 $scriptname="wrap";
 
+ini_set("include_path", __DIR__);
+ini_set("include_path", __DIR__ . "/contrib");
+
 $requires=array(
 	"functions.php",
 );
@@ -23,16 +34,15 @@ foreach ($requires as $require) {
 }
 
 $includes=array(
-	"$libdir/rssfeed.php",
-	"$libdir/cfpropertylist/CFPropertyList.php",
-	"$libdir/Mobile_Detect.php",
-	"$libdir/../Mobile_Detect.php",
+	"rssfeed.php",
+	"cfpropertylist/CFPropertyList.php",
+	"Mobile_Detect.php",
 );
 
 foreach ($includes as $include) {
-	if (is_file($include)) {
-		include_once($include);
-	}
+	// if (is_file($include)) {
+		@include_once($include);
+	// }
 }
 
 $largelinktype="next";
@@ -319,12 +329,15 @@ if(preg_match('/iPad/', getenv('HTTP_USER_AGENT'))) {
 		$bodyclasses['iphone']="iPhone";
 	}
 }
-$detect = new Mobile_Detect();
-// isAndroid(), isBlackberry(), isOpera(), isPalm(), isWindows(), isGeneric().
-if ($detect->isMobile()) {
-	$bodyclasses['smartphone']="smartphone";
-} else {
-  $bodyclasses['not-smartphone']="not-smartphone";
+if(class_exists('Mobile_Detect')) {
+	$detect = new Mobile_Detect();
+
+	// isAndroid(), isBlackberry(), isOpera(), isPalm(), isWindows(), isGeneric().
+	if ($detect->isMobile()) {
+		$bodyclasses['smartphone']="smartphone";
+	} else {
+		$bodyclasses['not-smartphone']="not-smartphone";
+	}
 }
 
 // if(preg_match('#iPhone|iPod#', getenv('HTTP_USER_AGENT')) || $_REQUEST['force']=="iPhone")
