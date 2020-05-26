@@ -3141,32 +3141,24 @@ if($REQUEST['output']=="rss" && $podcast)
 	// would probably be better to use the higher mod date of displayed files
 	$lastBuildDate=date ("D, d M Y H:i:s O");
 	$pubDate=$lastBuildDate;
-	//
+	$rsslink = $protocol . "://" . $hostname . rewritelink();
 
 	header("Content-Type: text/html; charset=$charset");
-	echo "<?xml version='1.0' encoding='UTF-8'?>"
-	. "<rss xmlns:itunes=\"http://www.itunes.com/dtds/podcast-1.0.dtd\" version=\"2.0\">"
-	. "<channel>"
-	. "<title>$globaltitle $pagetitle</title>"
-	. "<description>$pagetitle</description>"
-	. "<link>$prot$finalpageocol//" . $hostname . rewritelink() . "</link>"
-	. "<language>en-us</language>"
-	. "<copyright>Copyright 2008</copyright>"
-	. "<lastBuildDate>$lastBuildDate</lastBuildDate>"
-	. "<pubDate>$pubDate</pubDate>"
-	. "<docs>http://blogs.law.harvard.edu/tech/rss</docs>"
-	. "<webMaster>webmaster@magiiic.com</webMaster>";
-	echo $podcastxml
-	. "</channel>"
-	. "</rss>";
+	$rssxml = preg_replace("#<head>#i", "<head>\n[head][style]", file_get_contents(__DIR__ . "/inc/rss.inc"));
+	$rssxml = processtags(get_defined_vars(), $rssxml);
+
+	echo $output;
+	exit;
 }
-else if($REQUEST['output']=="flv")
+
+if($REQUEST['output']=="flv")
 # else if(isset($REQUEST['flv']))
 {
 	header("Content-Type: text/xml; charset=$charset");
 	echo $flvplaylist;
 	exit;
-} else {
+}
+
 
 	header("Content-Type: text/html; charset=$charset");
 
@@ -3216,7 +3208,7 @@ else if($REQUEST['output']=="flv")
 	<body>
 		<header>
 			<nav>
-				[navigation]
+				[navigation][downloads]
 			</nav>
 			[logo]
 		</header>
@@ -3251,22 +3243,18 @@ else if($REQUEST['output']=="flv")
 	{
 		$layout=preg_replace('#<head>#i', "<head>[head]", $layout);
 	}
-	if(!preg_match("#browser[0-9]*.js#", $layout))
-	{
-		$layout=preg_replace('#</head>#i', "<script type='text/javascript' src='" . BASE_URL . "/$scriptname.js'></script></head>", $layout);
-	}
 	switch ($videofallback) {
 		case "jwplayer":
-			$layout=preg_replace('#</head>#i', "<script type='text/javascript' src='/lib/jwplayer/jwplayer.js'></script></head>", $layout);
+			add_js('/lib/jwplayer/jwplayer.js');
 			break;
 		case "mediaelement":
-			$layout=preg_replace('#</head>#i', "<link rel='stylesheet' href='/lib/mediaelement/mediaelementplayer.css' /></head>", $layout);
-			$layout=preg_replace('#</head>#i', "<script src='/lib/mediaelement/jquery.js'></script><script src='/lib/mediaelement/mediaelement-and-player.min.js'></script></head>", $layout);
+			add_css('/lib/mediaelement/mediaelementplayer.css');
+			add_js('/lib/mediaelement/jquery.js');
 			$layout=preg_replace('#</body>#i', "<script>$('video,audio').mediaelementplayer();</script></body>", $layout);
 			break;
 		case "videojs":
-			$layout=preg_replace('#</head>#i', "<script src='/lib/videojs/video.js' type='text/javascript' charset='utf-8'></script></head>", $layout);
-			$layout=preg_replace('#</head>#i', "<link rel='stylesheet' href='/lib/videojs/video-js.css' type='text/css' media='screen' title='Video JS' charset='utf-8'></head>", $layout);
+			add_js('/lib/videojs/video.js');
+			add_css('/lib/videojs/video-js.css');
 			$layout=preg_replace('#</body>#i', "<script type='text/javascript' charset='utf-8'>VideoJS.setupAllWhenReady();</script></body>", $layout);
 			break;
 		// default:
@@ -3394,5 +3382,3 @@ else if($REQUEST['output']=="flv")
 	$finalpage=preg_replace("#<nav[^>]*> *</nav>#", "", $finalpage);
 	$finalpage=preg_replace("#<div[^>]*> *</div>#", "", $finalpage);
 	print "$finalpage";
-}
-?>

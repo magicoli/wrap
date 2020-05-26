@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rss xmlns:itunes=\"http://www.itunes.com/dtds/podcast-1.0.dtd\" version=\"2.0\">
+  <channel>
+    <title>[globaltitle] [pagetitle]</title>
+    <description>[pagetitle]</description>
+    <link>[rsslink]</link>
+    <language>en-us</language>
+    <copyright>Copyright 2008</copyright>
+    <lastBuildDate>[lastBuildDate]</lastBuildDate>
+    <pubDate>[pubDate]</pubDate>
+    <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+    <webMaster>[webmaster]</webMaster>";
+    [podcastxml]
+  </channel>
+</rss>
