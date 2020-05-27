@@ -2874,6 +2874,8 @@ if(empty($headtitle)) {
 	$headtitle=$pagetitle;
 }
 $headtitle=strip_tags(preg_replace("#</a>#", " / ", processtags(get_defined_vars(), $headtitle)));
+if($sitetitle != $headtitle ) $headtitle = "$headtitle | $sitetitle";
+
 $facetitle=strip_tags(preg_replace("#</a>#", " / ", processtags(get_defined_vars(), $facetitle)));
 
 // $headtitle=preg_replace("#<[^>]*>#", "", $headtitle);
