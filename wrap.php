@@ -1593,7 +1593,7 @@ if($includeparentstyle) {
 
 $checktemplate[]=preg_replace("#\.php$#", ".html", $scriptfilename);
 $checktemplate[]="themes/$theme/page-template.html";
-$checktemplate[]="themes/default/page-template.html";
+$checktemplate[]="themes/classic/page-template.html";
 $checktemplate[]="themes/minimal/page-template.html";
 $checktemplate[]="browser.html";
 
