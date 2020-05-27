@@ -474,16 +474,16 @@ if($_POST['signed_request'] || $_REQUEST['force']=="facebook") {
 
 $path=preg_split('#/#', preg_replace('#/$#', '', $uri));
 
-if(is_file(__DIR__ . "css/browser.css")) {
-	$combinedcss.="
-		<link href='" . BASE_URL . "/css/browser.css' rel='stylesheet' media='all'>";
-	$inpagecss.=file_get_contents(__DIR__ . "css/browser.css");
-}
-if(is_file(__DIR__ . "/lib/browser.css")) {
-	$combinedcss.="
-		<link href='" . BASE_URL . "/css/browser.css' rel='stylesheet' media='all'>";
-	$inpagecss.=file_get_contents(__DIR__ . "/css/browser.css");
-}
+// if(is_file(__DIR__ . "css/browser.css")) {
+// 	$combinedcss.="
+// 		<link href='" . BASE_URL . "/css/browser.css' rel='stylesheet' media='all'>";
+// 	$inpagecss.=file_get_contents(__DIR__ . "css/browser.css");
+// }
+// if(is_file(__DIR__ . "/lib/browser.css")) {
+// 	$combinedcss.="
+// 		<link href='" . BASE_URL . "/css/browser.css' rel='stylesheet' media='all'>";
+// 	$inpagecss.=file_get_contents(__DIR__ . "/css/browser.css");
+// }
 
 // if(is_file(__DIR__ . "css/$scriptname.css")) {
 // 	$combinedcss.="
@@ -493,6 +493,7 @@ if(is_file(__DIR__ . "/lib/browser.css")) {
 //
 add_css(BASE_URI . "/css/wrap.css");
 add_css(BASE_URI . "/themes/$theme/wrap.css");
+
 add_css(BASE_URI . "/css/print.css");
 add_css(BASE_URI . "/themes/$theme/print.css");
 
@@ -1589,16 +1590,16 @@ if(isset($pagetemplate)) {
 
 if($includeparentstyle) {
 	if($rootdir != "") {
-		$checktemplate[]=cleanpath(DOCUMENT_ROOT . "/$rootdir/browser.html");
+		// $checktemplate[]=cleanpath(DOCUMENT_ROOT . "/$rootdir/browser.html");
 	}
-	$checktemplate[]=DOCUMENT_ROOT . "/browser.html";
+	// $checktemplate[]=DOCUMENT_ROOT . "/browser.html";
 }
 
 $checktemplate[]=preg_replace("#\.php$#", ".html", $scriptfilename);
 $checktemplate[]="themes/$theme/page-template.html";
 $checktemplate[]="themes/classic/page-template.html";
 $checktemplate[]="themes/minimal/page-template.html";
-$checktemplate[]="browser.html";
+$checktemplate[]="wrap.html";
 
 $pagetemplate=firstValidFile($checktemplate);
 
