@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'WRAP_INC' ) ) die ;
+
 class item {
 	function item() {
 		global $hostname, $webroot, $protocol;
@@ -66,12 +68,12 @@ class item {
 		{
 			if($value)
 			{
-				$return .= "<div class=info_$key>" 
+				$return .= "<div class=info_$key>"
 				. preg_replace("#\n#", "</div><div class=info_$key>", $value)
 				. "</div>";
 			}
 		}
-		$return="<div class=description>$return</div>";		
+		$return="<div class=description>$return</div>";
 		return $return;
 	}
 }

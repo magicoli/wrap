@@ -1,7 +1,5 @@
 <?php
-
-##############
-## Functions () definition
+if ( ! defined( 'WRAP_INC' ) ) die ;
 
 function localise($string) {
 	global $localisation;

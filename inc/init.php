@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'WRAP_INC' ) ) die ;
 
 define('BASE_URI', dirname(getenv('SCRIPT_NAME')) );
 define('BASE_URL', getenv('REQUEST_SCHEME') . '://' . preg_replace(":/*$:", "/", getenv('HTTP_HOST') . BASE_URI ));

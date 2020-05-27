@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'WRAP_INC' ) ) die ;
 ## Aloha integration
 
 if($addons['aloha'] && $wrap_editable && $editmode) {

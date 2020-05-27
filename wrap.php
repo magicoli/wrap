@@ -5,15 +5,18 @@
  *
  */
 
+// We don't want to be called directly
+if (getenv('SCRIPT_URL') == getenv('SCRIPT_NAME')) die; // called directly
+
 define('DEBUG', true);
 
 ini_set( "include_path", __DIR__ );
 // ini_set( "include_path", __DIR__ . "/inc" );
 ini_set( "include_path", __DIR__ . "/contrib" );
 
+define( 'WRAP_INC', true ) ;
 require_once('inc/init.php');
 require_once('inc/functions.php');
-
 @include_once('Mobile_Detect.php');
 // "rssfeed.php",
 // "cfpropertylist/CFPropertyList.php",
