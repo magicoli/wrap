@@ -325,3 +325,31 @@ padding-top: 1em;
 	-moz-border-radius: 7px 7px 0 0;*/
 	z-index: 3;
 }
+
+#left .downloads .download {
+	display: block;
+	clear: both;
+	padding: 0.5em 0;
+}
+#left .downloads .thumbframe {
+	float: left;
+	padding-right: 0.5em;
+}
+#left .downloads img.thumb {
+	width: 64px;
+}
+
+@media screen and ( max-width: 960px ) {
+	#left .downloads,
+	#left .downloads .download,
+	#playlists, .playlist {
+		text-align: center;
+	}
+	#left .downloads .download {
+		display: inline-block;
+		font-size: 80%;
+	}
+	#left .downloads .thumbframe {
+		float: none;
+	}
+}
