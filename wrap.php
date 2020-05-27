@@ -1,7 +1,7 @@
 <?php
 /*
  * W.R.A.P.
- * Version: 2.0-dev
+ * Version: 2.0
  *
  */
 
