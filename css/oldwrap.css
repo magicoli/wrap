@@ -1,0 +1,280 @@
+.about {
+	float: none;
+	display: block;
+	text-align: left;
+	margin-bottom: 12pt;
+}
+.print {
+	display: none;
+}
+.list {
+	position: relative;
+	left: 80px;
+	margin: 1px 80px 0 0;
+}
+.list .year {
+	display: inline-block;
+	margin: 3px 0 0 -80px;
+	width: 80px;
+}
+img {
+	border: none;
+}
+
+.container {
+/*	position: absolute;*/
+	display: block;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin:auto auto;
+	text-align: left;
+	width: 100%;
+	max-width:  960px;
+	height: 90%;
+	border: solid 1px #999;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	background-color: #EEE;
+	padding: 0px;
+}
+.container .inner {
+    padding: 10px;
+}
+.footer .logo {
+	float: right;
+	text-align: right;
+}
+
+
+
+div.large
+ {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	margin: 1em auto;
+
+	width: 100%
+	/* max-width: 960px; */
+	height: 600px;
+	max-width: 100%;
+	max-height: 100%;
+	text-align: center;
+}
+
+
+.content {
+	position: relative;
+	background-color: #FFF;
+	margin: -1px 0 0 0;
+	border: solid 1px black;
+	width: 100%;
+/*	max-width: 960px;*/
+	min-height: 480px;
+/*	height: 640px;*/
+	padding: 0;
+	border-spacing:10px;
+}
+.content tr {
+	height: 640px;
+}
+.content td {
+	vertical-align: top;
+	padding: 0;
+}
+td.left, .content td.right {
+/*	width: 0;*/
+	margin-bottom: 10px;
+	max-width: 250px;
+	font-size: smaller;
+}
+.content td.article {
+/*	max-width: 100%;
+	max-height: 100%;
+*/
+}
+
+.left .tree {
+    max-width: 200px;
+}
+
+.right h4 {
+	margin-bottom: 0px;
+	padding-bottom: 0px;
+}
+
+.rss .channelname {
+	font-weight: bold;
+	font-size: 10pt;
+}
+
+.rss .right {
+	display: block;
+	width: 100%;
+	float: none;
+	margin: 0;
+	text-align: right;
+}
+
+.footer {
+	clear: both;
+	margin-top: 10px;
+	height: 25px;
+}
+
+.link, .media .controls a {
+	text-transform: uppercase;
+	font-size: 7pt;
+	background: #CCC;
+	color: #333;
+	text-decoration: none;
+	border: solid 1px #333;
+	padding: 1px 3px;
+	margin-left: -1px;
+}
+.link:before {
+	font-weight: bold;
+	content: "▼ ";
+}
+
+.controls {
+	text-align: center;
+	height: 30px;
+}
+
+.cloud, .cloud a {
+	margin: 10px 0;
+	text-align: left;
+	color: #CCC;
+	text-decoration: none;
+	/* font-family: Arial, Helvetica, sans-serif; */
+}
+
+.cloud1 { font-size: 10pt; font-weight: 100; }
+.cloud2 { font-size: 11pt; font-weight: 300; }
+.cloud3 { font-size: 12pt; font-weight: 500; }
+.cloud4 { font-size: 13pt; font-weight: 700; }
+.cloud5 { font-size: 14pt; font-weight: 900; }
+
+
+/*.article :first-child {
+	margin-top: 0px;
+}
+*/
+.article h1 {
+	display: none;
+}
+
+strike {
+	text-decoration: line-through;
+}
+
+.wrapbox {
+font-family: "ITC Berkeley Oldstyle", "Berkeley", "ITC Garamond", "Garamond", "Adobe Garamond Pro", "Times", "Times New Roman", Serif;
+/*	display: inline-block;*/
+	position: absolute;
+	width: 100%;
+	max-width: 960px;
+	top: 63px;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	margin: 0 auto;
+	font-size: 10pt;
+/*	background: white;*/
+	padding: 0 ;
+/*	border: solid 1px #CCC;*/
+	border-top: none;
+	z-index: 7;
+	text-align: right;
+	height: 0;
+}
+.wrapbox div {
+	display: inline;
+}
+.wrapbox a, .wrap_buttons a {
+	border: solid 1px #999;
+	padding: 2px 2px 0;
+	text-transform: uppercase;
+	text-decoration: none;
+	font-size: 90%;
+	background: white;
+/*	font-variant: small-caps;*/
+}
+.wrapbox a.button#active, .wrap_buttons a.button#active {
+	background: #CCC;
+}
+.wrapinfo {
+	margin-bottom: 6pt;
+}
+
+.social {
+	position: absolute;
+	top: -27px;
+	left: 0;
+}
+.fb_item_like {
+	position: absolute;
+	top: -20px;
+	left: 0px;
+}
+.fb_item_comments {
+	position: relative;
+	top: 100%;
+	width: 555px;
+	margin-right: -15px;
+	margin-left: 10px;
+	margin-top: 35px;
+/*	background: pink;*/
+	float:right;
+	z-index:8;
+	background-color: #EEE;
+}
+.fb_item_comments iframe {
+/*	background: white;*/
+}
+
+.large .description {
+	position: relative;
+	top: 100%;
+	margin-top: 32px;
+	left: 0;
+	width: 100%;
+	margin: 32px -22px 20px;
+	background-color: #EEE;
+/*	float: left;*/
+	text-align: left;
+	padding: 1px 10px;
+	border: solid 1px #999;
+	border-top: none;
+	border-radius: 0 0 10px 10px;
+	-moz-border-radius: 10px;
+}
+
+.item .short {
+	display: none;
+}
+
+td.left {
+	padding-right: 15px;
+}
+td.left hr {
+	opacity: 0.25;
+	margin: 15px 0;
+}
+.left .downloads .download {
+	display: block;
+	clear: both;
+	padding: 0.5em 0;
+}
+.left .downloads .thumbframe {
+	float: left;
+	padding-right: 0.5em;
+}
+.left .downloads img.thumb {
+	width: 48px;
+}

@@ -489,7 +489,10 @@ if(is_file(__DIR__ . "/lib/browser.css")) {
 // }
 //
 add_css(BASE_URI . "/css/wrap.css");
-add_css(BASE_URI . "/css/browser.css");
+add_css(BASE_URI . "/themes/$theme/wrap.css");
+add_css(BASE_URI . "/css/print.css");
+add_css(BASE_URI . "/themes/$theme/print.css");
+
 add_js(BASE_URI . "/js/wrap.js");
 
 if(is_array($path))
@@ -1589,9 +1592,9 @@ if($includeparentstyle) {
 }
 
 $checktemplate[]=preg_replace("#\.php$#", ".html", $scriptfilename);
-$checktemplate[]="themes/$theme/browser.html";
-$checktemplate[]="themes/default/browser.html";
-$checktemplate[]="themes/minimal/browser.html";
+$checktemplate[]="themes/$theme/page-template.html";
+$checktemplate[]="themes/default/page-template.html";
+$checktemplate[]="themes/minimal/page-template.html";
 $checktemplate[]="browser.html";
 
 $pagetemplate=firstValidFile($checktemplate);
@@ -2169,7 +2172,7 @@ if(is_array($names))
 					<a class='button play' id='play_$i' href='#' onClick='videoPlay(\"$i\");'>${buttons['play']}</a>";
 				}
 				$popupnavhtml .= "<a class='button close' id='close_$i' href='#' onClick='popOff(\"$i\");$windowshow;'>${buttons['close']}</a>";
-				if($next > $i) $popupnavhtml .= "<a class='button next' id='next_$i' href='#{$next}' onClick='popOff(\"$i\"); popOn(\"$next\");'>$next/" . $playlistindex[$next] . " ${buttons['next']}</a>";
+				if($next > $i) $popupnavhtml .= "<a class='button next' id='next_$i' href='#{$next}' onClick='popOff(\"$i\"); popOn(\"$next\");'>" . " ${buttons['next']}</a>";
 				$popupnavhtml .= $buttonlinks;
 			}
 #			buttonfullscreen: webkitEnterFullScreen();

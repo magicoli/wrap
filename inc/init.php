@@ -2,6 +2,7 @@
 
 define('BASE_URI', dirname(getenv('SCRIPT_NAME')) );
 define('BASE_URL', getenv('REQUEST_SCHEME') . '://' . preg_replace(":/*$:", "/", getenv('HTTP_HOST') . BASE_URI ));
+define('DEFAULT_THEME', 'bootstrap' );
 defined('DEBUG') or define('DEBUG', false);
 defined('DOCUMENT_ROOT') or define('DOCUMENT_ROOT', getenv('DOCUMENT_ROOT'));
 
@@ -10,6 +11,7 @@ $domain = preg_replace("(^preview\.|^wrap\.|^dev\.|^www\.)", "", $hostname);
 // $webroot=getenv('DOCUMENT_ROOT');
 $scriptroot=dirname(getenv('SCRIPT_FILENAME'));
 $scriptfilename=basename(getenv('SCRIPT_FILENAME'));
+$theme = DEFAULT_THEME;
 
 ini_set("error_reporting",  E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 
