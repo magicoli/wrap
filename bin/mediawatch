@@ -6,36 +6,36 @@ which helpers && . $(which helpers) || exit 1
 
 if [ ! "$@" ]
 then
-    sources=~/castings/$director/upload/server/php/files/
+  sources=~/castings/$director/upload/server/php/files/
 else
-    sources=$@
+  sources=$@
 fi
 [ -d "$sources/tmp" ] \
-    && phptmp=$sources/tmp \
-    || phptmp=~/domains/wrap.magiiic.media/tmp
+&& phptmp=$sources/tmp \
+|| phptmp=~/domains/wrap.magiiic.media/tmp
 
 log "watching $sources"
 
 while true
 do
-    clear
-    echo $sources
-    ls -lrt $sources \
-        | egrep '\.MTS|\.MPG|\.MOV|\.MP4|\.MXF' \
-		> $TMP.bydate
-    lines=$(($(tput lines) - 6))
-    [ $lines -gt 0 ] && tail -$lines $TMP.bydate
-    sort -k 9 $TMP.bydate \
-        > $TMP.files
-    printf "$(cat $TMP.files | wc -l) pending files"
-    diffs=$(diff $TMP.bydate $TMP.files 2>/dev/null | grep ">" | wc -l)
-    [ "$diffs" -eq 0 ] && echo || echo " ($diffs TIME MISMATCHESS" | grep --color ".*"
+  clear
+  echo $sources
+  ls -lrt $sources \
+  | egrep '\.MTS|\.MPG|\.MOV|\.MP4|\.MXF' \
+  > $TMP.bydate
+  lines=$(($(tput lines) - 6))
+  [ $lines -gt 0 ] && tail -$lines $TMP.bydate
+  sort -k 9 $TMP.bydate \
+  > $TMP.files
+  printf "$(cat $TMP.files | wc -l) pending files"
+  diffs=$(diff $TMP.bydate $TMP.files 2>/dev/null | grep ">" | wc -l)
+  [ "$diffs" -eq 0 ] && echo || echo " ($diffs TIME MISMATCHESS" | grep --color ".*"
 
-    ls $sources/tmp/php* >/dev/null 2>/dev/null \
-        && phptmp=$sources/tmp \
-        || phptmp=~/domains/wrap.magiiic.media/tmp
-    echo "$phptmp"
-    ls -lrt $phptmp | egrep '[[:blank:]]php'
-    date
-read -t 1
+  ls $sources/tmp/php* >/dev/null 2>/dev/null \
+  && phptmp=$sources/tmp \
+  || phptmp=~/domains/wrap.magiiic.media/tmp
+  echo "$phptmp"
+  ls -lrt $phptmp | egrep '[[:blank:]]php'
+  date
+  read -t 1
 done
