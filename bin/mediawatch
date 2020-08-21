@@ -4,6 +4,11 @@ director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1);
 export PATH=$PATH:$(basename "$0")
 which helpers >/dev/null && . $(which helpers) || exit 1
 
+for conf in /etc/casting ~/etc/casting /etc/$PGM /usr/local/etc/$PGM ~/etc/$PGM
+do
+    [ -f $conf ] && . $conf
+done
+
 if [ ! "$@" ]
 then
   sources=~/castings/$director/upload/server/php/files/
@@ -16,8 +21,40 @@ fi
 
 log "watching $sources"
 
+if [ "$remote" ]
+then
+  log "remote $remote"
+  remotehost=$(echo "$remote" | cut -d : -f 1)
+  remotepath=$(echo "$remote" | cut -d : -f 2)
+  if [ "$1" ]
+  then
+    client="$1"
+  elif [ ! "$client" ]
+  then
+    client="*"
+  fi
+fi
+log "client $client"
+
 while true
 do
+  if [ "$remote" -a "$remotehost" ]
+  then
+    printf "$(date) (connecting $remotehost)\r"
+    ssh $remotehost "ls $remotepath/$client/upload/server/php/files/tmp/php* $remotepath/$client/upload/server/php/files/tmp/*.MTS $remotepath/$client/upload/server/php/files/tmp/*.MP4" 2>/dev/null > $TMP.uploads \
+    && printf "\r\033[K" \
+    && date \
+    && notify-send -u critical "Upload in progress on $remotehost for
+$(
+    cat $TMP.uploads | sed "s:$remotepath/::" | cut -d "/" -f 1 | sort -u | sed "s/^/  /"
+    )" \
+    && printf "$_\n" \
+    && break
+    printf "\033[K$(date)"
+    read -t 5
+    printf "\r\033[K";
+    continue
+  fi
   clear
   echo $sources
   ls -lrt $sources \
