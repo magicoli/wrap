@@ -11,7 +11,7 @@ done
 
 if [ ! "$@" ]
 then
-  sources=~/castings/$director/upload/server/php/files/
+  sources=~/castings/$director/upload/files/
 else
   sources=$@
 fi
@@ -41,7 +41,7 @@ do
   if [ "$remote" -a "$remotehost" ]
   then
     printf "$(date) (connecting $remotehost)\r"
-    ssh $remotehost "ls $remotepath/$client/upload/server/php/files/tmp/php* $remotepath/$client/upload/server/php/files/tmp/*.MTS $remotepath/$client/upload/server/php/files/tmp/*.MP4" 2>/dev/null > $TMP.uploads \
+    ssh $remotehost "ls $remotepath/$client/upload/files/tmp/php*" 2>/dev/null > $TMP.uploads \
     && printf "\r\033[K" \
     && date \
     && notify-send -u critical "Upload in progress on $remotehost for
