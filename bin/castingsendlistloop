@@ -34,8 +34,8 @@ do
 #	    echo "$file" | tee -a ignore
 #	done
     fi
-    rsync -Wavz liste ignore thumbs $remote/$castingdir/.sources/ \
-		| egrep "^liste$|ignore|thumbs" | sed "s/$/ $(date)/"
+    rsync -Wavz liste ignore thumbs deleted $remote/$castingdir/.sources/ \
+		| egrep "^liste$|ignore|thumbs|deleted" | sed "s/$/ $(date)/"
     [ $LOOP ] || break
     read -t $WAIT
 done
