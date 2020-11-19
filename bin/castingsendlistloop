@@ -2,14 +2,14 @@
 
 WAIT=60
 
-[ "$1" = "-l" ] && LOOP=true
+[ "$1" = "-l" ] && LOOP=true && shift
+[ "$1" = "-c" ] && REFRESHIGNORE=true && shift
 
 export PATH=$PATH:$(dirname $0)
 . $(which casting-helpers) || exit 1
 
 pwd | egrep -q "^$localdir.*casting[0-9]*$" || end 1 "Ce n'est pas un dossier de casting"
 
-[ "$1" = "-c" ] && REFRESHIGNORE=true
 
 alias rsync="rsync --timeout=60 --contimeout=60"
 
