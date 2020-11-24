@@ -43,9 +43,10 @@ do
 
   rsync -Wavz $remote/$castingdir/.sources/times $base/$castingdir/
   rsync -Wavz $remote/$castingdir/.sources/.aliases $base/$castingdir/aliases
+  rsync -Wavz --delete $remote/$castingdir/.browsercache/ $base/$castingdir/thumbnails/ --exclude "*-thumb.jpg"
 
   [ $LOOP ] || break
-  read -t $WAIT
+  countdown $WAIT
 done
 
 end $?
