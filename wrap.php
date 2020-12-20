@@ -210,7 +210,7 @@ $htmlfiles=array(
 	);
 
 $playable=array (
-	".avi",
+	// ".avi",
 	".mov",
 	".mpeg",
 	".mpg",
@@ -222,7 +222,7 @@ $playable=array (
 	".mp3"
 );
 $html5_playable=array(
-	"avi",
+	// "avi",
 	"mp4",
 	"m4v",
 	"ogv",
@@ -231,6 +231,7 @@ $html5_playable=array(
 );
 
 $downloadable=array (
+	".avi",
 	".toast",
 	".dmg",
 	".doc",
