@@ -2599,7 +2599,10 @@ if(is_array($names))
 						}
 
 						// if($useragent!="firefox" && $useragent!='opera') {
-						$preloadvideo="preloadVideos();";
+
+						// try disabling preloadVideos()  to check if it causes the lag
+						// $preloadvideo="preloadVideos();";
+
 						$video_html5="$largelink
 						<video class='large $classes[video]' id='video_$i' alt='$namesafe'";
 						$video_html5.=" preload='metadata' ";
