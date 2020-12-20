@@ -210,6 +210,7 @@ $htmlfiles=array(
 	);
 
 $playable=array (
+	".avi",
 	".mov",
 	".mpeg",
 	".mpg",
@@ -221,6 +222,7 @@ $playable=array (
 	".mp3"
 );
 $html5_playable=array(
+	"avi",
 	"mp4",
 	"m4v",
 	"ogv",
@@ -247,6 +249,7 @@ $popable=array(
 );
 
 $mimetypes=array(
+	"avi" => 'video/x-msvideo',
 	"toast" => "application/octet-stream",
 	"bin" => "application/octet-stream",
 	"dmg" => "application/octet-stream",
