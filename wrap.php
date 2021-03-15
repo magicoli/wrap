@@ -2603,29 +2603,29 @@ if(is_array($names))
 						}
 
 						// if($useragent!="firefox" && $useragent!='opera') {
-
-						// try disabling preloadVideos()  to check if it causes the lag
-						// $preloadvideo="preloadVideos();";
-
-						$video_html5="$largelink
-						<video class='large $classes[video]' id='video_$i' alt='$namesafe'";
-						$video_html5.=" preload='metadata' ";
-						// $video_html5.=" preload ";
-						if($poster) $video_html5.=" poster='/$postersafe' ";
-						// if($controls != 'false' || $html5controller=='true') {
-						$video_html5.=" controls=true ";
-						$video_html5.=" playsinline=true ";
-						// }
-						if($autonext) $video_html5.=" onEnded='popOff(\"$i\"); popOn(\"$next\")' ";
-						$video_html5.=">\n";
-
+							$video_html5="
+								$largelink
+								<video controls class='large $classes[video]' id='video_$i' alt='$namesafe'";
+							$video_html5.=" preload=\"none\" ";
+							// $video_html5.=" preload ";
+							$preloadvideo="preloadVideos();";
+							if($poster) {
+								$video_html5.=" poster='/$postersafe' ";
+							}
+							if($controls != 'false' || $html5controller=='true') {
+								$video_html5.=" controls ";
+							}
+							if($autonext) {
+								$video_html5.=" onEnded='popOff(\"$i\"); popOn(\"$next\")' ";
+							}
+							$video_html5.=">\n";
 							// $video_html5.="<source src='$filesafe' type='video/mp4' ";
 							// 							if($mimetypes[$extension]) {
 							// 	$video_html5.=" type='$mimetypes[$extension]' ";
 							// }
 							$video_html5.=$video_sources;
 							$video_html5.=$video_tracks;
-							// $video_html5.=$video_object;
+							$video_html5.=$video_object;
 							$video_html5.="</video>";
 							$video_html5.=$largelinkout;
 						// }
@@ -3358,7 +3358,7 @@ if($REQUEST['output']=="flv")
 	// 	. "</div>";
 	$finalpage=preg_replace("#\[playlist\]#", $playlist, $finalpage);
 	$finalpage=preg_replace("#<p>\[img([a-zA-Z0-9]*):([^\[]*)\]</p>#", "<div class=intext\\1>[img\\1:\\2]</div>", $finalpage);
-	$finalpage=preg_replace("#\[video([a-zA-Z0-9]*):([^\[]*)\.([a-zA-Z0-9]*)\]#", "<video controls='true' class='large intext' alt='\\2' preload='metadata'><source src='\\2.\\3' type='video/\\3'><object class='player' codebase='http://www.apple.com/qtactivex/qtplugin.cab'><param name='src' value='\\2.\\3'><param name='controller' value='true'><param name='autoplay' value='false'><param name='cache' value='true'><param name='scale' value='aspect'><param name='kioskmode' value='true'><param name='saveembedtags' value='true'><param name='enablejs' value='true'><param name='allowscriptaccess' value='true'><embed class='player' name='\\2' src='\\2.\\3' controller='' autoplay='false' cache='true' scale='aspect' kioskmode='true' saveembedtags='true' enablejs='true' allowscriptaccess='true' type='video/\\3' pluginspage='http://www.apple.com/quicktime/download/'></object></video>", $finalpage);
+	$finalpage=preg_replace("#\[video([a-zA-Z0-9]*):([^\[]*)\.([a-zA-Z0-9]*)\]#", "<video controls='' class='large intext' alt='\\2' preload='auto'><source src='\\2.\\3' type='video/\\3'><object class='player' codebase='http://www.apple.com/qtactivex/qtplugin.cab'><param name='src' value='\\2.\\3'><param name='controller' value='true'><param name='autoplay' value='false'><param name='cache' value='true'><param name='scale' value='aspect'><param name='kioskmode' value='true'><param name='saveembedtags' value='true'><param name='enablejs' value='true'><param name='allowscriptaccess' value='true'><embed class='player' name='\\2' src='\\2.\\3' controller='' autoplay='false' cache='true' scale='aspect' kioskmode='true' saveembedtags='true' enablejs='true' allowscriptaccess='true' type='video/\\3' pluginspage='http://www.apple.com/quicktime/download/'></object></video>", $finalpage);
 
 	$finalpage=preg_replace("#\[img([a-zA-Z0-9]*):([^\[]*)\]#", "<img class=intext\\1 src='\\2'>", $finalpage);
 
