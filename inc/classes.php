@@ -3,7 +3,7 @@ if ( ! defined( 'WRAP_INC' ) ) die ;
 
 class item {
 	function item() {
-		global $hostname, $webroot, $protocol;
+		global $hostname, $protocol;
 		$arg=func_get_args();
 		if(is_array($arg[0]))
 		{
@@ -27,7 +27,7 @@ class item {
 		$this->hostname=preg_replace('#/.*#', '', preg_replace('#^[a-z]*://#', '', $this->url));
 		$this->directory=preg_replace('#^/#', '', dirname(preg_replace('#^[a-z]*://[^/]*/#', '', $file)));
 		$this->filename=basename(preg_replace('#^[a-z]*://[^/]*/#', '', $file));
-		$this->localfile=urldecode("$webroot/$this->directory/$this->filename");
+		$this->localfile=urldecode(DOCUMENT_ROOT . "/$this->directory/$this->filename");
 		$this->name=generateFileName($file);
 		$atoms=parseAtom($this->localfile);
 		$this->description=firstValidValue($atoms["desc"], $atoms["@cmt"], $atoms["comment"]);

@@ -1216,14 +1216,14 @@ if ($d)
 
 			case "_right.txt":
 			case "right.txt":
-				$right.=reformatFile("${webroot}/${directory}/${entry}");
+				$right.=reformatFile(DOCUMENT_ROOT . "/${directory}/${entry}");
 				break;
 			case "_left.txt":
 			case "left.txt":
-				$left.=reformatFile("${webroot}/${directory}/${entry}");
+				$left.=reformatFile(DOCUMENT_ROOT . "/${directory}/${entry}");
 				break;
 			case "_popup.txt":
-				$popup=reformatFile("${webroot}/${directory}/${entry}");
+				$popup=reformatFile(DOCUMENT_ROOT . "/${directory}/${entry}");
 				if($popup && $popup != '') {
 					$popup="<div class='popup' id='popup' onMouseOut='windowHide(\"popup\");' onMouseOver='windowShow(\"popup\");'>$popup</div>";
 				}
@@ -1233,7 +1233,7 @@ if ($d)
 			case "_text.txt":
 			case "text.txt":
 				$about.="<div id='about' class='about'>"
-				 	. reformatFile("${webroot}/${directory}/${entry}")
+				 	. reformatFile(DOCUMENT_ROOT . "/${directory}/${entry}")
 					. "\n</div>";
 				break;
 			case "_about.html":
@@ -2307,7 +2307,7 @@ if(is_array($names))
 			"$directory/$filename.txt"
 		);
 		if($descfile) {
-			$descitem = reformatFile("${webroot}/${descfile}");
+			$descitem = reformatFile(DOCUMENT_ROOT . "/${descfile}");
 		} else {
 			unset($descitem);
 		}
