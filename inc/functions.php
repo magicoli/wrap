@@ -1281,6 +1281,9 @@ function add_js($uri) {
 		$include_uri = $uri;
 	} else if(is_file(DOCUMENT_ROOT . "/$uri")) {
 		$include_uri = preg_replace('#//*#', '/', "$uri");
+	} else
+		if(@is_file(preg_replace('#^' . BASE_URI . '/#', BASE_PATH . '/', $uri))) {
+			$include_uri = preg_replace('#//*#', '/', $uri);
 	}
 	if($include_uri) {
 		$headers[$uri] = "<script src='$include_uri' type='text/javascript'></script>";

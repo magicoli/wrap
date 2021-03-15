@@ -502,6 +502,7 @@ add_css(BASE_URI . "/themes/$theme/wrap.css");
 add_css(BASE_URI . "/css/print.css");
 add_css(BASE_URI . "/themes/$theme/print.css");
 
+add_js(BASE_URI . "/lib/wrap/js/wrap.js");
 add_js(BASE_URI . "/js/wrap.js");
 
 if(is_array($path))
