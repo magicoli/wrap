@@ -12,8 +12,8 @@ if ( preg_match(":^" . dirname(getenv('SCRIPT_NAME')) . "/:", getenv('REQUEST_UR
 define('DEBUG', true);
 
 ini_set( "include_path", __DIR__ );
-// ini_set( "include_path", __DIR__ . "/inc" );
 ini_set( "include_path", __DIR__ . "/contrib" );
+// ini_set( "include_path", __DIR__ . "/inc" );
 
 define( 'WRAP_INC', true ) ;
 require_once('inc/init.php');
