@@ -1464,7 +1464,7 @@ if ($d)
 			{
 				$names[$file]=generateFileName($file);
 				$playlistindex[]=$file;
-				$if=count($index);
+				if(is_array($index)) $if=count($index);
 				$index[]=$file;
 			}
 			if(!($popup && $popable[$filetype]) &! $inpage)
