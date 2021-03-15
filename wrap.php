@@ -5,8 +5,9 @@
  *
  */
 
-// We don't want to be called directly
-if (getenv('SCRIPT_URL') == getenv('SCRIPT_NAME')) die; // called directly
+ // We don't want to be called directly
+if (getenv('REQUEST_URI') == getenv('SCRIPT_NAME')) die; // called directly
+if ( preg_match(":^" . dirname(getenv('SCRIPT_NAME')) . "/:", getenv('REQUEST_URI'))) die; // called from inside wrap directory
 
 define('DEBUG', true);
 
