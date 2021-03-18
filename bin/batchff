@@ -73,21 +73,21 @@ makemovie()
 		"web")
 		convertfolder=$SDDIR
 		output="$WEBDIR/$filename.$EXT"
-		size=480x270
-		bitrate=800k
+		scale=640x360
+		videorate=800k
 		;;
 		"large")
-		size=640x360
-		bitrate=2000k
+		scale=1920x1080
+		videorate=2000k
 		convertfolder=$HDDIR
 		output="$WEBDIR/$filename-large.$EXT"
 		;;
-		"dvd")
-		size=1024x576
-		bitrate=3000k
-		convertfolder=../dv
-		output="../dv/$filename.dv"
-		;;
+		# "dvd")
+		# scale=1024x576
+		# videorate=3000k
+		# convertfolder=../dv
+		# output="../dv/$filename.dv"
+		# ;;
 		*)
 		echo format: $format >&2
 		return
@@ -100,8 +100,8 @@ makemovie()
 	cd "$OLDPWD"
 
 	export convertfolder
-	export size
-	export bitrate
+	export scale
+	export videorate
 	# export output
 
 	printf " ($index)"
@@ -109,26 +109,30 @@ makemovie()
 	first=$(index2list $index | head -1)
 	for nr in $(index2list $index)
 	do
-		cp ignore .ignore.$$
+		cp ignore .ignore.$$ 2>/dev/null || touch .ignore.$$
 		if [ $nr -ne $first ]
 		then
 			grep -q "^$nr\." .ignore.$$ 2>/dev/null && continue
 		fi
 		printf " $nr"
 		echo "$convertfolder/$nr.mp4" >> $TMP.sources
-		input=$(ls -t $nr.mov $nr.MP4 $nr.MTS 2>/dev/null | head -1)
-		[ ! "$input" ] && printf "\?" && continue
+		# alias=$(ls -t $nr.mov $nr.mp4 $nr.MP4 $nr.MTS 2>/dev/null | head -1)
+		alias=$nr.mov
+		[ ! "$alias" ] && printf "\?" && continue
+		input=$(grep "\s$alias$" .aliases | sed "s/\s[0-9]*\.[[:alnum:]]*$//")
 		# echo "file '$convertfolder/$nr.mp4'" >> $TMP.sources
-		if [ ! -f "$convertfolder/$nr.mp4" ]
+		mp4output="$convertfolder/$nr.mp4"
+		if [ ! -f "$mp4output" ]
 		# if [ ! -f "$0" ]
 		then
 			printf "(c)"
-			rm -f "$output"
-			makemp4 $input 2>/dev/null \
+			rm -f "$mp4output"
+			makemp4 -o $mp4output $input 2>/dev/null
+			ffprobe -i "$mp4output" 2>/dev/null \
 			&& printf "\b\b\b   \b\b\b" \
 			|| {
 				printf "\b\b\b[$?]"
-				rm -f "$convertfolder/$nr.mp4"
+				rm -f "$mp4output"
 			}
 		fi
 		rm .ignore.$$
@@ -145,9 +149,9 @@ makemovie()
 		then
 			if [ -f "$TMP.sources" ]
 			then
+				echo "  $index $output"
 				printf "  mergin $sources" | sed "s|$convertfolder/*||g"
-				moviemerge "$output" $sources 2>/dev/null # && echo " ok" || echo "err $?"
-				echo
+				moviemerge "$output" $sources 2>/dev/null || log "merge failed $?"
 			fi
 		fi
 	fi
@@ -175,7 +179,7 @@ do
 	then
 		# echo "proceed now $index $name"
 		[ ! "$name" ] && continue
-		log "makemovie $index $name"
+		# log "makemovie $index $name"
 		makemovie $index $name
 		continue
 	else
