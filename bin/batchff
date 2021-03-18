@@ -73,21 +73,21 @@ makemovie()
 		"web")
 		convertfolder=$SDDIR
 		output="$WEBDIR/$filename.$EXT"
-		size=480x270
-		bitrate=800k
+		scale=640x360
+		videorate=800k
 		;;
 		"large")
-		size=640x360
-		bitrate=2000k
+		scale=1920x1080
+		videorate=2000k
 		convertfolder=$HDDIR
 		output="$WEBDIR/$filename-large.$EXT"
 		;;
-		"dvd")
-		size=1024x576
-		bitrate=3000k
-		convertfolder=../dv
-		output="../dv/$filename.dv"
-		;;
+		# "dvd")
+		# scale=1024x576
+		# videorate=3000k
+		# convertfolder=../dv
+		# output="../dv/$filename.dv"
+		# ;;
 		*)
 		echo format: $format >&2
 		return
@@ -100,8 +100,8 @@ makemovie()
 	cd "$OLDPWD"
 
 	export convertfolder
-	export size
-	export bitrate
+	export scale
+	export videorate
 	# export output
 
 	printf " ($index)"
@@ -127,7 +127,6 @@ makemovie()
 		then
 			printf "(c)"
 			rm -f "$mp4output"
-			log -1 makemp4 -o $mp4output $input 2>/dev/null
 			makemp4 -o $mp4output $input 2>/dev/null
 			ffprobe -i "$mp4output" 2>/dev/null \
 			&& printf "\b\b\b   \b\b\b" \
