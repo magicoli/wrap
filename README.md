@@ -2,7 +2,6 @@
 
 * Project URI:     https://wrap.rocks/
 * GitLab URI:      https://git.magiiic.com/magicoli/wrap
-* Description:     Tools for artists, bands, musicians, ...
 * Version:         3.0.1
 * Author:          Magiiic
 * Author URI:      https://magiiic.com/
