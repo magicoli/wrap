@@ -1,0 +1,35 @@
+#!/bin/sh
+
+LIMIT=5
+
+PGM=$(basename "$0")
+TMP=/tmp/$PGM.$$
+trap 'rm -f $TMP.*' EXIT
+
+last=$(cat liste | cut -f 1 | grep "^[0-9][0-9]*[[:blank:]]*$" | tail -1)
+[ ! "$last" ] && echo "$PGM: no data" >&2 && exit
+
+cat times | grep "\.mov:" | sed "s/\.mov: / /" \
+	| while read n t s
+do
+    [ ! "$n" ] && continue
+    [ $n -gt $last ] && break
+    [ ! "$s" ] && echo "no timing for clip $n $t $s" >&2 && continue
+#    echo "checking $n"
+	[ $s -gt $LIMIT ] && continue
+	o=$(($n + 1))
+	p=$(($n - 1))
+	egrep -q \
+		-e "^$n[[:blank:]][[:blank:]]*[0-9]" liste \
+		-e "^$p[[:blank:]][[:blank:]]*[0-9]" liste \
+		-e "^$n\.mov" \
+		-e "^$o[[:blank:]]|^$o[[:blank:]]*$" \
+		 && continue
+	# egrep -q "^$n\.mov" ignore && continue
+	# egrep -q "^$o[[:blank:]]|^$o[[:blank:]]*$" liste && continue
+	echo "$n.mov"
+done > $TMP.calculated
+cat ignore $TMP.calculated | sort -u | sort -n > $TMP.ignore
+diff ignore $TMP.ignore && exit
+cat $TMP.ignore > ignore
+

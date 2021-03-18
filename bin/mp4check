@@ -1,0 +1,67 @@
+#!/bin/bash
+
+[ ! -d sources ] && [ -d ../sources ] && cd ..
+
+PGM=$(basename "$0")
+TMP=$PWD/.$PGM
+
+SDDIR=../mp4
+HDDIR=../mp4-hd
+WEBDIR=../web
+SOURCES=../sources
+
+[ -f $(dirname "$0")/casting-helpers ] && . $(dirname "$0")/casting-helpers || exit 1
+
+for folder in $SDDIR $SOURCES
+do
+	[ ! -d $folder ] && echo missing $folder folder && exit 1
+done
+
+ls $SOURCES/*.mov 2>/dev/null >/dev/null && ext=mov
+ls $SOURCES/*.MTS 2>/dev/null >/dev/null && ext=MTS
+
+cd $SOURCES || exit 2
+if [ ! -f $TMP.originals ]
+	then
+	echo "calculating original times"
+	movietime *.$ext | grep $ext | sed "s/[[:blank:]][[:blank:]]*/ /g" | sort -n > $TMP.originals
+	echo $(cat $TMP.originals | wc -l) originals
+fi
+
+#cd $SDDIR || exit 3
+echo "calculating mp4 times"
+ls $SDDIR/*.mp4 | sort -n | xargs movietime | grep mp4 | sed "s/[[:blank:]][[:blank:]]*/ /g" | sed "s%^$SDDIR/%%" | sort -n > $TMP.conversions
+echo $(cat $TMP.conversions | wc -l) conversions
+
+cd $SOURCES
+
+rm -f "$TMP.batch"
+
+grep mp4 $TMP.conversions | while read file time length
+do
+    mp4=${file/:/}
+	original=${mp4/mp4/$ext}
+	egrep -q "^$original$|^$mp4$" ignore 2>/dev/null && continue
+	originallength=$(grep "^$original:" $TMP.originals | cut -d " " -f 3)
+	[ "$originallength" = "$length" ] && continue
+	if [ "$length" != "" ]
+	    then
+	    delta=$(($originallength - $length))
+	    printf "$mp4 $originallength ($length) "
+	    [ $delta -eq 1 ] && echo "low diff, ignoring" && continue
+	    [ $delta -eq -1 ] && echo "low diff, ignoring" && continue
+	else
+	    printf "$mp4 "
+	fi
+	printf " making"
+	echo "printf \"$mp4\"; makemp4 $original >/dev/null 2>/dev/null; [ -f $mp4 ] && mv $mp4 $SDDIR/ && echo" >> $TMP.batch
+	# [ ! -f $mp4 ] && echo "not found " && continue
+	# printf " moving"
+	# mv $mp4 $SDDIR/
+	echo
+done
+
+[ -f "$TMP.batch" ] && . "$TMP.batch"
+
+batchff liste
+batchsync

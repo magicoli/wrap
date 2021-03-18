@@ -1,0 +1,95 @@
+#!/bin/sh
+
+PGM=`basename "$0"`
+TMP="/tmp/$PGM.$$"
+method=cannelle
+
+[ -f $(dirname "$0")/casting-helpers ] && . $(dirname "$0")/casting-helpers || exit 1
+
+pwd | grep "/hella/" >/dev/null && method=hella
+
+[ ! $1 ] && echo must specify list && exit 1
+
+list=$1
+
+[ "$2" ] && method=$2
+
+# echo "method: $method" >&2
+
+cat "$list" \
+	| sed -e "s:#.*::" \
+ 	| sed "s/[[:blank:]][[:blank:]]*/ /g" | egrep "[A-Za-z]" | while read index name
+do
+	echo "$index" | egrep "[#/]" && continue
+		nr=$(echo $index | sed "s/[^0-9].*//")
+	[ "$name" = "" ] && continue
+	echo "$name" >> "$TMP.list"
+	# info=$(echo "$name" | grep "//" | sed "s|[^/]*//[[:blank:]]*||" | sed "s| */[/ ]*| |")
+	name=$(echo "$name" | sed "s|[[:blank:]]*//.*||")
+	name=`webnormalize "$name" | sed "s|_*/_*|_|g"`
+	case $method in
+		"andrieu")
+		thumbname=$lastname
+		thumbnr=$(($nr - 1))
+		posargs="-w -e -0"
+		lastname=$name
+		;;
+
+		"hella")
+		thumbname=$lastname
+		thumbnr=$(($nr - 2))
+		posargs="-w -e -0"
+		lastname=$name
+		;;
+
+		"alexandra")
+		thumbname=$name
+		thumbnr=$(($nr + 1))
+		posargs="-1"
+		;;
+		"cannelle")
+		thumbname=$name
+		thumbnr=$nr
+		posargs="-w -1"
+		# [ -f "$WEBDIR/.browsercache/$name-thumb.jpg" ] && continue
+		# [ -f ".browsercache/$nr-thumb.jpg" ] || continue
+		# cp -p ".browsercache/$nr-thumb.jpg" "$WEBDIR/.browsercache/$name-thumb.jpg"
+		;;
+		"2sur2")
+		thumbname=$name
+		thumbnr=$nr
+		posargs="-w -e -1"
+		;;
+	    default)
+		echo "no method"
+		break
+		;;
+	esac
+	thumb="$WEBDIR/.browsercache/$thumbname-thumb.jpg"
+	large="$WEBDIR/.browsercache/$thumbname-large.jpg"
+	[ -f "$thumbnr.mov" ] && source=$thumbnr.mov
+	[ -f "$thumbnr.MTS" ] && source=$thumbnr.MTS
+
+	[ ! -f "$thumb" ] \
+		&& qt-thumbnails.sh $posargs "$source" \
+		&& cp -p ".browsercache/$thumbnr-thumb.jpg" "$thumb" 2>/dev/null
+	[ ! -f "$large" ] \
+		&& qt-thumbnails.sh -l $posargs "$source" \
+		&& cp -p ".browsercache/$thumbnr-large.jpg" "$large" 2>/dev/null
+
+done >&2
+
+if [ -f "thumbs" ]
+	then
+	cat thumbs | while read mp4 t
+	do
+	    [ "$mp4" ] || continue
+	    file=$(basename $mp4 .mp4)
+	    # echo "special thumb for $file ($mp4)" >&2
+	    cp -p .browsercache/$t-thumb.jpg $WEBDIR/.browsercache/$file-thumb.jpg 2>/dev/null
+	    cp -p .browsercache/$t-large.jpg $WEBDIR/.browsercache/$file-large.jpg 2>/dev/null
+	done
+fi
+
+
+makeplaylist "$TMP.list" | sed "s/\$reserve=/\$customnames=/"

@@ -1,0 +1,144 @@
+#!/bin/sh
+
+base=~/castings
+
+PGM=`basename "$0"`
+TMP="/tmp/$PGM"
+
+(
+for conf in /etc/casting ~/etc/casting /etc/$PGM /usr/local/etc/$PGM ~/etc/$PGM
+do
+    [ -f $conf ] && . $conf
+done
+[ ! "$createfolders" ] && createfolders="$SDDIR $SOURCES"
+[ "$createfolders" = "none" ] && createfolders=
+
+echo "base: $base"
+
+printf "Client:"
+
+if [ $1 ]
+	then
+	client=$1
+else
+  printf "\n"
+  ls -d "$base"/*/*/casting* 2>/dev/null \
+  | sed "s%^$base/%%" | cut -d "/" -f 1 \
+  | sort -u > "$TMP.clients"
+
+  cat -n "$TMP.clients"
+  while [ ! "$client" ]
+  do
+    read -p "Choose client: " client
+    [ ! $client ] && continue
+
+    if [ "$client" = "`echo "$client" | grep -v "[^0-9]"`" ]
+    then
+      client=`head -$client "$TMP.clients" | tail -1`
+    fi
+  done
+fi
+
+printf "\t$client\n"
+
+if [ ! -d "$base/$client" ]
+	then
+	printf "\t"
+	read -p "client $client does not exist, create it? [y/N] " create
+	if [ "$create" != "y" ]
+		then
+		echo "cancelled"
+		exit
+	fi
+	mkdir "$base/$client" || exit 1
+	printf "\tcreated\n"
+fi
+
+printf "Job:"
+
+if [ $2 ]
+then
+	job=$2
+else
+	printf "\n"
+  echo ls -d "$base/$client/*/casting*"
+	ls -d "$base/$client"/*/casting* 2>/dev/null \
+    | sed "s:/casting[0-9]*$::" \
+    | sed "s:.*/::" \
+    | sort -u > $TMP.jobs
+#	    | cut -d "/" -f 5 | sort -u > "$TMP.jobs"
+	cat -n "$TMP.jobs"
+	while [ ! "$job" ]
+	do
+		read -p "Choose job: " job
+		[ ! $job ] && continue
+
+		if [ "$job" = "`echo "$job" | grep -v "[^0-9]"`" ]
+			then
+			job=`head -$job "$TMP.jobs" | tail -1`
+		fi
+	done
+fi
+
+printf "\t$job\n"
+
+if [ ! -d "$base/$client/$job" ]
+	then
+	printf "\t"
+	read -p "job $job does not exist, create it? [y/N] " create
+	if [ "$create" != "y" ]
+		then
+		echo "cancelled"
+		exit
+	fi
+	mkdir "$base/$client/$job" || exit 2
+	printf "\tcreated\n"
+fi
+
+printf "Castings:\n"
+
+ls -d "$base/$client/$job"/casting* 2>/dev/null \
+    | sed "s|$base/$client/$job/||" \
+    | sed "s/\..*//" | sort -u > "$TMP.castings"
+
+# cat -n "$TMP.castings"
+
+newnumber=$((`cat "$TMP.castings" | wc -l` + 1))
+casting="casting$newnumber"
+
+# printf "\t"
+# read -p "create \"$casting\" ? [y/N] " create
+# if [ "$create" != "y" ]
+# 	then
+# 	echo "cancelled"
+# 	unset job
+# 	exit
+# fi
+
+initialdir="$PWD"
+castingdir=$base/$client/$job/$casting
+mkdir -p "$castingdir" || exit  4
+cd "$castingdir"
+pwd | tee $TMP.lastcreated
+
+for folder in $createfolders
+do
+  if [ -d "$folder" ]
+  then
+    cd "$castingdir/$folder"
+    pwd | tee $TMP.lastcreated
+  else
+    mkdir "$castingdir/$folder" || exit 4
+    cd "$castingdir/$folder" || exit 5
+    pwd | tee $TMP.lastcreated
+  fi
+done
+) >&2
+cat $TMP.lastcreated
+
+# cd "$castingdir" || exit 5
+#ln -s "$base/$client/web/$job/$casting" web || exit 6
+#cd "$castingdir/dv" || exit 7
+#ln -s "$base/$client/web/$job/$casting/.browsercache" || exit 8
+
+# echo "$castingdir"

@@ -1,0 +1,101 @@
+#!/bin/sh
+#
+# This program does nothing
+#
+
+PID=$$
+PGM=`basename $0`
+TMP=/tmp/.$PGM.$PID
+
+OPTS="hi:-:"
+SYNTAX=`echo $OPTS|sed "s/-://g"|sed "s/\(.*\)/[-\\1] [<args>]/g"|sed "s/\(.\):/] [-\\1 <value>/g"`
+#sed "s/\(.\)/-\\1 /g"|sed "s/-:/<value>/g"
+USAGE="$PGM $SYNTAX"
+
+
+help() {
+    usage
+    echo
+    echo "	-h display this help"
+    echo "	-d debug mode"
+    echo "	-q quiet mode"
+    echo
+    echo "sorry, helpman is in a minimalist mood"
+    exit 0
+}
+
+usage() {
+    echo "usage: $PGM $SYNTAX"
+}
+
+while getopts $OPTS PARAM
+  do
+    case $PARAM in
+	"?")
+	    ERROR=1
+	    ;;
+	-)
+	    case $OPTARG in
+		help)
+		    help
+		    ;;
+		*)
+		    printf $0: illegal option -- $OPTARG
+#		    usage
+	    esac
+	    ;;
+	i)
+	    IDS="$IDS $OPTARG"
+	    ;;
+	h)
+	    help
+	    ;;
+	d)
+#		    echo "Debug mode"
+	    STDERR="&1"
+	    ;;
+	q)
+	    STDOUT="/dev/null"
+	            ;;
+	*)
+	    VALUES="$VALUES $PARAM"
+	    LASTVAL=$PARAM
+    esac
+done
+
+shift `expr $OPTIND - 1`
+
+IDS=`echo "$IDS $@"|sed "s/^ *//"`
+
+if [ ! "$IDS" ]
+    then
+    echo "Missing ID"
+    ERROR=3
+fi
+
+if [ $ERROR ]
+then
+    usage
+    echo "   type '$PGM --help' for more info"
+    rm -f $TMP*
+    exit $ERROR
+fi
+
+
+for ID in $IDS
+  do
+  echo Loading profile of $ID
+  lynx -dump -accept_all_cookies "http://fr.rendez-vous.be/scripts/friends/detail.cfm?IdProfile=$ID&xorigine=prive" \
+      |sed "s/^ *//"|grep -v "\["\
+      |egrep -v "^References$|^message$|^Id Liste$"\
+      |egrep -v "^[0-9]*\. http|abr=.*sz=.*tile.*|^$"\
+      > $TMP.$ID
+  (
+  cat $TMP.$ID | while read line
+    do echo -n $line|grep ":" |sed "s/: .*/:/"|sed "s/\(.\)/\\1\\1/g"
+    echo $line |sed "s/.* ://"|sed "s/^/   /"
+  done
+  )|less
+done
+
+rm -f $TMP*

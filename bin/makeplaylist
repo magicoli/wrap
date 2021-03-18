@@ -1,0 +1,99 @@
+#!/bin/sh
+
+PGM=`basename "$0"`
+TMP="/tmp/$PGM.$$"
+
+echo "<?php"
+
+if [ "$1" = "-s" ]
+then
+	printf "\$customnames=array(\n"
+	mode=source
+	sort=true
+	shift
+else
+	printf "\$reserve=array(\n"
+	sort=false
+fi
+
+if [ "$1" ]
+	then
+	for param in "$@"
+	do
+		if [ -f "$param" ]
+			then
+			# sort=false
+			cat "$param" | cut -d '"' -f 2 \
+				| sed "s|$| //|" \
+				| sed "s|[[:blank:]]*//|.mp4 //|" \
+				| sed "s|[[:blank:]]*//[[:blank:]]*$||" \
+			 	| sed "s|/|-SLASH-|g"
+		elif [ -d "$param" ]
+			then
+			sort=true
+			ls "$param"/*.mov "$param"/*.mp4 "$param"/*.m4v "$param"/*.mp3 "$param"/*.mpg "$param"/*.pdf "$param"/*.jpg  2>/dev/null \
+				| grep -v "\-large."\
+				| grep -v "\-dv."
+		fi
+	done | while read name
+	do
+		echo "$name"
+	done
+else
+	sort=true
+	ls *.mov *.mp4 *.m4v *.mp3 *.mpg *.jpg *.pdf 2>/dev/null | grep -v "\-large."\
+		| grep -v "\-dv."
+fi | grep -v "^qt-thumbnails" | while read name
+do
+	unset info
+	info=$(echo "$name" | grep "//" | sed "s|[^/]*//[[:blank:]]*||" | sed "s| */[/ ]*| |" | sed "s|^| // |")
+	info=$(echo "$name" | grep "\-SLASH--SLASH-" | sed "s|[^/]*-SLASH--SLASH-[[:blank:]]*||" | sed "s| */[/ ]*| |")
+	name=$(echo "$name" | sed "s|[[:blank:]]*-SLASH--SLASH-.*||" )
+	file=`echo "$name" | webnormalize | sed "s/[_-]*SLASH-.*/_/g" | sed "s/_*$//" | sed "s/\.jpg\.mp4$/.jpg/"`
+	name=$(basename "$name" | sed "s|-SLASH-|/|g" | sed "s|\.[a-zA-Z0-9]*$||")
+	#file=$name
+	name=`echo "$name" | sed "s/\.[a-zA-Z0-9]*$//" | sed "s/_/ /g" | sed "s/[-\. ][0-9]*$//"`
+	name=$(echo "$name" | sed "s/^title[0-9]*[[:blank:]|]*//")
+	second=`echo "$file" | egrep "^[0-9]*,[0-9]*-" | cut -d "-" -f 1 | grep "," | cut -d "," -f 2`
+	first=`echo "$file" | egrep "^[0-9]" | cut -d "-" -f 1 | cut -d "," -f 1`
+
+	if [ "$second" ]
+		then
+		if [ $second -gt $first ]
+			then printf "${second}b\t"
+		else
+			printf "${first}b\t"
+		fi
+	else
+		printf "${first}\t"
+	fi
+	unset infohtml
+	unset infocomment
+	[ "$info" ] && infohtml=" <span class=info>$info</span>"  && infocomment=$(webnormalize " // $info");
+	if [ "$mode" = "source" ]
+	then
+		nr="$name"
+		mp4=../.mp4/$(basename "$file" .mov).mp4
+		[ -f "$mp4" ] && file=$mp4 && res="" || res="(HD)"
+		name=$(egrep "^$nr[[:blank:],-]" liste | sed "s/[0-9,-]*[[:blank:]][[:blank:]]*//")
+		time=$(grep "^$nr.mov" times | cut -d " " -f 2 | sed "s/00://" | sed "s/:/\\\\'/")
+		printf "\t\"$file\" => '$nr - $name $res $time',\n"
+		# printf "\t\"$file\" => '$name$infohtml',$infocomment\n"
+	else
+		printf "\t\"$file\" => '$name$infohtml',$infocomment\n"
+	fi
+done > "$TMP.playlist"
+
+if [ "$sort" = "true" ]
+	then
+	cat "$TMP.playlist" | sort -n | cut -f 2-
+else
+	cat "$TMP.playlist" | cut -f 2-
+fi
+
+echo ");"
+found=$(cat "$TMP.playlist" | wc -l)
+[ $found -eq 0 ] && echo "\$hidden=true;"
+echo "?>"
+
+rm -f "$TMP.playlist"

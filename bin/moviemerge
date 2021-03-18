@@ -1,0 +1,223 @@
+#!/bin/sh
+#
+# Time sheet tool
+#
+
+#MOVEAFTERPROCESSING=yes
+
+PID=$$
+PGM=`basename $0`
+TMP=/tmp/.$PGM.$PID
+BILLDETAIL=/tmp/$PGM-billdetail
+LOG=/tmp/$PGM
+TABLE=`echo "tmp_${PGM}_${PID}" | sed "s/[^a-zA-Z0-9_]//g"`
+
+export PAGER=cat
+
+OPTS="o:f:l:mhvq"
+
+PAR=`echo $OPTS|sed 's/.://g'|grep -v "^$"|sed "s/\([a-zA-Z0-9]*\)/[-\\1]/g" `
+PAROPT=`echo $OPTS | sed "s/-://" | sed 's/\(.\)/\\1\//g' \
+    | sed 's/\(.\)\/:\//[-\\1 <value>] /g' \
+    | sed "s/.\///g" `
+USAGE=`echo $PGM $PAR $PAROPT "[<args>]" | sed "s/  / /g"`
+
+
+help() {
+    usage
+    echo
+    echo "      -t <template>"
+    echo "      -H display this help"
+    echo "      -V verbose mode"
+    echo "      -Q quiet mode"
+    echo
+    echo "sorry, helpman is in a minimalist mood"
+    exit 0
+}
+
+usage() {
+    echo "usage: $USAGE"
+}
+
+log() {
+    if [ "$LOG" ]
+        then
+        ERRNUM=`echo "$@" |grep "^[0-9]* "|cut -d " " -f 1`
+        ERR=`echo $ERRNUM|sed "s/\([0-9]*\)/<\\1\> /"`
+        [ "$ERRNUM" ] && shift
+        LOGMESSAGE=$@
+        LOGLINE=`date +"%b %e %H:%M:%S"`" $PGM[$$]: $ERR$LOGMESSAGE"
+        [ "$LOGGING" = "yes" ] && (echo $LOGLINE >> $LOG.log)
+        if [ "$ERRNUM" -a "$QUIET" != "yes" ]
+            then
+            echo "$PGM: $LOGMESSAGE ($ERRNUM)" >&2
+        elif [ "$DEBUG" = "yes" ]
+            then
+            echo "$PGM: $LOGMESSAGE" >&2
+        fi
+    else
+        echo "LOG variable not set"
+        exit 1
+    fi
+}
+
+end() {
+#    ERRNUM=$1
+#    if [ "$ERRNUM" != "" -a "$ERRNUM" = "`echo $ERRNUM|sed 's/[^0-9]//g'`" ]
+#        then
+#        ERRNUM=`expr $ERRNUM + 0`
+#        shift
+#        [ "$#" -gt 0 ]  && log "<$ERRNUM>" $@
+#    else
+#        ERRNUM=
+#        if [ "$#" -gt 0 ]
+#            then
+#            log $@
+#	elif [ "$DEBUG" = "yes" ]
+#	    then
+	if [ "$1" ]
+		then
+		log $@
+	else
+	    log "End processing"
+    fi
+    rm -f $TMP*
+    rm -f $LOG.lock
+    exit $ERRNUM
+}
+
+while getopts $OPTS PARAM
+  do
+    case $PARAM in
+	"?")
+	    ERROR=1
+	    ;;
+	-)
+	    case $OPTARG in
+		help)
+		    help
+		    ;;
+		*)
+		    printf "$PGM: illegal option -- $OPTARG"
+#		    ERROR=1
+	    esac
+	    ;;
+	o)
+	    mergedfile=$OPTARG
+	    ;;
+	f)
+	    FIRST=$OPTARG
+	    ;;
+	l)
+	    LAST=$OPTARG
+	    ;;
+	m)
+	    MOVEAFTERPROCESSING=yes
+	    ;;
+	h)
+	    help
+	    ;;
+	v)
+#		    echo "Debug mode"
+	    STDERR="&1"
+	    DEBUG=yes
+	    ;;
+	q)
+	    STDOUT="/dev/null"
+		QUIET=yes
+	    DEBUG=no
+	            ;;
+	*)
+	    VALUES="$VALUES $PARAM"
+	    LASTVAL=$PARAM
+    esac
+
+done 2>/dev/null
+
+shift `expr $OPTIND - 1`
+
+if [ $ERROR ]
+then
+    usage
+echo "$ERROR   type '$PGM --help' for more info"
+
+    end "$ERROR   type '$PGM --help' for more info"
+fi
+
+if [ ! "$mergedfile" ]
+then
+    if [ "$1" ]
+    then
+	mergedfile="$1"
+	shift 1
+    else
+	end 1 must specify mergedfile
+    fi
+fi
+
+if [ "$FIRST" -a "$LAST" ]
+then
+    sources=$(ls | grep -A1000 "^$FIRST$" | grep -B1000 "^$LAST$")
+else
+    sources=$@
+fi
+
+for app in MP4Box ffmpeg avconv catmovie
+do
+    which $app | grep -q $app || continue
+#    case $app in
+#	ffmpeg|avconv)
+#	    $app -c copy 2>&1 | grep -q "Unrecognized option 'c'" && continue
+#	    ;;
+#   esac
+    method=$app && break
+done
+
+case $method in
+    "MP4Box")
+	command=$(
+	    printf MP4Box
+	    for source in $sources
+	    do
+		printf " -cat $source"
+	    done
+	    printf " -new $mergedfile"
+	)
+	;;
+    avconv|ffmpeg)
+	for source in $sources
+	do
+	    i=$(($i + 1))
+	    ts=.$(basename "$source").ts
+	    if [ ! -f "$ts" ]
+	    then
+		log making intermediate for $source
+		$app -i $source -c copy -bsf:v h264_mp4toannexb -f mpegts $ts 2>/dev/null
+	    fi
+	    [ ! -f "$ts" ] && end 3 "could not make intermediate for $source"
+	    log "$source $ts"
+	    [ "$inter" ] \
+		&& inter="$inter|$ts" \
+		|| inter=$ts
+	done
+	command="$app -i concat:\"$inter\" -c copy -bsf:a aac_adtstoasc $mergedfile"
+        log "command: $command"
+	;;
+    *)
+	end 1 "no valid method found"
+esac
+
+echo "$command" > $TMP.command
+
+log merging $sources into $mergedfile
+. $TMP.command || end $?
+
+[ -f "$mergedfile" ] && qt-thumbnailswide.sh $mergedfile >/dev/null 2>/dev/null
+
+if [ "$MOVEAFTERPROCESSING" = "yes" ]
+then
+    mkdir -p ".processed"
+    mv $sources .processed
+fi
+
+end

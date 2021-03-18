@@ -1,0 +1,39 @@
+#!/bin/bash
+
+PGM=$(basename $0)
+TMP=/tmp/$PGM.$$
+
+SDDIR=../mp4
+HDDIR=../mp4-hd
+WEBDIR=../web
+
+[ -f $(dirname "$0")/casting-helpers ] && . $(dirname "$0")/casting-helpers || exit 1
+
+if [ "$1" == "--large" ]
+	then
+	dest=$HDDIR
+	method=$2
+else
+	dest=$SDDIR
+	method=$1
+fi
+
+[ ! -d "$dest" ] && echo "$dest missing" && exit 1
+[ ! -d "$WEBDIR" ] && echo "$WEBDIR missing" && exit 2
+mkdir -p "$WEBDIR/.browsercache"
+
+while true
+do
+	cp liste $TMP.liste || exit $?
+	# scratchmove --mp4 ./ $dest/
+	batchff $TMP.liste
+	# batchthumbs liste $method > $TMP.playlist
+	# mv $TMP.playlist $WEBDIR/playlist.php
+	batchthumbs $TMP.liste $method > $TMP.playlist 2>/dev/null \
+	&& mv $TMP.playlist ../playlist.php \
+	|| rm $TMP.playlist
+	du -sch ../*.mp4 2>/dev/null | sort -h | cut -f 2 | tail -20 | xargs movietime | grep ":.*:" | sort -nk3 | egrep -B5 --color "[0-9][0-9][0-9][0-9][0-9]* *$"
+	rm $TMP.liste
+	echo
+	read -t 10
+done

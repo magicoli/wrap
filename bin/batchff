@@ -1,0 +1,185 @@
+#!/bin/bash
+
+# Note for later: check comparison of aac encoders
+#     aac, libfaac, libfdk_aac, libvo_aacenc
+# https://trac.ffmpeg.org/wiki/AACEncodingGuide
+# Best encoders: libfdk_aac > libfaac > Native FFmpeg AAC ≥ libvo_aacenc
+
+default_scale=640x360
+default_rate=800k
+default_destfolder=mp4
+
+PGM=`basename "$0"`
+TMP=/tmp/$PGM.$$
+TURBO=true
+EXT=mp4
+DEBUG=yes
+
+OPTSINHELPER=no
+export PATH=$PATH:$(dirname $0)
+. $(dirname "$0")/casting-helpers || exit 1
+
+#which avconv | grep -q avconv || alias avconv=avconv
+#avconv -version >/dev/null 2>/dev/null || exit $?
+
+[ "$1" ] || end $? "usage $PGM list [format]"
+[ -f "$1" ] || end $? "$1 file not found"
+cat "$1" | sed -e "s://.*::" -e "s:#.*::" | egrep "^[0-9]" > $TMP.list
+format=$2
+[ ! $format ] && format=web
+
+if [ ! $EXT ]
+	then
+	EXT=mov
+fi
+
+lastnumber=$(ls *.mov 2>/dev/null | sort -n | tail -1 | cut -d "." -f 1)
+if [ $lastnumber ]
+	then
+	lastnumber=$(($lastnumber + 1))
+else
+	lastnumber=9999999
+fi
+
+index2list()
+{
+	local IFS=,
+	for idx in $@
+	do
+		echo $idx | grep -qv "-" && echo $idx && continue
+		i=$(echo $idx | cut -d- -f 1)
+		[ ! "$i" ] && i=0
+		j=$(echo $idx | cut -d- -f 2)
+		echo "$i" | grep -q "[^0-9,-]" && end 1 "var i $i is not a number"
+		echo "$j" | grep -q "[^0-9,-]" && end 1 "var i $j is not a number"
+		if [ "$i" -le "$j" ]
+		then
+			while [ $i -le $j ]
+			do
+				echo $i
+				i=$(($i + 1))
+			done
+		else
+			while [ $i -ge $j ]
+			do
+				echo $i
+				i=$(($i - 1))
+			done
+		fi
+	done
+}
+
+makemovie()
+{
+	[ ! "$2" ] && echo "usage makemovie index name $@" >&2 && return
+	local midx=$1
+	shift
+	showname=$@
+
+	filename=$(echo "$showname" | webnormalize | sed "s|_*/_*|_|g")
+	case $format in
+		"web")
+		convertfolder=$SDDIR
+		output="$WEBDIR/$filename.$EXT"
+		scale=640x360
+		videorate=800k
+		;;
+		"large")
+		scale=1920x1080
+		videorate=2000k
+		convertfolder=$HDDIR
+		output="$WEBDIR/$filename-large.$EXT"
+		;;
+		# "dvd")
+		# scale=1024x576
+		# videorate=3000k
+		# convertfolder=../dv
+		# output="../dv/$filename.dv"
+		# ;;
+		*)
+		log "unknown format $format"
+		return
+		;;
+	esac
+	printf "$showname "
+
+	cd "$convertfolder" || exit $?
+	convertfolder="$PWD"
+	cd "$OLDPWD"
+
+	# export output
+
+	printf " ($midx)"
+	printf "" > $TMP.sources
+	first=$(index2list $midx | head -1)
+	for nr in $(index2list $midx)
+	do
+		cp ignore .$PGM.$$.ignore 2>/dev/null || touch .$PGM.$$.ignore
+		if [ $nr -ne $first ]
+		then
+			grep -q "^$nr\." .$PGM.$$.ignore 2>/dev/null && continue
+		fi
+		printf " $nr"
+		echo "$convertfolder/$nr.mp4" >> $TMP.sources
+		# alias=$(ls -t $nr.mov $nr.mp4 $nr.MP4 $nr.MTS 2>/dev/null | head -1)
+		alias=$nr.mov
+		[ ! "$alias" ] && printf "\?" && continue
+		input=$(grep "\s$alias$" .aliases | sed "s/\s[0-9]*\.[[:alnum:]]*$//")
+		# echo "file '$convertfolder/$nr.mp4'" >> $TMP.sources
+		mp4="$convertfolder/$nr.mp4"
+		if [ ! -f "$mp4" ]
+		# if [ ! -f "$0" ]
+		then
+			printf "\e[s(c)"
+			rm -f "$mp4"
+
+			makemp4 -s $scale -b $videorate -o $mp4 $input 2>/dev/null || error=$?
+			ffprobe -i "$mp4" 2>/dev/null || error=$?
+			if [ "$error" ]
+			then
+				rm -f "$mp4"
+				printf "\e[u\33[0K[$?]"
+			else
+				printf "\e[u\33[0K."
+			fi
+		fi
+		rm .$PGM.$$.ignore
+	done
+	printf "\n"
+
+	if [ -f "$TMP.sources" ]
+	then
+		sources=$(cat $TMP.sources | tr "\n" " ")
+		ls -1 $sources >/dev/null 2>/dev/null || return $?
+
+		moviemerge "$output" $sources 2>/dev/null || log "merge failed $?"
+	fi
+}
+
+cat $TMP.list | while read -e lidx name
+do
+	echo "$lidx" | grep -q "[^0-9,-]" && log 1 "Wrong lidx '$lidx': in '$lidx $name'" && continue
+
+	if [ $begin -a "$showname" ]
+	then
+		theend=$(echo $lidx | sed "s/[^0-9].*//")
+		[ $theend -gt $begin ] || log 1 "end $theend lower than begin $begin" && unset begin && unset end && unset showname && continue
+		# echo pending $begin-$(($theend - 1)) $showname
+		makemovie $begin-$(($theend - 1)) $showname
+		showname=
+	fi
+	begin=
+	showname=
+	echo $lidx | grep -q "[,-]"
+	if [ $? -eq 0 ]
+	then
+		[ ! "$name" ] && continue
+		makemovie $lidx $name
+	else
+		if [ "$name" ]
+		then
+			begin=$lidx
+			showname=$name
+		fi
+	fi
+done

@@ -1,0 +1,41 @@
+#!/bin/bash
+
+extensions='\.(MTS|MPG|MOV|MP4|MXF)$'
+min2copy=5
+min2thumb=10
+
+director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1);
+echo "director: $director"
+source=~/castings/$director/upload/server/php/files/
+[ ! -d "$source" ] && echo "source $source MISSING" >&2 && exit 1
+echo "source $source"
+PGM=$(basename $0)
+TMP=/tmp/$PGM.$$
+
+while true
+do
+  cp liste .liste.$$
+  i=$(($i + 1))
+  ls "$source" | egrep -i "$extensions" 2>/dev/null | sort -n > $TMP.files
+  count=$(cat $TMP.files 2>/dev/null | wc -l)
+  [ $count -ge $min2copy ] && echo "$count enough to copy" \
+  || read -p "." -t 1 && i=$min2thumb && count=$min2copy \
+  || [ $count -gt 0 -a ! -f "$(ls "$source"/tmp/php* 2>/dev/null | head -1)" ] \
+  && echo "$count files and transfer ended" && i=$min2thumb && mediacopy && read -t 5
+
+  rmdir ../originals.* 2>/dev/null
+
+  if [ $i -ge $min2thumb ]
+  then
+    echo
+    [ "$director" = "bobines" ] && rethumb
+    rm ../.browsercache/* 2>/dev/null
+    batchthumbs .liste.$$ > ../playlist.php.$$ 2>/dev/null \
+    && mv ../playlist.php.$$ ../playlist.php \
+    || rm ../playlist.php.$$
+    i=0
+  fi
+  rm .liste.$$
+  echo
+  read -t 5
+done

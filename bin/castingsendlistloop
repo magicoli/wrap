@@ -1,0 +1,43 @@
+#!/bin/bash
+
+WAIT=60
+
+[ "$1" = "-l" ] && LOOP=true && shift
+[ "$1" = "-c" ] && REFRESHIGNORE=true && shift
+
+export PATH=$PATH:$(dirname $0)
+. $(which casting-helpers) || exit 1
+
+pwd | egrep -q "^$localdir.*casting[0-9]*$" || end 1 "Ce n'est pas un dossier de casting"
+
+
+alias rsync="rsync --timeout=60 --contimeout=60"
+
+castingdir=$client/$job/$casting
+echo "client: $client"
+echo "job: $job"
+echo "casting: $casting"
+echo "remote: $remote"
+[ "$REFRESHIGNORE" = "true" ] && echo refresh ignore list
+
+while true
+do
+    if [ "$REFRESHIGNORE" = "true" ]
+    then
+	last=$(cat liste | cut -f 1 | grep [0-9]  | tail -1)
+	castingchecktimes
+# | while read file
+#	do
+#	    nr=${file/.mov/}
+#	    [ $nr -ge $last ] && break
+#	    grep -q "^$file$" ignore && continue
+#	    echo "$file" | tee -a ignore
+#	done
+    fi
+    rsync -Wavz liste ignore thumbs deleted $remote/$castingdir/.sources/ \
+		| egrep "^liste$|ignore|thumbs|deleted" | sed "s/$/ $(date)/"
+    [ $LOOP ] || break
+    read -t $WAIT
+done
+
+end $?

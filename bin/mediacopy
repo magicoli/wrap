@@ -1,0 +1,122 @@
+#!/bin/sh
+
+extensions='\.(MTS|MPG|MOV|MP4|MXF)$'
+THUMBOFFSET=0
+MOVEORIGINALS=yes
+MOVEPREFIX=../.originals
+
+[ -f $(dirname "$0")/casting-helpers ] && . $(dirname "$0")/casting-helpers || exit 1
+
+if [ "$1" = "-l" ]
+then
+	method=link
+	shift
+else
+	method=copy
+fi
+
+if [ "$MOVEORIGINALS" = "yes" ]
+then
+	[ ! "$MOVEPREFIX" ] && MOVEPREFIX=moved
+	lastmove=$(ls -d "$MOVEPREFIX".* | sed "s/.*\.//" | sort -n | tail -1 | grep "[0-9]" || echo 0)
+	movedir=$MOVEPREFIX.$(($lastmove + 1))
+	mkdir -p "$movedir" || end 1 "Could not create moved directory $movedir"
+	log "$method destination $movedir"
+else
+	log "$method"
+fi
+
+lastalias=$(
+	(
+		ls *.mov 2>/dev/null
+		#	cat .aliases 2>/dev/null | cut -f 2
+	) \
+	| cut -d "." -f 1 | sort -n | tail -1  | sed "s/^$/0/" \
+	| grep [0-9] || echo 0
+)
+s=$(($lastalias + 1))
+log "start with $s"
+lastimport=$(cat .aliases 2>/dev/null | cut -f 1 | sort -n | tail -1 | sed "s/_.*CANON.*//" | cut -d "." -f 1 | sed -e "s/[^0-9]//g" -e "s/^0*//" | grep [0-9] || echo 0)
+echo "last impport: $lastimport" >&2
+
+#i=$(ls *.mov 2>/dev/null | cut -d "." -f 1 | sort -n | tail -1  | sed "s/^$/0/")
+i=$lastalias
+delta=$((lastalias - $lastimport))
+
+if [ ! "$@" ]
+then
+	director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1);
+	sources=~/castings/$director/upload/server/php/files/
+fi
+
+for source in $sources "$@"
+do
+	[ ! -d "$source" ] && echo "ignoring $source" >&2 && continue
+	echo "$source" | sed "s%/$%%"
+done | while read source
+do
+	tail -1 .aliases
+	pwd | xargs basename | egrep -q "^\.*sources[0-9]*$" || exit 2
+
+	log "source: $source"
+
+	# ls "$source/"*.MPG "$source/"*.MP4 "$source/"*.MOV "$source/"*.MTS 2>/dev/null > $TMP.movies
+	l=$( ( [ -f .last ] && cat .last || echo 0 ) | sed "s/_.*CANON.*//" | cut -d . -f 1 | sed -e "s/^[a-zA-Z]*0*\([0-9\]\)/\\1/" -e "s/[^0-9]//g" | sort -n | tail -1)
+
+	# cd "$source" || break
+	ls "$source" | egrep -i "$extensions" 2>/dev/null | sort -n | while read file
+  do
+    n=$(echo $file | sed "s/_.*CANON.*//" | cut -d . -f 1 | sed "s/^[a-zA-Z]*0*\([0-9\]\)/\\1/" | sed "s/[^0-9]//g")
+    [ $n -eq $l ] && echo "$file" && continue
+    p=$(($n -1)); [ $p -eq $l ] && echo "$file" || break
+    l=$n
+  done | sed "s:^:$source/:" > $TMP.movies
+
+	count=$(cat $TMP.movies | wc -l)
+	cat $TMP.movies
+	cat $TMP.movies | wc -l | sed "s/$/ files to move/"
+
+	cat $TMP.movies | sort -n | while read file
+	do
+		i=$(($i + 1))
+		#	j=$(($s + $i))
+		#	j=$(basename "$file" | sed "s/\..*$//" | sed "s/[^0-9]//" | sed "s/^0*//" | sed "s/^$/0/")
+		#	j=$(($s + $j))
+
+		alias=$i.mov
+		#	qt-thumbnailswide.sh -l -1 "$alias"
+		egrep "^$file " .aliases 2>/dev/null && log 1 "$file already there" && continue
+		[ -f "$alias" ] && log 1 "duplicate $alias for" $(basename $file) && end
+
+		if [ "$MOVEORIGINALS" = "yes" ]
+		then
+			mv -v "$file" "$movedir/" \
+			&& basename "$file" > .last \
+			|| end 1 "error moving $file to $movedir"
+
+			origin="$movedir/$(basename "$file")"
+		else
+			origin="$file"
+		fi
+		if [ "$method" = "copy" ]
+		then
+			printf "$origin "
+			cp -l "$origin" $alias \
+			&& printf "$origin\t$alias\n" >> .aliases \
+			&& printf " > $alias "
+		else
+			ln -s "$origin" $alias \
+			&& printf "$origin\t$alias\n" >> .aliases \
+			&& printf " > $alias "
+		fi
+		qt-thumbnailswide.sh -l -$THUMBOFFSET "$alias"
+		log files: $(ls *.mov | wc -l)
+	done
+	echo $(ls "$source" | egrep -i "$extensions" 2>/dev/null) | grep . | sed "s/^/$(cat .last 2>/dev/null) /" | grep --color " .*"
+	echo "$(ls "$source" | egrep -i "$extensions" | wc -l) files remaining"
+	rmdir "$movedir" 2>/dev/null
+done
+
+movietime $(ls *.mov 2>/dev/null | sort -n) | tee times.$$ | tail -2; mv times.$$ times
+
+end

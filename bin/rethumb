@@ -1,0 +1,25 @@
+#!/bin/bash
+
+[ "$1" ] && standard="$1"
+group=5
+
+cat liste | grep -i [a-z] | while read index foo
+do
+  nr=$(echo $index | sed "s/[^0-9].*//")
+  grep -q "^$nr.mov" .rethumbed 2>/dev/null && continue
+  grep "^$nr.mov" times | while read f f duration
+  do
+    echo "$foo" | grep -q "," \
+    && d=$group \
+    || {
+      [ "$standard" ] && d=$standard || d=$(($duration));
+    }
+    while [ $d -ge 0 ]
+    do
+      qt-thumbnailswide.sh -f -l -$d $nr.mov
+      du -sh .browsercache/$nr-thumb.jpg | grep ^0 && d=$(($d - 1)) && echo retrying && continue
+      echo  "$nr.mov" >> .rethumbed
+      break
+    done
+  done
+done

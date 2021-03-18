@@ -1,0 +1,367 @@
+#!/bin/bash
+
+# i=0; cat liste.txt | while read file; do  i=`expr $i + 1`; name="julien_frison-$i.mov"; chapcutmovie "$file" -o "$name"; done; ls *unnamed\ chapter*| while read file; do newfile=`echo "$file" | sed "s/ <unnamed chapter>//"`; echo $newfile; mv "$file" "$newfile"; done
+
+EXCLUDE='--exclude=".makemp4*" --exclude=".qmsubexp" --exclude="qt-thumbnails*" --exclude=".DS*" --exclude="disabled" --exclude=".qt*" --exclude=".QT*" --exclude="*~" --exclude=".sources"'
+SUFFIX="-MPEG4_"
+EXTENSION="mp4"
+NEWEXT="mp4"
+NEWSUF=""
+
+PGM=`basename "$0" .sh`
+TMP="/tmp/$PGM"
+
+syncmode=W
+processvideo=true
+processthumbs=true
+
+OPTS="1fPsvl:r:n:"
+SYNTAX=`echo $OPTS|sed "s/-://g"|sed "s/\(.*\)/[-\\1] [<args>]/g"|sed "s/\(.\):/] [-\\1 <value>/g"`
+
+help() {
+    usage
+    echo
+    echo "	-h display this help"
+    echo "	-d debug mode"
+    echo "	-q quiet mode"
+    echo
+    echo "sorry, helpman is in a minimalist mood"
+    exit 0
+}
+
+usage() {
+    echo "usage: $PGM $SYNTAX"
+}
+
+while getopts $OPTS PARAM
+  do
+    case $PARAM in
+	"?")
+	    ERROR=1
+	    ;;
+	-)
+	    case $OPTARG in
+		help)
+		    help
+		    ;;
+		*)
+		    printf $0: illegal option -- $OPTARG
+#		    usage
+	    esac
+	    ;;
+	x|y|z)
+	    printf "$PARAM set to $OPTARG\n"
+	    ;;
+	l)
+		setlocal=$OPTARG
+		;;
+	f)
+		forcesync=true
+		;;
+	1)
+		singlepass=true
+		;;
+	n)
+		case $OPTARG in
+		s)
+			nosync=true
+			;;
+			
+		v)
+			forceprocessvideo=false
+			;;
+		t)
+			processthumbs=false
+			;;
+		esac
+		;;
+	r)
+		setremote=$OPTARG
+		;;
+	s)
+		saveprefs=true
+		;;
+	P)
+		syncmode=P
+		;;
+	v)
+		viewparams=true
+		;;
+	h)
+	    help
+	    ;;
+	d)
+#		    echo "Debug mode"
+	    STDERR="&1"
+	    ;;
+	q)
+	    STDOUT="/dev/null"
+	            ;;
+	*)
+	    VALUES="$VALUES $PARAM"
+	    LASTVAL=$PARAM
+    esac
+done
+
+shift `expr $OPTIND - 1`
+
+if [ $ERROR ]
+then
+    usage
+    echo "   type '$PGM --help' for more info"
+    rm -f $TMP*
+    exit $ERROR
+fi
+
+if [ $1 ]
+	then
+	job=$1
+else
+	for basefolder in castings Jobs Showreels Castagne Sites Archaos MagiiicMobile
+	do
+		job=`pwd | grep $basefolder | sed "s/.*$basefolder//" | tr [:upper:] [:lower:] | sed "s/ //g" | cut -d "/" -f 2`
+		if [ "$job" ]
+			then
+			break
+		fi
+#		echo "nothing in $basefolder"
+	done
+#	echo "Job: $job"
+#	exit
+#	job=`pwd | grep Jobs | sed "s/.*Jobs//" | tr [:upper:] [:lower:] | sed "s/ //g" | cut -d "/" -f 2`
+#	if [ ! $job ]
+#		then
+#		job=`pwd | grep Showreels | sed "s/.*Showreels//" | tr [:upper:] [:lower:] | sed "s/ //g" | cut -d "/" -f 2`
+#		if [ ! $job ]
+#			then
+#			job=`pwd | grep Castagne | sed "s/.*Castagne//" | tr [:upper:] [:lower:] | sed "s/ //g" | cut -d "/" -f 2`
+#			if [ ! $job ]
+#				then
+#				echo "job=none" >&2
+#				exit 1
+#			fi
+#		fi
+#	fi
+fi
+
+if [ ! $viewparams ]
+	then
+	echo "$PGM: processing $job"
+fi
+
+defaults=$(which defaults)
+
+if [ $defaults ]
+then
+    defaults read "net.van-helden.$PGM" "$job" 2>/dev/null | grep "=" | sed "s/^ *//" | sed "s/ *= */=/" > "$TMP.prefs" 
+    . "$TMP.prefs"
+    rm "$TMP.prefs"
+else
+    ini_parser="$(which ini_parser)"
+    [ "$ini_parser" ] && . $ini_parser 2>/dev/null
+
+    for ini in /etc/${PGM}.ini ~/.${PGM}rc
+    do
+	[ -f "$ini" ] && ini_parser "$ini"
+    done
+    ini_section_$job
+fi
+
+if [ "$forceprocessvideo" ]
+	then
+	processvideo=$forceprocessvideo
+fi
+
+if [ "$setlocal" != "" ]
+	then
+	local=$setlocal
+	if [ "$local" = "." ]
+		then
+		local=$PWD
+	fi
+fi
+
+if [ "$setremote" != "" ]
+	then
+	remote=$setremote
+fi
+
+if [ "$local" = "" ]
+	then
+	echo "$PGM: local directory not set" >&2
+	exit 2
+fi
+
+if [ ! $remote ]
+	then
+	echo "$PGM: remote location not set" >&2
+	exit 3
+fi
+
+if [ $viewparams ]
+then
+	hash="# "
+fi
+
+if [ $saveprefs ]
+	then
+    if [ $defaults ]
+	then
+	defaults write "net.van-helden.$PGM" $job -dict-add \
+		local "$local" \
+		remote "$remote" \
+		processvideo $processvideo \
+		processthumbs $processthumbs \
+	&& 	echo "$hash$PGM: parameters saved"
+    else
+	echo "$PGM: parameters can't be saved in this OS"
+    fi
+fi
+
+if [ $viewparams ]
+	then
+	echo "job=\"$job\""
+	echo "local=\"$local\""
+	echo "remote=\"$remote\""
+	echo "processvideo=$processvideo"
+	echo "processthumbs=$processthumbs"
+	echo "lastCasting=\"$lastCasting\""
+	echo "lastCastingFolder=\"$lastCastingFolder\""
+	echo "lastiMovieFolder=\"$lastiMovieFolder\""
+	exit
+fi
+
+PENDING="${PWD}/.${PGM}-pending"
+#echo "$PENDING"
+touch "$PENDING"
+
+if [ "$processvideo" != "false" ]
+	then
+	echo "$PGM: fetching last movies"
+
+	ls *${SUFFIX}*.${EXTENSION} *${SUFFIX}*.mov 2>/dev/null | sort -u > "$TMP.list"
+	#sleep 10
+
+	cat "$TMP.list" | while read file
+	do
+		newfile=`echo "$file" | sed "s/${SUFFIX}.*/${NEWSUF}.${NEWEXT}/"`
+		fileext=`echo "$file" | sed "s/.*\.//"`
+		if [ -f "${file}TEMP"* ]
+			then
+			echo "$file waiting"
+			continue
+		fi
+		if [ "$fileext" == "mov" ]
+			then
+			upid=`fuser "$file" 2>&1 | sed "s/.*: //"`
+			if [ "$upid" ]
+				then
+				echo "$file in use by $upid"
+				continue
+			fi
+		fi	
+		if [ ! -f "${file}TEMP"* ]
+			then
+			mv "$file" "../web/$newfile" 
+			if [ $? -eq 0 ]
+				then
+				echo "$newfile" | grep "\-large\." >/dev/null 2>/dev/null \
+					|| qt-thumbnailswide.sh "../web/$newfile" 2>/dev/null 
+			fi
+			#			open -a "casse-flv" "../web/$newfile"
+			touch "$PENDING"
+		else
+			echo "$file just in use"
+			continue
+		fi
+	done
+
+	rm "$TMP.list"
+
+	#cd ../web
+
+	if [ "$processthumbs" != "false" ]
+		then
+		cd "$local" || exit
+		echo "processing thumbs"
+		find . -name "*.${NEWEXT}" \
+			| grep -v "\-large\.${NEWEXT}" \
+			| while read file
+		do
+			qt-thumbnailswide.sh -10 "${file}"
+		done
+	fi
+fi
+
+if [ "$forcesync" != "true" ]
+	then
+	ps -awwx | grep -v grep | grep rsync >/dev/null
+
+	if [ $? -eq 0 ]
+		then
+		echo "## sync delayed because a transfert is already in progress"
+		exit
+	fi
+fi
+
+if [ ! "$remote" ]
+	then
+	echo "no sync"
+	exit
+fi
+
+if [ $nosync ]
+	then
+	n="-n"
+	echo "$PGM: no sync, just showing"
+	singlepass=true
+fi
+
+while [ -f "$PENDING" ]
+do
+	rm "$PENDING"
+	#	~/bin/casting-batch-splitlist >/dev/null
+	if [ ! $singlepass ]
+		then
+		echo "$PGM: sending light files"
+		rsync $n --progress -${syncmode}avz --timeout=180 \
+			--exclude="*.${NEWEXT}" \
+			--exclude="*.m4v" \
+			--exclude="*.mp4" \
+			--exclude="*.mov" \
+			--exclude="*.mpg" \
+			--exclude="*.ogv" \
+			--exclude="logs" \
+		        --exclude=".makemp4*" \
+			--exclude=".qmsubexp" --exclude="qt-thumbnails*" --exclude=".DS*" \
+			--exclude="disabled" --exclude=".qt*" --exclude=".QT*" \
+			"$local/" \
+			"$remote/"
+		# if [ "$processvideo" != "false" ]
+		# 	then
+			echo "$PGM: sending movies (${syncmode})"
+			rsync $n --progress -${syncmode}avz --timeout=180 \
+				--exclude="*-large.*" \
+				--exclude="*-dv.*" \
+				--exclude="*-original.*" \
+				--exclude="logs" \
+		                --exclude=".makemp4*" \
+				--exclude=".qmsubexp" --exclude="qt-thumbnails*" --exclude=".DS*" \
+				--exclude="disabled" --exclude=".qt*" --exclude=".QT*" \
+				"$local/" \
+				"$remote/"
+		# fi
+		echo "$PGM: sending large files (${syncmode})"
+	fi
+	rsync $n --progress -${syncmode}avz --timeout=180 \
+		--exclude="logs" \
+	        --exclude=".makemp4*" \
+		--exclude=".qmsubexp" --exclude="qt-thumbnails*" --exclude=".DS*" \
+		--exclude="disabled" --exclude=".qt*" --exclude=".QT*" \
+		"$local/" \
+		"$remote/"
+
+	echo "$PGM: checking pending jobs"
+done
+echo "$PGM: nothing left to do"
+
