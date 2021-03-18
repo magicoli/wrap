@@ -24,7 +24,7 @@ mkdir -p "$WEBDIR/.browsercache"
 
 while true
 do
-	cp liste $TMP.liste
+	cp liste $TMP.liste || exit $?
 	# scratchmove --mp4 ./ $dest/
 	batchff $TMP.liste
 	# batchthumbs liste $method > $TMP.playlist
