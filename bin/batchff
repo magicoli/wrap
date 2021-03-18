@@ -109,26 +109,29 @@ makemovie()
 	first=$(index2list $index | head -1)
 	for nr in $(index2list $index)
 	do
-		cp ignore .ignore.$$
+		cp ignore .ignore.$$ 2>/dev/null || touch .ignore.$$
 		if [ $nr -ne $first ]
 		then
 			grep -q "^$nr\." .ignore.$$ 2>/dev/null && continue
 		fi
 		printf " $nr"
 		echo "$convertfolder/$nr.mp4" >> $TMP.sources
-		input=$(ls -t $nr.mov $nr.MP4 $nr.MTS 2>/dev/null | head -1)
-		[ ! "$input" ] && printf "\?" && continue
+		alias=$(ls -t $nr.mov $nr.mp4 $nr.MP4 $nr.MTS 2>/dev/null | head -1)
+		[ ! "$alias" ] && printf "\?" && continue
+		input=$(grep "\s$alias$" .aliases | sed "s/\s[0-9]*\.[[:alnum:]]*$//")
 		# echo "file '$convertfolder/$nr.mp4'" >> $TMP.sources
-		if [ ! -f "$convertfolder/$nr.mp4" ]
+		output="$convertfolder/$nr.mp4"
+		if [ ! -f "$output" ]
 		# if [ ! -f "$0" ]
 		then
 			printf "(c)"
 			rm -f "$output"
-			makemp4 $input 2>/dev/null \
+			makemp4 -o $output $input 2>/dev/null
+			ffprobe -i "$output" 2>/dev/null \
 			&& printf "\b\b\b   \b\b\b" \
 			|| {
 				printf "\b\b\b[$?]"
-				rm -f "$convertfolder/$nr.mp4"
+				rm -f "$output"
 			}
 		fi
 		rm .ignore.$$
