@@ -1,13 +1,13 @@
 # Web Reel Automated Publishing: it's a W.R.A.P.
 
-- Project URI:     https://wrap.rocks/
-- Description:     Tools for artists, bands, musicians, ...
-- Version:         3.0
-- Author:          Magiiic
-- Author URI:      https://magiiic.com/
-- Text Domain:     wrap
-- Domain Path:     /languages
-- License:         GNU Affero GPL v3.0 (AGPLv3)
+* Project URI:     https://wrap.rocks/
+* Description:     Tools for artists, bands, musicians, ...
+* Version:         3.0
+* Author:          Magiiic
+* Author URI:      https://magiiic.com/
+* Text Domain:     wrap
+* Domain Path:     /languages
+* License:         GNU Affero GPL v3.0 (AGPLv3)
 
 Wrap is a basic CMS, aimed to display mostly galleries of images or videos.
 The idea is to allow the website maintainer to push media in subfolders.
