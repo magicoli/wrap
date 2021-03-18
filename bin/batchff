@@ -116,22 +116,24 @@ makemovie()
 		fi
 		printf " $nr"
 		echo "$convertfolder/$nr.mp4" >> $TMP.sources
-		alias=$(ls -t $nr.mov $nr.mp4 $nr.MP4 $nr.MTS 2>/dev/null | head -1)
+		# alias=$(ls -t $nr.mov $nr.mp4 $nr.MP4 $nr.MTS 2>/dev/null | head -1)
+		alias=$nr.mov
 		[ ! "$alias" ] && printf "\?" && continue
 		input=$(grep "\s$alias$" .aliases | sed "s/\s[0-9]*\.[[:alnum:]]*$//")
 		# echo "file '$convertfolder/$nr.mp4'" >> $TMP.sources
-		output="$convertfolder/$nr.mp4"
-		if [ ! -f "$output" ]
+		mp4output="$convertfolder/$nr.mp4"
+		if [ ! -f "$mp4output" ]
 		# if [ ! -f "$0" ]
 		then
 			printf "(c)"
-			rm -f "$output"
-			makemp4 -o $output $input 2>/dev/null
-			ffprobe -i "$output" 2>/dev/null \
+			rm -f "$mp4output"
+			log -1 makemp4 -o $mp4output $input 2>/dev/null
+			makemp4 -o $mp4output $input 2>/dev/null
+			ffprobe -i "$mp4output" 2>/dev/null \
 			&& printf "\b\b\b   \b\b\b" \
 			|| {
 				printf "\b\b\b[$?]"
-				rm -f "$output"
+				rm -f "$mp4output"
 			}
 		fi
 		rm .ignore.$$
@@ -148,9 +150,9 @@ makemovie()
 		then
 			if [ -f "$TMP.sources" ]
 			then
+				echo "  $index $output"
 				printf "  mergin $sources" | sed "s|$convertfolder/*||g"
-				moviemerge "$output" $sources 2>/dev/null # && echo " ok" || echo "err $?"
-				echo
+				moviemerge "$output" $sources 2>/dev/null || log "merge failed $?"
 			fi
 		fi
 	fi
@@ -178,7 +180,7 @@ do
 	then
 		# echo "proceed now $index $name"
 		[ ! "$name" ] && continue
-		log "makemovie $index $name"
+		# log "makemovie $index $name"
 		makemovie $index $name
 		continue
 	else
