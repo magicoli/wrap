@@ -1,6 +1,13 @@
 # Web Reel Automated Publishing: it's a W.R.A.P.
-> @ Olivier van Helden 2000-2016. All rights reserved.  
-> http://wrap.magiiic.com  
+
+- Project URI:     https://wrap.rocks/
+- Description:     Tools for artists, bands, musicians, ...
+- Version:         3.0
+- Author:          Magiiic
+- Author URI:      https://magiiic.com/
+- Text Domain:     wrap
+- Domain Path:     /languages
+- License:         GNU Affero GPL v3.0 (AGPLv3)
 
 Wrap is a basic CMS, aimed to display mostly galleries of images or videos.
 The idea is to allow the website maintainer to push media in subfolders.
@@ -13,6 +20,8 @@ It is designed for fast, efficient media transmission. Although it is
 possible to make a pretty beautiful website with this system (and I did), it's
 not the goal.
 
-It is not documented, and it works only with PHP5 for now. Work is in progress
-to adapt it for PHP7 (mostly because of a huge amount of ereg, ereg_match and
-ereg_replace calls!).
+It is poorly documented, but it works now with PHP7 (and probably 8).
+
+## Installation
+
+Tbd
