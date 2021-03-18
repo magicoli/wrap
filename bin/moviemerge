@@ -103,7 +103,7 @@ while getopts $OPTS PARAM
 	    esac
 	    ;;
 	o)
-	    output=$OPTARG
+	    mergedfile=$OPTARG
 	    ;;
 	f)
 	    FIRST=$OPTARG
@@ -144,14 +144,14 @@ echo "$ERROR   type '$PGM --help' for more info"
     end "$ERROR   type '$PGM --help' for more info"
 fi
 
-if [ ! "$output" ]
+if [ ! "$mergedfile" ]
 then
     if [ "$1" ]
     then
-	output="$1"
+	mergedfile="$1"
 	shift 1
     else
-	end 1 must specify output
+	end 1 must specify mergedfile
     fi
 fi
 
@@ -162,7 +162,7 @@ else
     sources=$@
 fi
 
-for app in MP4Box ffmpeg avconv catmovie 
+for app in MP4Box ffmpeg avconv catmovie
 do
     which $app | grep -q $app || continue
 #    case $app in
@@ -181,7 +181,7 @@ case $method in
 	    do
 		printf " -cat $source"
 	    done
-	    printf " -new $output"
+	    printf " -new $mergedfile"
 	)
 	;;
     avconv|ffmpeg)
@@ -200,7 +200,7 @@ case $method in
 		&& inter="$inter|$ts" \
 		|| inter=$ts
 	done
-	command="$app -i concat:\"$inter\" -c copy -bsf:a aac_adtstoasc $output"
+	command="$app -i concat:\"$inter\" -c copy -bsf:a aac_adtstoasc $mergedfile"
         log "command: $command"
 	;;
     *)
@@ -209,10 +209,10 @@ esac
 
 echo "$command" > $TMP.command
 
-log merging $sources into $output
+log merging $sources into $mergedfile
 . $TMP.command || end $?
 
-[ -f "$output" ] && qt-thumbnailswide.sh $output
+[ -f "$mergedfile" ] && qt-thumbnailswide.sh $mergedfile >/dev/null 2>/dev/null
 
 if [ "$MOVEAFTERPROCESSING" = "yes" ]
 then
