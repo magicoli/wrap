@@ -29,33 +29,27 @@
 * fix: only try to detect mobile if Mobile_Detect class is present
 
 ## 1.11
-* handle .tar, .gz and .tar extensions as downloadable
-* added [video:] tag
-* wrap.php: allow one simple text line in links.txt, not converted as link
-* added info from comment additions in playlist
-
-## 1.10
 * new: SSL support
 * new: theming (work in progress)
-* enhanced: ignore list (tilde, hashes, DS_Store...)
-* enhanced: automatic pageid
-* enhanced: multiple body classes
-* fixes: html cleaning, remove empty tags
-
-## 1.9
-* fixed: efficient nofollow and noindex for non indexable pages
 * new: handle remote pages
 * new: html5 video subtitles support
 * added theora ogg & ogv support
 * added modules videosub, video-js and modernizr
+* added [video:] tag
+* fixes: html cleaning, remove empty tags
+* fixed: efficient nofollow and noindex for non indexable pages
+* enhanced: ignore list (tilde, hashes, DS_Store...)
+* enhanced: automatic pageid
+* enhanced: multiple body classes
+* handle .tar, .gz and .tar extensions as downloadable
+* wrap.php: allow one simple text line in links.txt, not converted as link
+* added info from comment additions in playlist
 
 ## 1.8
 * First stable release as W.R.A.P.
 * Renamed browser* files to wrap
 * split main code, functions and facebook auth
 * fixes and cosmetic changes
-
-## 1.7
 * Initial fork of "browser" project, renamed W.R.A.P.
 * A php app with huge bunch of files, tools, libraries, codes,
   developed between 2000 and 2013 under the too generic name "browser"
