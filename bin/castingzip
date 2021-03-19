@@ -1,0 +1,38 @@
+#!/bin/sh
+
+#for casting in $(ls $@)
+if [ $1 ]
+    then
+    for folder in $@
+    do
+	ls -d "$folder"
+    done
+else
+    ls -d *
+fi | while read casting
+do
+    casting=$(echo "$casting" | sed "s|/$||")
+    [ ! -d "$casting" ] && continue
+    ls $casting/*.jpg >/dev/null 2>/dev/null && type=pictures
+    ls $casting/*.png >/dev/null 2>/dev/null && type=pictures
+    ls $casting/*.mp4 >/dev/null 2>/dev/null && type=movies
+
+    zipname=$(echo "$casting" | sed "s/^[_ ]*//")
+    if [ "$type" = "pictures" ]
+    then
+	zipfile=$casting/$(basename "$PWD")-$zipname.zip
+    else
+	zipfile=$casting/$zipname.zip
+    fi
+    [ -f $zipfile ] && echo "$zipfile exists" && continue
+    zip $zipfile \
+	$(cat $casting/playlist.php  | grep "=>" | cut -d '"' -f 2 | sed s:^:$casting/:)
+    if [ "$type" = "movies" ]
+    then
+	cd "$casting"
+	mv .browsercache $casting-pictures \
+	    && zip $casting-pictures.zip $casting-pictures/*-large* \
+	    && mv $casting-pictures .browsercache 
+	cd "$OLDPWD"
+    fi
+done

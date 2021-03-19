@@ -1,0 +1,27 @@
+#!/bin/sh
+
+#[ "$1" ] || exit 1
+#[ -f "$1" ] || exit 2
+
+PGM=`basename "$0"`
+PATH="$PATH:"$(dirname "$0")
+
+case "$1" in
+    "-p")
+	shift
+	castingrolesbyexpr $@
+	;;
+    "-c")
+	shift
+	castingrolesbycomment $@
+	;;
+    *)
+	(
+	echo "Usage:"
+	printf "\t\$ $PGM -p <role> <exp1> [<exp2>] [...]\n"
+	printf "\t(use numbers list or grep patterns list)\n"
+	printf "\t\$ $PGM -c\n"
+	printf "\t(parse // comments in playlists)\n"
+	) >&2
+	exit 1
+esac

@@ -1,0 +1,28 @@
+#!/bin/sh
+
+PGM=$(basename $0)
+
+[ -f $(dirname "$0")/casting-helpers ] && . $(dirname "$0")/casting-helpers || exit 1
+
+ls casting*/playlist.php >/dev/null || end 2 "No playlist (not in a castinf folder?)"
+[ ! $2 ] && end 1 "usage: $PGM <selection> <filter> <filter2> ..."
+
+if [ "$1" = "-a" ]
+then
+    APPEND=yes
+    shift
+fi
+
+selection=$1
+shift
+
+head -2 casting1/playlist.php; 
+
+for filter in $(echo $@ | sed "s/-/ /g")
+do
+    echo "$filter" | grep -q "^[0-9][0-9]*$" && pattern="[^0-9]$filter-"
+    grep -A1 -H "$pattern" casting*/playlist.php \
+	| egrep "'.*,.*'|$pattern"
+done | sed "s%^\(.*/\).*[:-]\([[:blank:]]*\)\"%\\2\"../\\1%"
+tail -2 casting1/playlist.php
+

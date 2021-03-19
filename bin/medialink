@@ -1,0 +1,66 @@
+#!/bin/sh
+
+mediacopy -l "$@"
+exit
+
+
+export PATH=$PATH:$(dirname $0)
+. $(which casting-helpers) || exit 1
+
+echo "mounts:"
+cat $TMP.mounts
+
+PGM=$(basename "$0")
+TMP=/tmp/$PGM.$$
+
+[ -f "$TMP.mounts" ] || end 1 no mounts
+
+cat "$TMP.mounts" | while read mount
+do
+	for folder in $clipfolders
+	do
+		find "$mount/$folder" -iname "*.mp4"
+		find "$mount/$folder" -iname "*.mts"
+		find "$mount/$folder" -iname "*.mov"
+		find "$mount/$folder" -iname "*.mpg"
+done | sort -u > $TMP.files
+
+if [ $(basename "$PWD") = "sources" ]
+then
+    sources=$PWD
+else
+    if [ -d $PWD/sources ]
+	then
+	sources=$PWD/sources
+    fi
+fi
+
+cat $TMP.files | sed "s:[^/]*$::" | sort -u | while read folder
+do
+    echo "$folder"
+    count=$(grep -c "$folder" $TMP.files)
+    extension=$(grep "$folder" $TMP.files | sed "s/.*\.//" | sort -u)
+    echo "$count $extension videos"
+    if [ ! "$sources" ]
+	then
+	echo "copy these files to a casting sources folder"
+	echo "or start this program from a casting folder"
+	continue
+    fi
+    echo "$PGM: copying files"
+
+    rsync --progress -Wavz $folder/*.$extension $sources/
+
+    echo "$PGM: making thumbnails"
+
+    cd $sources
+    clips-renumber
+
+    ls *.$extension *.mov 2>/dev/null | sort -n | while read file
+    do
+	qt-thumbnailswide.sh -1 -l $file
+    done
+
+done
+
+rm -f $TMP*

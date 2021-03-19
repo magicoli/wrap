@@ -1,0 +1,35 @@
+#!/bin/bash
+
+[ ! -f playlist.php ] && echo "no playlist" && exit 1
+
+while true
+do
+    all=$(grep ".mp4" playlist.php | wc -l)
+    clear
+    date
+    pwd
+    if [ $all = 0 ]
+    then
+	echo "nothing found in playlist"
+	read -t 5
+	continue
+    fi
+
+    expecting=$(grep "\.mp4" playlist.php | wc -l)
+
+#    current=$(ls *.mp4 | wc -l)
+    current=$(grep "\.mp4" playlist.php  | cut -d '"' -f 2 | while read file; do [ -f "$file" ] && echo "$file" && continue; [ -f .$file.* ] && echo "$file" && continue; done | wc -l)
+    processed=$(grep "\.mp4" playlist.php  | cut -d '"' -f 2 | while read file; do [ ! -f "$file" ] && break; [ -f .$file.* ] && break; echo "$file"; done | wc -l)
+    echo "<p>"Transfert en cours: $current / $all"</p>" | tee _about.txt
+    if [ $processed = $all ]
+    then
+	rm _about.txt
+	date
+	echo "will start the zip in 60 seconds"
+	sleep 60
+	cd ../
+	castingzip
+	break
+    fi
+    read -t 5
+done

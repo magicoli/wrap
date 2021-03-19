@@ -1,0 +1,45 @@
+#!/bin/bash
+
+USETTS=yes
+
+export PATH=$PATH:$(dirname $0)
+. $(which casting-helpers) || exit 1
+
+[ "$SAY" ] || SAY=echo
+
+PGM=$(basename "$0")
+TMP=/tmp/$PGM.$$
+
+case $client in
+	"deuxhuit")
+	baseurl="http://wrap.deuxhuit.be" \
+	;;
+	*)
+	baseurl="http://wrap.magiiic.media/$client"
+	;;
+esac
+
+[ "$1" ] \
+	&& url=$1 \
+	|| url=$baseurl/$job/$casting
+
+echo "$job/$casting"
+
+while true
+do
+#	echo "$url/_about.txt"
+	curl -s "$url/_about.txt"  | sed "s|</*p>||g" | sed "s|/|sur|" > $TMP.last
+	grep -q Transfert $TMP.last || {
+		$SAY "J'ai avalé toutes les vidéos, et c'était bon!"
+		break
+	}
+	diff $TMP.last $TMP.previous >/dev/null 2>/dev/null || {
+	    date
+	    cat $TMP.last
+	    $SAY "$(cat $TMP.last)"
+	    cp $TMP.last $TMP.previous
+	}
+	read -t 30
+done
+
+rm -f $TMP.last $TMP.previous

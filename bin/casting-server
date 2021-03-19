@@ -1,0 +1,79 @@
+#!/bin/bash
+
+DEBUG=yes
+
+export PATH=$PATH:$(dirname $0)
+. $(which casting-helpers) || exit 1
+for conf in /etc/casting ~/etc/casting /etc/$PGM /usr/local/etc/$PGM ~/etc/$PGM
+do
+    [ -f $conf ] && . $conf
+done
+[ "$MODE" = "client" ] && PGM=casting-client
+
+editor=$(which gedit || which atom || which subl)
+if [ "$3" ]
+then
+  cd $base/$1/$2/$3 || end 1 could not cd to $base/$1/$2/$3
+elif [ "$2" ]
+then
+  cd $base/$1/$2 || end 1 could not cd to $base/$1/$2
+  ls -1d casting*
+  yesno "Créer un nouveau casting?" || end "no"
+  cd $(newcasting $1 $2 | tail -1) || end 1 Erreur en créant le casting
+elif [ "$1" ]
+then
+  echo $1 | grep -q : && end 0
+  cd "$1" || end 1 "error with folder $1"
+fi
+
+pwd | egrep -q "^$base/.*/casting[0-9]*" || end 1 "Ce n'est pas un dossier de casting"
+if [ "$createfolders" != "none" ]
+then
+  subfolder=$(echo $createfolders | sed "s/.* //")
+  pwd | egrep -q "^$base/.*/casting[0-9]*/$subfolder" || cd $subfolder 2>/dev/null || end 2 "Dossier $subfolder manquant"
+fi
+
+SCREENTITLE=$(pwd | sed "s:^$base/*::" | cut -d / -f -3 | tr "/ " ":_")
+
+open=$(which open || which xdg-open || which gnome-open)
+
+if [ ! "$SSH_CLIENT" ]
+then
+  xrandr --query | grep [[:blank:]]connected | sed -e "s/.*connected //" -e "s/.*primary //"> $TMP.screens
+  allscreens=$(cat $TMP.screens | wc -l)
+  scrpos=$(cat $TMP.screens | cut -d+ -f2| cut -d " " -f 1 | tail -1)
+  scrwidth=$(cat $TMP.screens | cut -dx -f1 | tail -1)
+  # scrheigth=$(cat $TMP.screens | cut -dx -f2 | cut -d+ -f 1 | tail -1)
+  winwidth=$(($scrwidth / 3))
+  # winheight=$scrheigth
+  echo "$PGM" | grep server \
+  && winposx=$(($scrpos + $scrwidth - $winwidth)) \
+  || winposx=$(($scrpos + $scrwidth - 2 * $winwidth))
+  # winposy=0
+  wmctrl -r :ACTIVE: -e 5,$winposx,-1,$winwidth,-1
+  wmctrl -r :ACTIVE: -b add,maximized_vert
+  wmctrl -r :ACTIVE: -N "$USER@$HOSTNAME $PGM $SCREENTITLE"
+
+  echo "$PGM"
+  if echo "$PGM" | grep -q "server"
+  then
+    remotehost=$(echo $remote | cut -d: -f1)
+    ssh -t $remotehost "cd $PWD && $(which $PGM)" $@ \
+    || end $? "remote command failed"
+    end remote finished
+  else
+    mkdir -p browsercache
+    thumbstable > browsercache/index.html
+    $open browsercache
+    $open browsercache/index.html https://wrap.rocks/$client/$job/$casting
+    touch liste ignore thumbs deleted roles
+    $editor liste ignore thumbs deleted roles >/dev/null 2>/dev/null & >/dev/null 2>/dev/null
+  fi
+fi
+
+screen -x $SCREENTITLE && end
+
+SCREENRC=$(realpath $(dirname $0))/$PGM.screenrc
+[ -e "$SCREENRC" ] || end 3 Missing $SCREENRC
+screen -S $SCREENTITLE -c $SCREENRC
+end

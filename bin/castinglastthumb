@@ -1,0 +1,12 @@
+#!/bin/bash
+
+cat liste | while read id name
+do
+    [ "$lastname" ] && echo "$lastname "$(($id - 1))
+    unset lastname
+    [ "$name" ] && lastname=$(webnormalize "$name") || unset lastname
+done | while read n i
+do
+    grep -q "^$n[[:blank:]]" thumbs && echo "> $n $i" >&2 && continue
+    printf "$n\t$i\n"
+done

@@ -1,0 +1,13 @@
+source ~/.screenrc
+screen mediawatch
+split
+focus down
+screen medialoop
+split
+focus down
+screen batchloop
+split
+focus down
+screen
+layout save castingserver
+layout autosave on

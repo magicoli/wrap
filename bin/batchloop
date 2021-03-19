@@ -25,10 +25,7 @@ mkdir -p "$WEBDIR/.browsercache"
 while true
 do
 	cp liste $TMP.liste || exit $?
-	# scratchmove --mp4 ./ $dest/
 	batchff $TMP.liste
-	# batchthumbs liste $method > $TMP.playlist
-	# mv $TMP.playlist $WEBDIR/playlist.php
 	batchthumbs $TMP.liste $method > $TMP.playlist 2>/dev/null \
 	&& mv $TMP.playlist ../playlist.php \
 	|| rm $TMP.playlist

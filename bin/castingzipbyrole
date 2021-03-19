@@ -1,0 +1,27 @@
+#!/bin/sh
+
+BASEDIR=$(pwd)
+
+if [ $1 ]
+	then
+	for folder in $@
+	do
+		ls $folder/playlist.php
+	done
+else
+	ls */playlist.php | egrep -v "^casting" 
+fi \
+	| cut -d "/" -f 1 | while read folder
+do
+	cd "$BASEDIR"
+	cd "$folder"
+	zipfile="$folder.zip"
+	[ -f $zipfile ] && echo "$zipfile exists" && continue
+	zip -j $zipfile $(
+	grep "=>" playlist.php | cut -d '"' -f 2 | while read file
+	do
+		echo "$file"
+		echo "$file" | grep mp4 | sed "s|\(.*\)/\([^/]*\).mp4|\\1/.browsercache/\\2-large.jpg|"
+	done
+	)
+done

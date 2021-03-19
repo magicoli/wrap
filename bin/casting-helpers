@@ -1,0 +1,42 @@
+#!/bin/sh
+
+[ ! "$ENDSUCCESS" ] && ENDSUCCESS="Ça roule"
+[ ! "$ENDFAILED" ] && ENDFAILED="Ça craint!"
+
+for prefs in /etc/casting ~/etc/casting ~/.casting
+do
+#echo "$prefs"
+	[ -f "$prefs" ] && . "$prefs"
+done
+
+. $(which helpers) || exit 1
+
+basename $PWD | grep -q browsercache && cd ..
+
+if [ ! "$base" ]
+	then
+	for folder in ~/Jobs/castings ~/castings /home/castings
+	do
+		[ -d "$folder" ] && base="$folder" && continue
+	done
+fi
+
+if [ ! "$mounts" ]
+	then
+	for folder in /Volumes /media /mnt
+	do
+		mount \
+			| grep " on $folder" | cut -d " " -f 3- \
+			| egrep " type vfat | \(msdos" \
+			| sed "s/ type .*//" | sed "s/ (.*).*//" >> $TMP.mounts
+		# [ -d "$folder" ] && mountdirs="$mountdir$folder "
+	done
+fi
+
+casting=$(basename "$PWD")
+job=$(basename $(dirname "$PWD"))
+[ -f ../_pagetitle.txt ] \
+&& jobname=$(cat ../_pagetitle.txt) \
+|| jobname=$job
+client=$(basename $(dirname $(dirname "$PWD")))
+clientname=$(titlecase $client)

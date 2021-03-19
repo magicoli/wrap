@@ -1,0 +1,13 @@
+source ~/.screenrc
+screen castinggetthumbs -l
+split
+focus down
+screen castingsendlistloop -l -c
+split
+focus down
+screen castingthumbsgroups -l
+split
+focus down
+screen thumbstable -l
+layout save castingclient
+layout autosave on
