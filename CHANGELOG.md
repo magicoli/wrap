@@ -14,7 +14,7 @@
 * New back-end tools
   (old ones actually, merged from another repo, will be maintained here now)
 
-## 2.x
+## 2.4.8
 * new: bootstrap layout, becomes default
 * fix: protect wrap own directory
 * added: support for Canon .MXF files
