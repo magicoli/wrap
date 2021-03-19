@@ -7,7 +7,9 @@
 * new back-end scripts
 
 ## 3.0
-* New branch for 3.x development
+This is a major upgrade. However, there is no specific upgrade path for the web
+content, it is backward compatible with 2.x as the actual major change is the
+inclusion of new back-end scripts.
 * PHP7-ready
 * Optimize bandwidth, load video only on request
 * Optimize video display
