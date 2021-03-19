@@ -1,0 +1,6 @@
+# .gitattributes built automatically from .distignore, do not modify
+.gitattributes export-ignore
+.git export-ignore
+.gitignore export-ignore
+.gitmodules export-ignore
+doc/ export-ignore

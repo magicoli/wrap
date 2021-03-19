@@ -1,0 +1,5 @@
+.gitattributes
+.git
+.gitignore
+.gitmodules
+doc/

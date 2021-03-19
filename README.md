@@ -1,6 +1,6 @@
 # Web Reel Automated Publishing: it's a W.R.A.P.
 
-* Version:         3.0.2
+* Version:         3.0.3
 * Project URI:     https://wrap.rocks/
 * GitLab URI:      https://git.magiiic.com/magicoli/wrap
 * Donate link:     https://paypal.me/magicoli
