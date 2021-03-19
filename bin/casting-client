@@ -1,2 +1,2 @@
 export MODE=client
-/opt/magic/bin/casting-server
+casting-server
