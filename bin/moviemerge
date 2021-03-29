@@ -200,7 +200,7 @@ case $method in
 		&& inter="$inter|$ts" \
 		|| inter=$ts
 	done
-	command="$app -i concat:\"$inter\" -c copy -bsf:a aac_adtstoasc $mergedfile"
+	command="$app -vsync -1 -i concat:\"$inter\" -c copy -bsf:a aac_adtstoasc $mergedfile"
         log "command: $command"
 	;;
     *)
