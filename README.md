@@ -23,7 +23,6 @@ not the goal.
 
 It is poorly documented, but it works now with PHP7 (and probably 8).
 
-
 ## Installation
 
 * VERY IMPORTANT: **Put this project outside your web directory**. It contains
