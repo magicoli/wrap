@@ -7,6 +7,7 @@
 [ "$audiorate" ] || audiorate=160k
 [ "$preset" ] || preset=medium
 [ "$blur" ] || blur=yes
+[ "$allblur" ] || blur=no
 
 PGM=`basename "$0"`
 TMP="/tmp/$PGM.$$"
@@ -235,7 +236,7 @@ do
       width=$(echo $sourceinfo | cut -d, -f1)
       height=$(echo $sourceinfo | cut -d, -f2)
     fi
-    if [ $width -lt $height -a "$blur" ]
+    if [ $width -lt $height -a "$blur" ] || [ "$allblur" ]
     then
       log "width $width < height $height let's blur the lines"
       vfilterblur=",split[original][copy];[copy]scale=${ow}:-1,crop=${ow}:${oh},gblur=sigma=20[blurred];[blurred][original]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2"
