@@ -211,17 +211,20 @@ $htmlfiles=array(
 	);
 
 $playable=array (
-	// ".avi",
-	".mov",
-	".mpeg",
-	".mpg",
-	".wmv",
+	".avi",
 	".flv",
-	".mp4",
 	".m4p",
 	".m4v",
-	".mp3"
+	".mov",
+	".mp4",
+	".mpeg",
+	".mpg",
+	// ".mp3",
+	// ".wav",
+	".webm",
+	".wmv",
 );
+
 $html5_playable=array(
 	// "avi",
 	"mp4",
@@ -243,6 +246,8 @@ $downloadable=array (
 	".tgz",
 	".tar",
 	".gz",
+	".mp3",
+	".wav",
 );
 
 $popable=array(
