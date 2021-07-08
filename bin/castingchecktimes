@@ -1,10 +1,25 @@
 #!/bin/sh
 
-LIMIT=5
+ignoreshorterthan=5
 
 PGM=$(basename "$0")
 TMP=/tmp/$PGM.$$
 trap 'rm -f $TMP.*' EXIT
+
+export PATH=$PATH:$(dirname $0)
+. $(which casting-helpers) || exit 1
+
+subs=$(echo $PWD | sed -e "s:/*$::" -e "s:^$base/*::")
+cum=$base
+export IFS=:
+for sub in $(echo $subs | tr "/" ":")
+do
+	# [ "$sub" ] || break
+	cum=$cum/$sub
+	[ -f "$cum/.casting" ] && . "$cum/.casting"
+	# echo $cum
+done
+unset IFS
 
 last=$(cat liste | cut -f 1 | grep "^[0-9][0-9]*[[:blank:]]*$" | tail -1)
 [ ! "$last" ] && echo "$PGM: no data" >&2 && exit
@@ -16,7 +31,7 @@ do
     [ $n -gt $last ] && break
     [ ! "$s" ] && echo "no timing for clip $n $t $s" >&2 && continue
 #    echo "checking $n"
-	[ $s -gt $LIMIT ] && continue
+	[ $s -gt $ignoreshorterthan ] && continue
 	o=$(($n + 1))
 	p=$(($n - 1))
 	egrep -q \
@@ -32,4 +47,3 @@ done > $TMP.calculated
 cat ignore $TMP.calculated | sort -u | sort -n > $TMP.ignore
 diff ignore $TMP.ignore && exit
 cat $TMP.ignore > ignore
-
