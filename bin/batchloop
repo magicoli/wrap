@@ -29,6 +29,13 @@ do
 	batchthumbs $TMP.liste $method > $TMP.playlist 2>/dev/null \
 	&& mv $TMP.playlist ../playlist.php \
 	|| rm $TMP.playlist
+	grep "=>" ../playlist.php  | cut -d '"' -f 2 \
+	| while read file
+	do
+		[ -f "../$file" ] || echo still $file
+	done > $TMP.missing
+	[ -f "$TMP.missing" ] && echo "Still in queue" && cat $TMP.missing && rm $TMP.missing
+
 	du -sch ../*.mp4 2>/dev/null | sort -h | cut -f 2 | tail -20 | xargs movietime | grep ":.*:" | sort -nk3 | egrep -B5 --color "[0-9][0-9][0-9][0-9][0-9]* *$"
 	rm $TMP.liste
 	echo
