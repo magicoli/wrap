@@ -7,7 +7,6 @@
 [ "$audiorate" ] || audiorate=160k
 [ "$preset" ] || preset=medium
 [ "$blur" ] || blur=yes
-[ "$allblur" ] || blur=no
 
 PGM=`basename "$0"`
 TMP="/tmp/$PGM.$$"
@@ -160,13 +159,14 @@ do
     tmpfile=$TMP.processing.mp4
     ext=$(echo "$file" | sed "s/.*\.//")
     alias=$TMP.alias.$ext
+    alias=$(realpath "$alias")
+
     log "file $file"
     log "  alias $alias"
     log "  tmpfile $tmpfile"
 
-    rm -f $tmpfile $alias
-    ln -s "$(basename "$file")" "$alias" || end 1 "could not make alias"
-
+    rm -f $tmpfile "$alias"
+    ln -s "$file" "$alias" || end 1 "could not make alias"
     if [ "$scale" = "o" ]
     then
       convertsize=$($vapp -i "$alias" 2>&1 | egrep "Stream #.*Video:" | sed "s/.*[^0-9]\([0-9]*x[0-9]*\)[^0-9].*/\\1/")
@@ -174,8 +174,8 @@ do
       convertsize=$scale
     fi
 
-    command="$vapp -i $(realpath "$file")"
-    [ ! $output ] && output=$destfolder/$name.mp4
+    command="$vapp -i $alias"
+    [ ! "$output" ] && output=$destfolder/$name.mp4
     [ -f "$output" ] && echo "$PGM: $output exists" && continue
 
     for codec in aac mp3
@@ -225,7 +225,7 @@ do
   oh=$(echo $scale | tr ":" "x" | cut -d x -f 2)
   if istrue $blur
   then
-    sourceinfo=$(ffprobe $alias -v error -select_streams v:0 -show_entries stream=width,height:stream_tags=rotate -of csv=p=0)
+    sourceinfo=$(ffprobe "$alias" -v error -select_streams v:0 -show_entries stream=width,height:stream_tags=rotate -of csv=p=0)
     rotate=$(echo $sourceinfo | grep ',.*,' | cut -d , -f 3)
     [ "$rotate" ] && rotate=$(($rotate % 180))
     if [ "$rotate" = "90" ]
@@ -236,7 +236,7 @@ do
       width=$(echo $sourceinfo | cut -d, -f1)
       height=$(echo $sourceinfo | cut -d, -f2)
     fi
-    if [ $width -lt $height -a "$blur" ] || [ "$allblur" ]
+    if [ $width -lt $height -a "$blur" ]
     then
       log "width $width < height $height let's blur the lines"
       vfilterblur=",split[original][copy];[copy]scale=${ow}:-1,crop=${ow}:${oh},gblur=sigma=20[blurred];[blurred][original]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2"
@@ -245,12 +245,12 @@ do
     fi
   fi
 
-  command="$command -ac 2 -acodec $acodec -ab $audiorate -vcodec $vcodec $profile $preset -vb $videorate -maxrate $videorate -bufsize $buffer -pix_fmt yuv420p -vf scale=iw/ih*$oh:$oh$vfilterblur,fps=50"
+  command="$command -ac 2 -acodec $acodec -ab $audiorate -vcodec $vcodec $profile $preset -vb $videorate -maxrate $videorate -bufsize $buffer -pix_fmt yuv420p -vf scale=iw/ih*$oh:$oh$vfilterblur"
   # command="$command -ac 2 -vcodec $vcodec $profile $preset -vb $videorate -maxrate $videorate -bufsize $buffer -vf scale=$convertsize -pix_fmt yuv420p -acodec $acodec -ab $audiorate"
   # -threads auto
   # command="$command -acodec $acodec -ab 160000 -s $convertsize -vcodec libx264 -coder 1 -flags +loop $osparams -me_method umh -subq 8 -me_range 16 -g 250 -keyint_min 25 -sc_threshold 40 -i_qfactor 0.71 -b_strategy 2 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -bf 3 -refs 5 $directpred 3 -trellis 1 -wpredp 2 -coder 0 -bf 0 -refs 1 -level 30 -maxrate 10000000 -bufsize 10000000 -wpredp 0 -b $videorate -threads 0 -f mp4"
   command="$command $tmpfile"
-  $command
+  $command || end $? "ERROR processing $command"
 
   # [ -f $tmpfile ] && mv "$tmpfile" "$output" || {
   ffprobe -i $tmpfile -v error && mv "$tmpfile" "$output" || {
