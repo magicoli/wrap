@@ -67,7 +67,7 @@ then
     $open browsercache
     $open browsercache/index.html https://wrap.rocks/$client/$job/$casting
     touch liste ignore thumbs deleted roles
-    $editor liste ignore thumbs deleted roles >/dev/null 2>/dev/null & >/dev/null 2>/dev/null
+    $editor ./ liste ignore thumbs deleted roles >/dev/null 2>/dev/null & >/dev/null 2>/dev/null
   fi
 fi
 
