@@ -8,6 +8,6 @@ focus down
 screen castingthumbsgroups -l
 split
 focus down
-screen thumbstable -l
+screen mediawatch
 layout save castingclient
 layout autosave on

@@ -4,7 +4,7 @@ if ( ! defined( 'WRAP_INC' ) ) die ;
 define('BASE_URI', dirname(getenv('SCRIPT_NAME')) );
 define('BASE_PATH', dirname(getenv('SCRIPT_FILENAME')) );
 define('BASE_URL', getenv('REQUEST_SCHEME') . '://' . preg_replace(":/*$:", "/", getenv('HTTP_HOST') . BASE_URI ));
-define('DEFAULT_THEME', 'bootstrap' );
+define('DEFAULT_THEME', 'flex' );
 defined('DEBUG') or define('DEBUG', false);
 defined('DOCUMENT_ROOT') or define('DOCUMENT_ROOT', getenv('DOCUMENT_ROOT'));
 
