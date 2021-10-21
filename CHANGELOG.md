@@ -1,5 +1,29 @@
 # Changelog
 
+## 3.1.0
+* fix file not found when filename contains spaces or special characters
+* front-end:
+  - updated playable formats
+  - new flex/grid-based default theme
+  - smooth scroll to clicked thumb
+  - stay on clicked thumb position after playing video
+  - don't hide playlist in background
+  - use versioning to launch css and js, to avoid cache issues
+* new mediadeduplicate script
+* batchff: quote file names
+* medialoop: show countdown between instances
+* casting-server: include folder in when launching atom
+* batchloop: show still unprocessed videos
+* makemp4 added allblur preference, whatever it is
+* castingchecktime: ignore <5 sec as default, read .casting conf in client/job or casting for custom thresold and other custom vars
+* casting-client launch mediawatch in 4th window
+* casting-client/server prefer atom editor if present
+* batchloop show missing videos (still in queue)
+* added icons
+* fix #1 don't try to play audio files (download only)
+* removed -threads auto from ffmpeg args
+* added vsync to moviemerge
+
 ## 3.0.3
 * removed useless files from release package
 * cleaner changelog and minor cosmetic changes
