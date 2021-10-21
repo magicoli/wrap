@@ -1,5 +1,9 @@
 /* /wrap/wrap.css */
 
+html {
+	scroll-behavior: smooth;
+}
+
 #header,
 #main,
 #footer {

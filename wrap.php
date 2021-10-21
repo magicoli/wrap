@@ -2090,20 +2090,20 @@ if(is_array($names))
 			$windowhide="";
 			if(is_array($popuphide)) {
 				foreach($popuphide as $togglestyle) {
-					$windowhide.="windowHide(\"$togglestyle\");" ;
+					// $windowhide.="windowHide(\"$togglestyle\");" ;
 					$windowshow.="windowShow(\"$togglestyle\");" ;
 				}
 			} else {
-				$windowhide.="windowHide(\"playlists\");" ;
+				// $windowhide.="windowHide(\"playlists\");" ;
 				$windowshow.="windowShow(\"playlists\");" ;
 			}
 
 			if(!$inpage) {
-				$itemlink="<a href='#'"
+				$itemlink="<a href='#item-$i'"
 					. " class=itemlink"
 					. " title='$namesafe'"
 					. " alt='$namesafe'"
-					. " onClick='$windowhide popOn(\"$i\");'"
+					. " onClick='$windowhide; popOn(\"$i\");'"
 					. ">";
 				$itemlinkout="</a>";
 				if($filetype!='video') {
@@ -2181,7 +2181,7 @@ if(is_array($names))
 					<a class='button pause' id='pause_$i' href='#' onClick='videoPause(\"$i\");'>${buttons['pause']}</a>
 					<a class='button play' id='play_$i' href='#' onClick='videoPlay(\"$i\");'>${buttons['play']}</a>";
 				}
-				$popupnavhtml .= "<a class='button close' id='close_$i' href='#' onClick='popOff(\"$i\");$windowshow;'>${buttons['close']}</a>";
+				$popupnavhtml .= "<a class='button close' id='close_$i' href='#item-$i' onClick='popOff(\"$i\");$windowshow;'>${buttons['close']}</a>";
 				if($next > $i) $popupnavhtml .= "<a class='button next' id='next_$i' href='#{$next}' onClick='popOff(\"$i\"); popOn(\"$next\");'>" . " ${buttons['next']}</a>";
 				$popupnavhtml .= $buttonlinks;
 			}
@@ -2698,7 +2698,7 @@ if(is_array($names))
 						<div class='short'>" . htmlsafe($short) . "</div>";
 				}
 				$item = "
-						<div class=item>
+						<div class=item id='item-$i'>
 							$itemlink
 							${item}
 							${itemlinkout}
