@@ -307,10 +307,11 @@ img.large
 	#left {
 		flex-basis: 300px;
 		font-size: 90%;
-		  position: -webkit-sticky;
-		  position: sticky;
-		  top: 0;
+		position: -webkit-sticky;
+		position: sticky;
+		top: 0;
 	}
+
 	#content {
 		flex-basis: 100%;
 		padding: 0;

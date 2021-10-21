@@ -1,9 +1,12 @@
 <?php
-/*
- * W.R.A.P.
- * Version: 2.0
+/**
+ * W.R.A.P. front-end libraries
  *
+ * @author Magiiic https://magiiic.com/
+ * @var [type]
  */
+
+define('WRAP_VERSION', '3.1.0');
 
  // We don't want to be called directly
 if (getenv('REQUEST_URI') == getenv('SCRIPT_NAME')) die; // called directly

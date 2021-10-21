@@ -1259,7 +1259,7 @@ function findVariants($file) {
 	}
 }
 
-function add_css($uri) {
+function add_css($uri, $version = WRAP_VERSION) {
 	global $combinedcss;
 	if(preg_match("#^https*://#", $uri)) {
 		$include_uri=$uri;
@@ -1268,14 +1268,14 @@ function add_css($uri) {
 		$localfile = DOCUMENT_ROOT . "$uri";
 	}
 	if($include_uri) {
-		$combinedcss.="\n		<link href='$include_uri' rel='stylesheet' media='all'>";
+		$combinedcss.="\n		<link href='$include_uri?ver=$version' rel='stylesheet' media='all'>";
 		if($localfile) $inpagecss.=file_get_contents($localfile);
 		return true;
 	}
 	return false;
 }
 
-function add_js($uri) {
+function add_js($uri, $version = WRAP_VERSION) {
 	global $headers;
 	if(preg_match("#^https*://#", $uri)) {
 		$include_uri = $uri;
@@ -1286,7 +1286,7 @@ function add_js($uri) {
 			$include_uri = preg_replace('#//*#', '/', $uri);
 	}
 	if($include_uri) {
-		$headers[$uri] = "<script src='$include_uri' type='text/javascript'></script>";
+		$headers[$uri] = "<script src='$include_uri?ver=$version' type='text/javascript'></script>";
 		return true;
 	}
 	return false;
