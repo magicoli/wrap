@@ -4,6 +4,9 @@ extensions='\.(MTS|MPG|MOV|MP4|MXF)$'
 min2copy=5
 min2thumb=10
 
+[ -f $(dirname "$0")/casting-helpers ] && . $(dirname "$0")/casting-helpers \
+	|| exit 1
+
 director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1);
 echo "director: $director"
 source=~/castings/$director/upload/server/php/files/
@@ -21,7 +24,7 @@ do
   [ $count -ge $min2copy ] && echo "$count enough to copy" \
   || read -p "." -t 1 && i=$min2thumb && count=$min2copy \
   || [ $count -gt 0 -a ! -f "$(ls "$source"/tmp/php* 2>/dev/null | head -1)" ] \
-  && echo "$count files and transfer ended" && i=$min2thumb && mediacopy && read -t 5
+  && echo "$count files and transfer ended" && i=$min2thumb && mediacopy && countdown 5
 
   rmdir ../originals.* 2>/dev/null
 
@@ -37,5 +40,5 @@ do
   fi
   rm .liste.$$
   echo
-  read -t 5
+  countdown 5
 done
