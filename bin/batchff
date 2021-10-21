@@ -127,7 +127,7 @@ makemovie()
 		then
 			printf "(c)"
 			rm -f "$mp4output"
-			makemp4 -o $mp4output $input 2>/dev/null
+			makemp4 -o "$mp4output" "$input" 2>/dev/null
 			ffprobe -i "$mp4output" 2>/dev/null \
 			&& printf "\b\b\b   \b\b\b" \
 			|| {
