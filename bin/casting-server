@@ -10,7 +10,7 @@ do
 done
 [ "$MODE" = "client" ] && PGM=casting-client
 
-editor=$(which gedit || which atom || which subl)
+editor=$(which atom || which gedit || which subl)
 if [ "$3" ]
 then
   cd $base/$1/$2/$3 || end 1 could not cd to $base/$1/$2/$3
@@ -67,7 +67,7 @@ then
     $open browsercache
     $open browsercache/index.html https://wrap.rocks/$client/$job/$casting
     touch liste ignore thumbs deleted roles
-    $editor liste ignore thumbs deleted roles >/dev/null 2>/dev/null & >/dev/null 2>/dev/null
+    $editor ./ liste ignore thumbs deleted roles >/dev/null 2>/dev/null & >/dev/null 2>/dev/null
   fi
 fi
 
