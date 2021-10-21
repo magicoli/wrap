@@ -1,7 +1,6 @@
 # Changelog
 
 ## 3.1.0
-* fix file not found when filename contains spaces or special characters
 * front-end:
   - updated playable formats
   - new flex/grid-based default theme
@@ -9,6 +8,7 @@
   - stay on clicked thumb position after playing video
   - don't hide playlist in background
   - use versioning to launch css and js, to avoid cache issues
+* fix file not found when filename contains spaces or special characters
 * new mediadeduplicate script
 * batchff: quote file names
 * medialoop: show countdown between instances
