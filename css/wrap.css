@@ -1,106 +1,24 @@
-body {
-	font-family: Roboto, Verdana, Arial, Helvetica, sans-serif;
-	margin: 20px;
-	color: #333;
-	background: #eee;
+/* /wrap/wrap.css */
+
+#header,
+#main,
+#footer {
+    margin: 1em 0;
 }
-body,
-a, a:hover, a:visited, a:active {
-	color: #666;
+#header {
+    border-bottom: solid 1px grey;
+    padding: 0 0 1em;
 }
-div, aside {
-	margin: 0;
-}
-.logo {
-	text-align: right;
-	white-space: nowrap;
+#footer {
+    border-top: solid 1px grey;
+    padding: 1em 0;
 }
 
 .item {
-	display: inline-block;
-	/* font-size: 8pt; */
-/*	height: 150px;*/
-	text-indent: 0px;
-	padding: 5px 0;
-	margin: 0 0 5px 0;
-	vertical-align: top;
-	text-align: center;
-	height: 160px;
+    display: inline-block;
 }
 
-.item, .thumbframe {
-	width: auto;
-	display: inline-block;
-}
-.thumbframe {
-	width: auto;
-	height: 300px;
-}
-.item .details {
-	display: none;
-}
-.thumbframe, .thumb {
-	padding: 0;
-	margin: 0;
-	border: none;
-	vertical-align: middle;
-}
-
-div.thumb img {
-	display: inline-block;
-	vertical-align: middle;
-	padding: 0;
-	margin: 0;
-	border: none;
-}
-
-.playlist .item {
-	width: auto;
-}
-
-div.thumbframe, div.thumb {
-	width: auto;
-	height: auto;
-	background: none;
-}
-
-div.thumb img.thumb {
-	display: inline-block;
-	height: 124px;
-	vertical-align: middle;
-}
-
-.thumbframe {
-	position: relative;
-}
-.item .name {
-	position: relative;
-	top: 0px;
-	height: 20px;
-	width: 100%;
-	left: 0;
-	right: 0;
-	background: white;
-}
-.item .name .info {
-    display: block;
-    color: #666;
-    font-size: 80%;
-    font-style:italic;
-    background: transparent;
-    padding: 0 0 5px;
-    margin: 0 0 5px;
-}
-
-.item:hover .name {
-	display: block;
-}
-a.itemlink:link, a.itemlink:visited, a.itemlink:active {
-	text-decoration: none;
-}
-
-img.large
- {
+.large {
 	position: absolute;
 	top: 0;
 	bottom: 0;
@@ -111,83 +29,6 @@ img.large
 	max-height: 100%;
 	border: solid 1px black;
 }
-.large .nav {
-/*	font-family: Arial, Helvetica, sans-serif;*/
-clear: both;
-padding-top: 1em;
-}
-.large .nav a.button {
-	text-decoration: none;
-	font-size: 1.5em;
-	display: block;
-	line-height: 1em;
-	/* background-color: #eee; */
-	/* border: solid 1px #ccc; */
-	/* border-radius: 5px; */
-	/* padding: 8px 10px 10px; */
-}
-.large .nav a.button:hover {
-	color: #ccc;
-	/* background-color: #ccc; */
-}
-.large .nav .close,
-.large .nav .next,
-.large .nav .previous {
-	position: absolute;
-	width: auto;
-	margin: 0 auto;
-	text-align: left;
-	z-index: 6;
-}
-.large .nav .next {
-	text-align: right;
-	bottom: 20px;
-	right: 20px;
-}
-.large .nav .previous {
-	text-align: left;
-	bottom: 20px;
-	left: 20px;
-}
-.large .nav .close {
-	text-align: right;
-	top: 20px;
-	right: 20px;
-}
-
-
-.nav .links {
-	position: absolute;
-	right: 0;
-	top: 100%;
-	margin-top: 30px;
-	margin-right: 60px;
-	background: white;
-	border: solid 1px black;
-	border-top: none;
-	padding: 0 5px 5px;
-	border-radius: 0 0 3px 3px;
-	-moz-border-radius: 0 0 3px 3px;
-}
-.variants {
-	position: absolute;
-	top: 100%;
-	left: 0;
-	margin-top: 30px;
-}
-.variants:before {
-	content: "qualité: ";
-}
-.nav .links:before {
-	content: "télécharger: ";
-}
-.large .info {
-	position: absolute;
-	bottom: 0;
-	width: 100%;
-	margin: 0 auto;
-	padding: 7px 0;
-}
 
 .large {
 	display: block;
@@ -196,165 +37,14 @@ padding-top: 1em;
 	bottom: 0;
 	left: 0;
 	right: 0;
-	/* padding: 20px; */
-	background-color: rgba(0,0,0,0.8);
+	background-color: white;
 	text-align: center;
 }
-/* .large video object { */
+
 .large video {
-	background: none;
-	border: solid 1px #333;
-	/* position: absolute; */
-	/* width: 90%; */
-	/* max-width: 90%; */
-	/* max-height: 90%; */
+	background: white;
+	border: solid 1px var(--palette-300);
 	max-width: 100%;
 	height: calc(100% - 150px);
 	margin: auto;
-}
-
-.large .info .largename {
-	text-align: center;
-}
-
-
-.player {
-	width: 100%;
-	height: 420px;
-}
-
-
-.playlist {
-	width: 100%;
-	margin-left: auto;
-	margin-right: auto;
-	text-align: left;
-}
-
-
-
-.nav h1 {
-	display: inline-block;
-	font-size: 10pt;
-	line-height: normal;
-	font-weight: bold;
-}
-
-.nav a {
-	text-decoration: none;
-}
-.nav a:hover {
-	text-decoration: underline;
-}
-
-.branch {
-	margin-left: 10px;
-	font-size: 95%;
-	margin-bottom: 10px;
-}
-.tree > .branch {
-    margin-left: 0;
-}
-.leaf, .leafactive {
-	display: block;
-/*	white-space: nowrap;*/
-	margin-bottom: 5px;
-}
-.leafactive {
-	font-weight: bold;
-}
-.nav .parent, .nav .parent a {
-	font-weight: normal;
-}
-.parent .interleave:before {
-	content: "/";
-}
-.parent a:link {
-	text-decoration: none;
-}
-
-.nav .parent {
-/*	float:left;*/
-	/* top: 0;
-	left: 0;
-	font-size: 10pt; */
-	/* font-family: Verdana, Arial, Helvetica, sans-serif; */
-	/* font-weight: bold; */
-	/* margin-top: -30px; */
-	/* height: 30px; */
-/*	display: inline;*/
-}
-.nav .navtitle {
-	font-weight: bold;
-}
-
-
-.nav .sisters, .branch#main {
-	margin: 0px;
-	padding: 0px;
-	width: 100%;
-	height: 26px;
-	vertical-align: bottom;
-	text-align: center;
-	margin: 0px;
-	line-height: 21px;
-	white-space: nowrap;
-	overflow: hidden;
-}
-.branch#main .leaf, .branch#main .leafactive {
-	display: inline-block;
-}
-.nav .sister, .nav .sisteractive, .branch#main a {
-	display: inline-block;
-	border: solid 1px black;
-	padding: 1px 6px 2px;
-	margin: 0px -6px 0px 0px;
-	position:relative;
-	background-color: #ccc;
-	font-size: 12px;casting1/
-	line-height: 17px;
-	position: relative;
-	z-index: 1;
-}
-.nav .sister:hover, .branch#main a:hover {
-	font-size: 14px;
-	line-height: 19px;
-	z-index: 2;
-}
-.nav .sisteractive, .branch#main .leafactive a {
-	font-size: 16px;
-	line-height: 21px;
-	background-color: white;
-	border-bottom: solid 1px white;
-	border-radius: 7px 7px 0 0;
-	-moz-border-radius: 7px 7px 0 0;*/
-	z-index: 3;
-}
-
-#left .downloads .download {
-	display: block;
-	clear: both;
-	padding: 0.5em 0;
-}
-#left .downloads .thumbframe {
-	float: left;
-	padding-right: 0.5em;
-}
-#left .downloads img.thumb {
-	width: 64px;
-}
-
-@media screen and ( max-width: 960px ) {
-	#left .downloads,
-	#left .downloads .download,
-	#playlists, .playlist {
-		text-align: center;
-	}
-	#left .downloads .download {
-		display: inline-block;
-		font-size: 80%;
-	}
-	#left .downloads .thumbframe {
-		float: none;
-	}
 }
