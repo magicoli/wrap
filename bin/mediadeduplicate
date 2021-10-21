@@ -1,0 +1,34 @@
+#!/bin/bash
+
+extensions='\.(MTS|MPG|MOV|MP4|MXF)$'
+min2copy=5
+min2thumb=10
+
+director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1);
+echo "director: $director"
+source=~/castings/$director/upload/server/php/files/
+source=$(realpath "$source")
+[ ! -d "$source" ] && echo "source $source MISSING" >&2 && exit 1
+echo "source $source"
+PGM=$(basename $0)
+TMP=/tmp/$PGM.$$
+
+while true
+do
+  ls "$source" | egrep -i "$extensions" 2>/dev/null | sort -n > $TMP.files
+  cat $TMP.files | while read file
+  do
+    duplicate=$(ls ../.originals.*/$file 2>/dev/null | tail -1)
+    [ "$duplicate" ] || continue
+    diff "$file" "$duplicate" 2>/dev/null && rm "$file" && echo "removed identical $file" && continue
+    du -sk "$duplicate" | grep -qv ^0 && echo "duplicate $duplicate has content" >&2 && continue
+    alias=$(grep $duplicate .aliases | tail -1 | cut -f 2)
+    echo "$duplicate ($alias) is duplicate and empty"
+    mv -v "$source/$file" "$duplicate" \
+    && rm $alias \
+    && ln $duplicate $alias \
+    && qt-thumbnailswide.sh -f -l -0 $alias \
+    || echo "error processing $file ($duplicate, $alias)" >&2
+  done
+  read -t 1
+done
