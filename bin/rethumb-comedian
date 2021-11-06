@@ -6,7 +6,7 @@ export PATH=$PATH:$(basename "$0")
 which helpers >/dev/null && . $(which helpers) || exit 1
 
 [ "$1" ] || end $? "usage $PGM -n|+n c1 [c2]"S
-echo "$1" | egrep -q "^[\+-][0-9]+$" && offset=$1 && shift
+echo "$1" | egrep -q "^[\+-][0-9\.]+$" && offset=$1 && shift
 if [ ! "$offset" ]
 then
   [ "$director" = "bobines" ] && offset=-1 || offset=+1
@@ -27,8 +27,8 @@ do
   fi
   # t=$(grep ^$v.mov times | sed -E "s/.*[[:blank:]]([0-9]+)[[:blank:]]/\1/")
   [ "$t" ] || t=0
-  t=$(($t $offset))
-  [ $t -gt $d -o $t -lt 0 ] && end 1 "time $t not between 0 an $d"
+  t=$(echo $t $offset | bc)
+  (( $(echo "$t < 0 || $t > $d" | bc -l) )) && log 1 "time $t not between 0 an $d" && continue
   echo "$t" > .$v.thumbtime
   qt-thumbnailswide.sh -f -l -$t $v.mov && rm ../.browsercache/$c-* \
   && batchthumbs liste >/dev/null \
