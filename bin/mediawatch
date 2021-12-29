@@ -13,12 +13,7 @@ done
 
 if [ ! "$@" ]
 then
-  if [ "$director" = "" ]
-  then
-    sources=~/castings/*/upload/files/
-  else
-    sources=~/castings/$director/upload/files/
-  fi
+  sources=~/castings/$director/upload/files/
 else
   sources=$@
 fi
@@ -47,19 +42,17 @@ while true
 do
   if [ "$remote" -a "$remotehost" ]
   then
-    [ "$client" = "" ] && client="*"
     printf "$(date) (connecting $remotehost)\r"
     ssh $remotehost "ls $remotepath/$client/upload/files/tmp/php*" 2>/dev/null > $TMP.uploads \
     && printf "\r\033[K" \
     && date \
-    && message="Upload in progress on $remotehost for
+    && notify-send -u critical "Upload in progress on $remotehost for
 $(
     cat $TMP.uploads | sed "s:$remotepath/::" | cut -d "/" -f 1 | sort -u | sed "s/^/  /"
     )" \
-    && notify-send -u critical "$message" \
     && printf "$_\n" \
-    && tts "$message" || echo \
     && break
+    
     printf "\033[K$(date)"
     read -t 5
     printf "\r\033[K";
