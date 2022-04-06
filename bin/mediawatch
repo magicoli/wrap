@@ -6,8 +6,6 @@ director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1);
 export PATH=$PATH:$(basename "$0")
 which helpers >/dev/null && . $(which helpers) || exit 1
 
-which notify-send >/dev/null || end $? "Command 'notify-send' not found, but can be installed with:
-sudo apt install libnotify-bin"
 
 for conf in /etc/casting ~/etc/casting /etc/$PGM /usr/local/etc/$PGM ~/etc/$PGM
 do
@@ -29,8 +27,8 @@ fi
 && phptmp=$sources/tmp \
 || phptmp=~/domains/wrap.magiiic.media/tmp
 
-log "watching $sources"
-
+which notify-send >/dev/null || log $? "Command 'notify-send' not found, but can be installed with:
+sudo apt install libnotify-bin"
 function notify() {
   [ "$1" = "" ] && return
   echo "$@" >&2
@@ -38,7 +36,8 @@ function notify() {
   which tts >/dev/null && tts "$@"
 }
 
-which tts >/dev/null && say=tts || say=echo
+log "watching $sources"
+
 if echo "$remote" | grep -q ":"
 then
   log "remote $remote"
