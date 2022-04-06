@@ -16,7 +16,12 @@ done
 
 if [ ! "$@" ]
 then
-  sources=~/castings/$director/upload/files/
+  if [ "$director" = "" ]
+  then
+    sources=~/castings/*/upload/files/
+  else
+    sources=~/castings/$director/upload/files/
+  fi
 else
   sources=$@
 fi
@@ -53,6 +58,7 @@ while true
 do
   if [ "$remote" -a "$remotehost" ]
   then
+    [ "$client" = "" ] && client="*"
     printf "$(date) (connecting $remotehost)\r"
     ssh $remotehost "ls $remotepath/$client/upload/files/tmp/php*" 2>/dev/null > $TMP.uploads \
     && printf "\r\033[K" \
