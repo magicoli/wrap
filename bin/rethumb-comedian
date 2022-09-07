@@ -1,9 +1,17 @@
 #!/bin/bash
 
 
-director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1);
+director=$(pwd | sed 's:.*/castings/::' | cut -d / -f 1)
 export PATH=$PATH:$(basename "$0")
-which helpers >/dev/null && . $(which helpers) || exit 1
+. $(which casting-helpers) || exit 1
+
+if echo "remote $remote" | grep -q ":"
+then
+  remotehost=$(echo "$remote" | cut -d : -f 1)
+  ssh $remotehost "cd $PWD/.sources && $0 $@" \
+  && rsync -Waz $remote/$director/$job/$casting/.browsercache/ thumbnails/ --exclude "*thumb.jpg"
+  exit $?
+fi
 
 [ "$1" ] || end $? "usage $PGM -n|+n c1 [c2]"S
 echo "$1" | egrep -q "^[\+-][0-9\.]+$" && offset=$1 && shift
