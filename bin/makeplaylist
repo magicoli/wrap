@@ -69,7 +69,17 @@ do
 	fi
 	unset infohtml
 	unset infocomment
-	[ "$info" ] && infohtml=" <span class=info>$info</span>"  && infocomment=$(webnormalize " // $info");
+	if [ "$info" ]
+	then
+		infohtml=" <span class=info>$info</span>"
+		infocomment=$(
+		echo $info | sed -E "s#[[:blank:]]*(//*|,)[[:blank:]]*#\n#g" | grep . | while read comment
+		do
+			printf "// _$(webnormalize "$comment") "
+		done
+		)
+		# infocomment=$(webnormalize " // $info");
+	fi
 	if [ "$mode" = "source" ]
 	then
 		nr="$name"
