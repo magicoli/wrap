@@ -24,10 +24,10 @@ fi
 
 for c in $@
 do
-  name=$(grep "[[:blank:]]$c-[^,]*$" liste | sed -E "s/^[0-9,-]+[[:blank:]]+//" | head -1)
+  name=$(sed "s://.*::" liste | grep "[[:blank:]]$c-[^,]*$" | sed -E "s/^[0-9,-]+[[:blank:]]+//" | head -1)
   [ ! "$name" ] && log 1 "Comedian $c not found" && continue
   echo "$name"
-  v=$(grep "[[:blank:]]$c-" liste | cut -d " " -f 1 | cut -f 1 | head -1)
+  v=$(sed "s://.*::" liste | grep "[[:blank:]]$c-" | cut -d " " -f 1 | cut -f 1 | cut -d "-" -f 1 | cut -d "," -f 1 | head -1)
   [ ! "$v" ] && log 1 "No video found for comedian $c $name" && continue
   [ ! -f "$v.mov" ] && log 1 "Video $v.mov not found" && continue
   # echo $v.mov
