@@ -6,12 +6,6 @@ director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1);
 export PATH=$PATH:$(basename "$0")
 which helpers >/dev/null && . $(which helpers) || exit 1
 
-<<<<<<< HEAD
-=======
-which notify-send >/dev/null || end $? "Command 'notify-send' not found, but can be installed with:
-sudo apt install libnotify-bin"
-
->>>>>>> parent of 0856021... mediawatch: partial revert e941d06989510cc982e3e94fddddeb2eead70791 
 for conf in /etc/casting ~/etc/casting /etc/$PGM /usr/local/etc/$PGM ~/etc/$PGM
 do
     [ -f $conf ] && . $conf
@@ -32,8 +26,8 @@ fi
 && phptmp=$sources/tmp \
 || phptmp=~/domains/wrap.magiiic.media/tmp
 
-log "watching $sources"
-
+which notify-send >/dev/null || log $? "Command 'notify-send' not found, but can be installed with:
+sudo apt install libnotify-bin"
 function notify() {
   [ "$1" = "" ] && return
   echo "$@" >&2
@@ -41,7 +35,8 @@ function notify() {
   which tts >/dev/null && tts "$@"
 }
 
-which tts >/dev/null && say=tts || say=echo
+log "watching $sources"
+
 if echo "$remote" | grep -q ":"
 then
   log "remote $remote"
