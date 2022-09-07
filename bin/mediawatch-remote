@@ -1,0 +1,106 @@
+#!/bin/bash
+
+DEBUG=false
+
+director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1);
+export PATH=$PATH:$(basename "$0")
+which helpers >/dev/null && . $(which helpers) || exit 1
+
+<<<<<<< HEAD
+=======
+which notify-send >/dev/null || end $? "Command 'notify-send' not found, but can be installed with:
+sudo apt install libnotify-bin"
+
+>>>>>>> parent of 0856021... mediawatch: partial revert e941d06989510cc982e3e94fddddeb2eead70791 
+for conf in /etc/casting ~/etc/casting /etc/$PGM /usr/local/etc/$PGM ~/etc/$PGM
+do
+    [ -f $conf ] && . $conf
+done
+
+if [ ! "$@" ]
+then
+  if [ "$director" = "" ]
+  then
+    sources=~/castings/*/upload/files/
+  else
+    sources=~/castings/$director/upload/files/
+  fi
+else
+  sources=$@
+fi
+[ -d "$sources/tmp" ] \
+&& phptmp=$sources/tmp \
+|| phptmp=~/domains/wrap.magiiic.media/tmp
+
+log "watching $sources"
+
+function notify() {
+  [ "$1" = "" ] && return
+  echo "$@" >&2
+  notify-send -u critical "$@"
+  which tts >/dev/null && tts "$@"
+}
+
+which tts >/dev/null && say=tts || say=echo
+if echo "$remote" | grep -q ":"
+then
+  log "remote $remote"
+  remotehost=$(echo "$remote" | cut -d : -f 1)
+  remotepath=$(echo "$remote" | cut -d : -f 2)
+  if [ "$1" ]
+  then
+    client="$1"
+  elif [ ! "$client" ]
+  then
+    client="*"
+  fi
+fi
+log "client $client"
+
+while true
+do
+  # if [ "$remote" -a "$remotehost" ]
+  if true
+  then
+    [ "$client" = "" ] && client="*"
+    printf "$(date) (connecting $remotehost)\r"
+    ssh $remotehost "ls $remotepath/$client/upload/files/tmp/php*" 2>/dev/null > $TMP.uploads
+    if grep -q '[[:alnum:]]' $TMP.uploads
+    then
+      remotedirector=$(cat $TMP.uploads | sed "s:$remotepath/::" | cut -d "/" -f 1 | sort -u)
+      if [ "$director" = "$remotedirector" -o "$director" = "" ]
+      then
+        printf "\r\033[K"
+        date
+        notify "Un envoi est en cours, sur $remotehost, pour $director"
+        printf "$_\n"
+        break
+      fi
+    fi
+
+    printf "\033[K$(date)"
+    read -t 5
+    printf "\r\033[K";
+    continue
+  fi
+  clear
+  echo $sources
+  ls -lrt $sources \
+  | egrep '\.MTS|\.MPG|\.MOV|\.MP4|\.MXF' \
+  > $TMP.bydate
+  lines=$(($(tput lines) - 6))
+  [ $lines -gt 0 ] && tail -$lines $TMP.bydate
+  sort -k 9 $TMP.bydate \
+  > $TMP.files
+  printf "$(cat $TMP.files | wc -l) pending files"
+  diffs=$(diff $TMP.bydate $TMP.files 2>/dev/null | grep ">" | wc -l)
+  [ "$diffs" -eq 0 ] && echo || echo " ($diffs TIME MISMATCHESS" | grep --color ".*"
+
+  ls $sources/tmp/php* >/dev/null 2>/dev/null \
+  && phptmp=$sources/tmp \
+  || phptmp=~/domains/wrap.magiiic.media/tmp
+  echo "$phptmp"
+  ls -lrt $phptmp | egrep '[[:blank:]]php'
+  date
+  read -t 1
+done
