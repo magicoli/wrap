@@ -43,6 +43,7 @@ do
   [ "$t" ] || t=0
   t=$(echo $t $offset | bc)
   (( $(echo "$t < 0 || $t > $d" | bc -l) )) && log 1 "time $t not between 0 an $d" && continue
+  echo "$t" | grep -q "^\." && t=0$t
   echo "$t" > .$v.thumbtime
   qt-thumbnailswide.sh -f -l -$t $v.mov && rm ../.browsercache/$c-* \
   && batchthumbs liste >/dev/null \
