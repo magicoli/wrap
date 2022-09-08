@@ -1,10 +1,12 @@
 #!/bin/bash
 
-evoice=mb-fr4
-mvoice=fr4
-pitch=100
-speed=100
-[ ! "$amplitude" ] && amplitude=50
+voice=${voice-fr4}
+evoice=mb-$voice
+mvoice=$voice
+pitch=${pitch-90}
+speed=${speed-120}
+amplitude=${amplitude-50}
+# [ ! "$amplitude" ] && amplitude=50
 
 TTS=$(which espeak-ng) || TTS=$(which espeak) || TTS=$(which say) || TTS=cat
 TTS=$(basename "$TTS")
