@@ -236,7 +236,10 @@ do
       width=$(echo $sourceinfo | cut -d, -f1)
       height=$(echo $sourceinfo | cut -d, -f2)
     fi
-    if [ $width -lt $height -a "$blur" ]
+
+    # if [ $width -lt $height -a "$blur" ]
+    resized_width=$(($width * $oh / $height))
+    if [ $resized_width -lt $ow -a "$blur" ]
     then
       log "width $width < height $height let's blur the lines"
       vfilterblur=",split[original][copy];[copy]scale=${ow}:-1,crop=${ow}:${oh},gblur=sigma=20[blurred];[blurred][original]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2"
