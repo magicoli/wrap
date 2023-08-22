@@ -227,7 +227,7 @@ do
   ow=$(echo $scale | tr ":" "x" | cut -d x -f 1)
   oh=$(echo $scale | tr ":" "x" | cut -d x -f 2)
 
-  sourceinfo=$(ffprobe -i "$realfile" -v error -select_streams v:0 -show_entries stream=width,height:stream_tags=rotate -of csv=p=0)
+  sourceinfo=$(ffprobe -i "$realfile" -v error -select_streams v:0 -show_entries stream=width,height:stream_tags=rotate -of csv=p=0 | head -1)
   width=$(echo $sourceinfo | cut -d, -f1)
   height=$(echo $sourceinfo | cut -d, -f2)
 
