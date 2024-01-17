@@ -59,7 +59,7 @@ do
   then
     [ "$client" = "" ] && client="*"
     printf "$(date) (connecting $remotehost)\r"
-    ssh $remotehost "ls $remotepath/$client/upload/files/tmp/php*" 2>/dev/null > $TMP.uploads \
+    ssh $remotehost "ls $remotepath/$client/upload/files/tmp/php* || ls $remotepath/$client/upload/files/*.*" 2>/dev/null > $TMP.uploads \
     && printf "\r\033[K" \
     && date \
     && notify "Un envoi est en cours, sur $remotehost, pour
