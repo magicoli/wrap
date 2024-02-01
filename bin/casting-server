@@ -10,7 +10,7 @@ do
 done
 [ "$MODE" = "client" ] && PGM=casting-client
 
-editor=$(which atom || which gedit || which subl)
+editor=$(which code || which atom || which gedit || which subl)
 if [ "$3" ]
 then
   cd $base/$1/$2/$3 || end 1 could not cd to $base/$1/$2/$3
