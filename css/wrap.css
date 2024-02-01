@@ -52,3 +52,21 @@ html {
 	height: calc(100% - 150px);
 	margin: auto;
 }
+
+.toc-list {
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+  gap: 1em;
+    align-items: flex-start;
+  justify-content: start;
+  padding: 0;
+}
+.toc-item {
+  padding: 0;
+}
+.toc-item figure,
+.toc-item figure > * {
+  margin: 0;
+  width: 240px;
+}

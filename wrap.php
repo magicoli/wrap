@@ -6,7 +6,7 @@
  * @var [type]
  */
 
-define('WRAP_VERSION', '3.1.0');
+define('WRAP_VERSION', '3.1.1');
 
  // We don't want to be called directly
 if (getenv('REQUEST_URI') == getenv('SCRIPT_NAME')) die; // called directly

@@ -1,0 +1,32 @@
+#!/bin/sh
+
+#[ "$1" ] || exit 1
+#[ -f "$1" ] || exit 2
+
+PGM=`basename "$0"`
+PATH="$PATH:"$(dirname "$0")
+TMP="/tmp/$PGM"
+
+# echo "<?php"
+# echo "\$pagetitle=\"TOC (whole content)\";"
+# echo "\$about='';"
+
+# echo "\$customnames=array("
+t=0
+ls -d casting* | sed -E "s/^([a-z]+)([0-9]+)/\\2 \\1\\2/" | sort -n | while read c folder
+do
+	t=$((t + 1))
+	[ -f "$folder/_pagetitle.txt" ] && title=$(cat "$folder/_pagetitle.txt") || title="Casting $c"
+	echo "<h2><a href='../$folder'>$title</a></h2>"
+	echo "  <ul class=toc-list>"
+	egrep -H "=>" "$folder/playlist.php"  \
+	| grep -v "\"title[0-9]\"\s*=>" \
+	| sed "s|^[[:blank:]]*\(.*\)/playlist.php:[[:blank:]]*\"|\\t\"../\\1/|" \
+	| sed -E "s/\s*\"(.*)\" => '(.*)'.*/\\1 \\2/" | while read file title
+	do
+		thumb=../$folder/.browsercache/$(basename "$file" | sed -E "s/\.[a-z0-9]+$//")-thumb.jpg
+		# echo "$file - $thumb - $title"
+		echo "    <ul class=toc-item><figure><img src="$thumb"><figcaption>$title</figcatption></ul>"
+	done
+	echo "  </ul>"
+done
