@@ -9,6 +9,8 @@ TMP="/tmp/$PGM"
 
 ls casting*/playlist.php 2>/dev/null || exit 1
 
+castings=$(ls -d casting* | sed -E "s/^([a-z]+)([0-9]+)/\\2\t\\1\\2/" | sort -n | cut -f 2-)
+
 grep "//" casting*/playlist.php | sed "s|.*, *//[[:blank:]]*||" | while read roles
 do
 	echo "$roles" | sed -E "s#[[:blank:]]*(//*|,)[[:blank:]]*#\n#g" | grep .
@@ -16,18 +18,26 @@ done | sort -u | while read role
 do
 	printf "$role\t"
 	folder=$(echo "$role" | webnormalize)
+	egrep -H "(/|,)[[:blank:]]*$role[[:blank:]]*(,|/|$)" casting*/playlist.php \
+	| sed "s|^[[:blank:]]*\(.*\)/playlist.php:[[:blank:]]*\"| \"../\\1/|" \
+	| sed "s|<span class=info>[^<]*</span>||" > $TMP.unsorted
+
+	for casting in $castings
+	do
+		grep "$casting/" $TMP.unsorted
+	done >$TMP.items
+
 	mkdir -p "$folder"
 	(
 	echo "<?php"
 	echo "\$customnames=array("
-	egrep -H "(/|,)[[:blank:]]*$role[[:blank:]]*(,|/|$)" casting*/playlist.php \
-	| sed "s|^[[:blank:]]*\(.*\)/playlist.php:[[:blank:]]*\"| \"../\\1/|" \
-	| sed "s|<span class=info>[^<]*</span>||"
+	cat $TMP.items
 	echo ");"
 	echo "?>"
 	) > "$folder/playlist.php"
 	cat "$folder/playlist.php" | grep "=>" | wc -l
 done
+[ -d "toc" ] && castingtoc > toc/_about.html && echo "TOC updated"
 echo
 
 # casting="$1"
