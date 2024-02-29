@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 PGM=`basename "$0"`
 TMP="/tmp/$PGM.$$"
@@ -92,6 +92,13 @@ do
 	else
 		printf "\t\"$file\" => '$name$infohtml',$infocomment\n"
 	fi
+	folder=$(echo "$file" | cut -d. -f 1)
+	# echo "$PWD/$folder" >&2
+	if [ -d "../$folder" ] 
+	then
+		# echo "adding $folder" >&2
+		printf "\t\"$folder\" => '$name',\n" >> $TMP.folderlist
+	fi
 done > "$TMP.playlist"
 
 if [ "$sort" = "true" ]
@@ -102,7 +109,8 @@ else
 fi
 
 echo ");"
-found=$(cat "$TMP.playlist" | wc -l)
+grep -q . $TMP.folderlist 2>/dev/null && echo '$customfolders = array(' && cat $TMP.folderlist && echo ");"
+found=$(cat "$TMP.playlist" "$TMP.folderlist" 2>/dev/null | wc -l)
 [ $found -eq 0 ] && echo "\$hidden=true;"
 echo "?>"
 
