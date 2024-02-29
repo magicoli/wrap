@@ -1,0 +1,19 @@
+#!/bin/bash
+
+printf "" > fix
+grep .mov times | sed "s/://" | while read file time seconds
+do
+    n=$(basename $file .mov)
+    [ "$seconds" = "" ] && continue
+    [ "$seconds" = "0" ] && continue
+    mp4=../.mp4/$n.mp4
+    mp4secs=$(movietime $mp4 | grep $mp4 | sed -E "s/.*\s([0-9]+)\s*$/\\1/")
+    [ $seconds -lt 3 ] && continue
+    [ "$seconds" = "$mp4secs" ] && continue
+    diff=$(($seconds - $mp4secs))
+    echo "$file differs of $diff seconds ($seconds / $mp4secs)" >&2
+    echo "rm -f .$n.mp4.ts && makemp4 $file && mv $n.mp4 ../.mp4/" >> fix
+    continue
+done
+echo >&2
+cat fix
