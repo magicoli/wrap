@@ -1,0 +1,54 @@
+#!/bin/bash
+
+if ! basename $PWD | grep -q "^.sources"
+then
+    echo  must be run from .sources directory >&2
+    exit 1
+fi
+
+rm -f ../*/* 2>/dev/null
+rm -rf ../*/.browsercache 2>/dev/null
+rmdir ../* 2>/dev/null
+digits=3
+lastnrs=
+batchthumbs liste > playlist.php
+cat liste | sed -e "s: *//.*::" -e "s/\s*#.*//" | grep . | while read nr name
+do
+    if [ "$lastname" != "$name" ]
+    then
+        if [ "$lastname" ]
+        then
+            count=$(($nr - $lastnr))
+            printf "processing $lastname ($count) " >&2
+            basename=$(webnormalize "$lastname")
+            mkdir -p "../$basename/.browsercache" || exit $?
+            rm "../$basename/"* 2>/dev/null
+            echo "$lastname" > "../$basename/_pagetitle.txt"
+            i=$lastnr
+            j=1
+            # digits=$(printf "$count"| wc -c)
+            nrs=
+            while [ $i -lt $nr ]
+            do
+                printf " $i" >&2
+                nrs="$nrs $i"
+                # jstr=$(printf "%0${digits}d" "$j");
+                jstr=$(printf "%0${digits}d" "$i");
+                [ -f  ../.mp4/$i.mp4 ] && cp ../.mp4/$i.mp4 "../$basename/$basename-$jstr.mp4" 2>/dev/null \
+                && [ -f .browsercache/$i-thumb.jpg ] && cp .browsercache/$i-thumb.jpg "../$basename/.browsercache/$basename-$jstr-thumb.jpg" 2>/dev/null \
+                && [ -f .browsercache/$i-large.jpg ] && cp .browsercache/$i-large.jpg "../$basename/.browsercache/$basename-$jstr-large.jpg" 2>/dev/null \
+                || printf "(ERR$?)" >&2
+                i=$((i + 1))
+                j=$((j + 1))
+            done
+            echo >&2
+        fi
+        lastnrs=
+    fi
+    lastname="$name"
+    [ "$name" ] && lastfullname=$name
+    lastnr=$nr
+done
+batchthumbs liste > ../playlist.php
+cd ..
+makefolderlist >> playlist.php
