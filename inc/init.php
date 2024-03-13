@@ -15,7 +15,9 @@ $scriptroot=dirname(getenv('SCRIPT_FILENAME'));
 $scriptfilename=basename(getenv('SCRIPT_FILENAME'));
 $theme = DEFAULT_THEME;
 
-ini_set("error_reporting",  E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+// ini_set("error_reporting",  E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+// Turn off all error reporting
+error_reporting(0);
 
 $protocol=preg_replace("/:.*/", "", getenv("SCRIPT_URI"));
 if(preg_match("/^dev\.|^local\.|^preview\./", getenv("HTTP_HOST"))) {

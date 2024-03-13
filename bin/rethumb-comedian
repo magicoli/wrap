@@ -1,0 +1,65 @@
+#!/bin/bash
+
+
+director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1);
+export PATH=$PATH:$(basename "$0")
+which helpers >/dev/null && . $(which helpers) || exit 1
+
+[ "$1" ] || end $? "usage $PGM -n|+n c1 [c2]"S
+echo "$1" | egrep -q "^[\+-][0-9\.]+$" && offset=$1 && shift
+if [ ! "$offset" ]
+then
+  [ "$director" = "bobines" ] && offset=-1 || offset=+1
+fi
+
+[ -f "liste" ] || end $? "List not found, not a casting directory?"
+
+for c in $@
+do
+  name=$(grep "[[:blank:]]$c-[^,]*$" liste | sed -E "s/^[0-9,-]+[[:blank:]]+//" | head -1)
+  [ ! "$name" ] && log 1 "Comedian $c not found" && continue
+  echo "$name"
+  v=$(grep "[[:blank:]]$c-" liste | cut -d " " -f 1 | cut -f 1 | head -1)
+  [ ! "$v" ] && log 1 "No video found for comedian $c $name" && continue
+  [ ! -f "$v.mov" ] && log 1 "Video $v.mov not found" && continue
+  # echo $v.mov
+  d=$(grep ^$v.mov times | sed -E "s/.*[[:blank:]]([0-9]+)[[:blank:]]/\1/")
+  [ ! "$d" ] && log 1 "Duration not found for video $v.mov" && continue
+  if [ -f .$v.thumbtime ]
+  then
+    t=$(cat .$v.thumbtime)
+  else
+    echo "$offset" | egrep "\+" && t=0 || t=$d
+  fi
+  # t=$(grep ^$v.mov times | sed -E "s/.*[[:blank:]]([0-9]+)[[:blank:]]/\1/")
+  [ "$t" ] || t=0
+  t=$(echo $t $offset | bc)
+  (( $(echo "$t < 0 || $t > $d" | bc -l) )) && log 1 "time $t not between 0 an $d" && continue
+  echo "$t" > .$v.thumbtime
+  qt-thumbnailswide.sh -f -l -$t $v.mov && rm ../.browsercache/$c-* \
+  && batchthumbs liste >/dev/null \
+  && echo "$t" > .$v.thumbtime
+done
+
+# [ "$1" ] && standard="$1"
+# group=5
+# cat liste | grep -i [a-z] | while read index foo
+# do
+#   nr=$(echo $index | sed "s/[^0-9].*//")
+#   grep -q "^$nr.mov" .rethumbed 2>/dev/null && continue
+#   grep "^$nr.mov" times | while read f f duration
+#   do
+#     echo "$foo" | grep -q "," \
+#     && d=$group \
+#     || {
+#       [ "$standard" ] && d=$standard || d=$(($duration));
+#     }
+#     while [ $d -ge 0 ]
+#     do
+#       qt-thumbnailswide.sh -f -l -$d $nr.mov
+#       du -sh .browsercache/$nr-thumb.jpg | grep ^0 && d=$(($d - 1)) && echo retrying && continue
+#       echo  "$nr.mov" >> .rethumbed
+#       break
+#     done
+#   done
+# done

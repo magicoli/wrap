@@ -40,3 +40,11 @@ job=$(basename $(dirname "$PWD"))
 || jobname=$job
 client=$(basename $(dirname $(dirname "$PWD")))
 clientname=$(titlecase $client)
+
+director="$client"
+for folder in "$base" "$base/$director" "$base/$director/$job"
+do
+	[ -f "$folder/.castingrc" ] && . "$folder/.castingrc"
+done
+
+echo "$remote" | grep -q ":" && castingmode=client || castingmode=server

@@ -1795,8 +1795,8 @@ if (is_array($names))
 				{
 					if ($foundvariants[$type] && $foundvariants[$type] != "$file")
 					{
-						$downloadFiles[$file][$type][file]="/" . urlsafe($foundvariants[$type]);
-						$downloadFiles[$file][$type][link] = BASE_URL . "/download.php?f=" . $downloadFiles[$file][$type][file];
+						$downloadFiles[$file][$type]['file']="/" . urlsafe($foundvariants[$type]);
+						$downloadFiles[$file][$type]['link'] = BASE_URL . "/download.php?f=" . $downloadFiles[$file][$type]['file'];
 					}
 				}
 			}
@@ -2148,7 +2148,7 @@ if(is_array($names))
 			while(list($downloadtype, $download)=each($downloadFiles[$file]))
 			{
 				$buttonlinks .= "
-					<a class='link' href='${download[link]}'>${downloadtype}</a>";
+					<a class='link' href='${download['link']}'>${downloadtype}</a>";
 			}
 			$buttonlinks .= "
 				</div>
