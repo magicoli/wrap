@@ -28,9 +28,10 @@ cat times | grep "\.mov:" | sed "s/\.mov: / /" \
 	| while read n t s
 do
     [ ! "$n" ] && continue
+		echo "$n" | grep -q -E "^[0-9]+$" || continue
     [ $n -gt $last ] && break
     [ ! "$s" ] && echo "no timing for clip $n $t $s" >&2 && continue
-#    echo "checking $n"
+		echo "$s" | grep -q -E "^[0-9]+$" || continue
 	[ $s -gt $ignoreshorterthan ] && continue
 	o=$(($n + 1))
 	p=$(($n - 1))

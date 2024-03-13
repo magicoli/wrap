@@ -1,9 +1,17 @@
 #!/bin/bash
 
 
-director=$(pwd | sed "s|.*/castings/||" | cut -d / -f 1);
+director=$(pwd | sed 's:.*/castings/::' | cut -d / -f 1)
 export PATH=$PATH:$(basename "$0")
-which helpers >/dev/null && . $(which helpers) || exit 1
+. $(which casting-helpers) || exit 1
+
+if echo "remote $remote" | grep -q ":"
+then
+  remotehost=$(echo "$remote" | cut -d : -f 1)
+  ssh $remotehost "cd $PWD/.sources && $0 $@" \
+  && rsync -Waz $remote/$director/$job/$casting/.browsercache/ thumbnails/ --exclude "*thumb.jpg"
+  exit $?
+fi
 
 [ "$1" ] || end $? "usage $PGM -n|+n c1 [c2]"S
 echo "$1" | egrep -q "^[\+-][0-9\.]+$" && offset=$1 && shift
@@ -16,10 +24,10 @@ fi
 
 for c in $@
 do
-  name=$(grep "[[:blank:]]$c-[^,]*$" liste | sed -E "s/^[0-9,-]+[[:blank:]]+//" | head -1)
+  name=$(sed "s://.*::" liste | grep "[[:blank:]]$c-[^,]*$" | sed -E "s/^[0-9,-]+[[:blank:]]+//" | head -1)
   [ ! "$name" ] && log 1 "Comedian $c not found" && continue
   echo "$name"
-  v=$(grep "[[:blank:]]$c-" liste | cut -d " " -f 1 | cut -f 1 | head -1)
+  v=$(sed "s://.*::" liste | grep "[[:blank:]]$c-" | cut -d " " -f 1 | cut -f 1 | cut -d "-" -f 1 | cut -d "," -f 1 | head -1)
   [ ! "$v" ] && log 1 "No video found for comedian $c $name" && continue
   [ ! -f "$v.mov" ] && log 1 "Video $v.mov not found" && continue
   # echo $v.mov
@@ -35,8 +43,9 @@ do
   [ "$t" ] || t=0
   t=$(echo $t $offset | bc)
   (( $(echo "$t < 0 || $t > $d" | bc -l) )) && log 1 "time $t not between 0 an $d" && continue
+  echo "$t" | grep -q "^\." && t=0$t
   echo "$t" > .$v.thumbtime
-  qt-thumbnailswide.sh -f -l -$t $v.mov && rm ../.browsercache/$c-* \
+  qt-thumbnailswide.sh -f -l -$t $v.mov && rm -f ../.browsercache/$c-* \
   && batchthumbs liste >/dev/null \
   && echo "$t" > .$v.thumbtime
 done

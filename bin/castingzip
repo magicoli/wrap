@@ -27,6 +27,7 @@ do
     [ -f $zipfile ] && echo "$zipfile exists" && continue
     zip $zipfile \
 	$(cat $casting/playlist.php  | grep "=>" | cut -d '"' -f 2 | sed s:^:$casting/:)
+    ls $casting/*/*.mp4 >/dev/null && zip "$casting/$casting-split.zip" $casting/*/*.mp4
     if [ "$type" = "movies" ]
     then
 	cd "$casting"

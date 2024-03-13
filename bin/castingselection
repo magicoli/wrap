@@ -1,0 +1,35 @@
+#!/bin/bash
+
+[ ! "$1" ] && echo usage $0 /destination/path >&2 && exit 1
+
+dest=$(echo "$1" | sed "s:/*$::")
+
+[ ! -d "$dest" ] && echo usage $0 /destination/path >&2 && exit 1
+
+PGM=$(basename "$0")
+TMP=/tmp/$PGM.$$
+
+cat _selection | while read nr
+do
+  grep "\"$nr-" playlist.php | tee -a  $TMP.selection.php | cut -d'"' -f 2 | sed "s/.mp4$//" | while read name
+  do
+    echo "adding $name" >&2
+    rsync $name.mp4 $dest/ \
+    && echo "$dest/$name.mp4" >> $TMP.files \
+    && rsync .browsercache/$name-*.jpg $dest/.browsercache/
+  done
+done
+cat $TMP.files
+
+ls $dest/*.mp4 | while read file
+do
+  grep -q "^$file$" $TMP.files && continue
+  echo "deleting $file"
+  rm -f "$file" $dest/.browsercache/$(basename "$file" .mp4)-*jpg
+done
+
+(
+head -2 playlist.php
+cat $TMP.selection.php
+tail -2 playlist.php
+) > $dest/playlist.php

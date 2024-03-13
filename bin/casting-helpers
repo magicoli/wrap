@@ -41,7 +41,7 @@ job=$(basename $(dirname "$PWD"))
 client=$(basename $(dirname $(dirname "$PWD")))
 clientname=$(titlecase $client)
 
-director="$client"
+[ ! "$director" ] && director="$client"
 for folder in "$base" "$base/$director" "$base/$director/$job"
 do
 	[ -f "$folder/.castingrc" ] && . "$folder/.castingrc"

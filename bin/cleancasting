@@ -1,0 +1,57 @@
+#!/bin/bash
+
+pwd | grep -q casting || { echo "must be run from casting directory" >&2
+ exit 1
+ }
+pwd | grep -q ".sources$" && cd ..
+[ -d .sources ] || { echo "must be run from a casting day" >&2
+ exit 1
+ }
+
+pwd
+
+while getopts "lt:" opt; do
+    case $opt in
+        l)
+            loop=true
+            ;;
+        t)
+            max_time=$OPTARG
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            exit 1
+            ;;
+    esac
+done
+
+while true
+do 
+    date
+    count=$(grep mp4 playlist.php | wc -l)
+    if [ $count -lt 1 ]
+    then
+        echo "no mp4 files in playlist.php, better not to try"
+    else
+        ## TODO: Delete media with duration greater than max_time (in seconds)
+        if [ -n "$max_time" ]
+        then
+            movietime *.mp4 | sort -nk3 | grep \.mp4 | sed "s/://" | while read file timestring time
+            do
+                [ $time -lt $max_time ] && continue
+                rm "$file" &&  echo "corrupted $file deleted (${time}s > ${max_time}s)"
+                # [ $time -gt $max_time ] && echo rm "$file" # && echo deleted $file $time
+            done
+        fi
+
+        ls *.mp4 | while read file
+        do
+            grep -q "\"$file\"" playlist.php && continue
+            rm "$file" && echo "obsolete $file deleted"
+        done
+    fi
+    echo files: $(ls *.mp4 | wc -l ) / $count
+
+    [ "$loop" ] || break
+    read -t 60 || echo
+done

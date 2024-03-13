@@ -1,0 +1,97 @@
+#!/bin/bash
+
+if ! basename $PWD | grep -q "^.sources"
+then
+    echo  must be run from .sources directory >&2
+    exit 1
+fi
+
+rm -f ../*/* 2>/dev/null
+rm -rf ../*/.browsercache 2>/dev/null
+rmdir ../* 2>/dev/null
+digits=3
+lastnrs=
+batchthumbs liste > ../playlist.php
+i=0
+cat liste | sed -e "s: *//.*::" -e "s/\s*#.*//" | grep . | while read nr name
+do
+    if [ "$lastname" != "$name" ]
+    then
+        printf "processing $lastname"
+        if [ "$lastname" ]
+        then
+            nrs=
+            if echo "$lastnr" | egrep -q "[,-]"
+            then
+                printf " custom $lastnr" >&2
+                IFS=',' read -ra ranges <<< "$lastnr"
+                for range in "${ranges[@]}"; do
+                    if [[ $range == *-* ]]; then
+                        IFS='-' read -ra nums <<< "$range"
+                        start=${nums[0]}
+                        end=${nums[1]}
+                        for ((i=start; i<=end; i++)); do
+                            nrs="$nrs $i"
+                        done
+                    else
+                        nrs="$nrs $range"
+                    fi
+                done
+                IFS=' '
+            else
+                i=$lastnr
+                printf " normal $lastnr-$(($nr - 1))" >&2
+                while [ $i -lt $nr ]
+                do
+                    nrs="$nrs $i"
+                    i=$((i + 1))
+                done
+            fi
+
+            cleaned_nrs=""
+            for i in $nrs; do
+                grep -q "^$i.mov" ignore && continue
+                cleaned_nrs="$cleaned_nrs $i"
+            done
+            nrs="$cleaned_nrs"
+
+            printf "\n  files $nrs" >&2
+            count=$(($nr - $lastnr))
+            printf " ($count)\n" >&2
+
+            basename=$(webnormalize "$lastname")
+            mkdir -p "../$basename/.browsercache" || exit $?
+            rm "../$basename/"* 2>/dev/null
+            echo "$lastname" | tee "../$basename/_pagetitle.txt" >&2
+            j=1
+            digits=$(printf "$count"| wc -c)
+            echo >&2
+            # while [ $i -lt $nr ]
+            for i in $nrs
+            do
+                printf " $i" >&2
+                nrs="$nrs $i"
+                # jstr=$(printf "%0${digits}d" "$j");
+                jstr=$(printf "%0${digits}d" "$j")-$i;
+
+                part="${basename}_$jstr"
+                echo "  $basename/$part.mp4"
+                [ -f  ../.mp4/$i.mp4 ] && cp ../.mp4/$i.mp4 "../$basename/$part.mp4" 2>/dev/null \
+                && [ -f .browsercache/$i-thumb.jpg ] && cp .browsercache/$i-thumb.jpg "../$basename/.browsercache/$part-thumb.jpg" 2>/dev/null \
+                && [ -f .browsercache/$i-large.jpg ] && cp .browsercache/$i-large.jpg "../$basename/.browsercache/$part-large.jpg" 2>/dev/null \
+                || printf "(ERR$?)" >&2
+                i=$((i + 1))
+                j=$((j + 1))
+            done
+            echo >&2
+        fi
+        lastnrs=
+    fi
+    lastname="$name"
+    [ "$name" ] && lastfullname=$name
+    lastnr=$nr
+done
+batchthumbs liste > ../playlist.php
+
+# cd ..
+# makefolderlist >> playlist.php

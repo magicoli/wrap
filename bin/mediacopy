@@ -1,6 +1,6 @@
 #!/bin/sh
 
-extensions='\.(MTS|MPG|MOV|MP4|MXF)$'
+extensions='\.(MTS|MPG|MOV|MP4|MXF|MKV)$'
 THUMBOFFSET=0
 MOVEORIGINALS=yes
 MOVEPREFIX=../.originals
