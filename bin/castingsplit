@@ -37,7 +37,7 @@ do
                         nrs="$nrs $range"
                     fi
                 done
-                IFS=
+                IFS=' '
             else
                 i=$lastnr
                 printf " normal $lastnr-$(($nr - 1))" >&2
