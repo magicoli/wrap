@@ -1,0 +1,35 @@
+{
+  "name": "wrap5",
+  "version": "5.0.0-dev",
+  "description": "W.R.A.P. by Magiiic",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.magiiic.com:magic/wrap.git"
+  },
+  "keywords": [
+    "media",
+    "browser",
+    "player"
+  ],
+  "author": "Olivier van Helden",
+  "license": "AGPL-3.0-or-later",
+  "dependencies": {
+    "video.js": "^8.10.0"
+  },
+  "devDependencies": {
+    "css-loader": "^6.10.0",
+    "mini-css-extract-plugin": "^2.8.1",
+    "style-loader": "^3.3.4",
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.3"
+  },
+  "scripts": {
+    "start": "webpack --watch --mode development",
+    "build": "webpack --mode production"
+  }
+}
