@@ -306,7 +306,7 @@ class Wrap_Folder {
         
     public function get_content() {
         $icons = Wrap::icons();
-        $content = '<ul>';
+        $content = '<ul class="files">';
         foreach ($this->files as $filename) {
             $file = new Wrap_File($this->path_url . '/' . $filename);
             $name = $file->name;
@@ -318,7 +318,7 @@ class Wrap_Folder {
                 $thumb = $icon;
             }
             $content .= sprintf( 
-                '<li>%s %s</li>',
+                '<li class="file"><span class=thumbnail>%s</span> <span clas=name>%s</span></li>',
                 $thumb,
                 $name,
             );
