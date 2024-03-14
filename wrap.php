@@ -1,5 +1,4 @@
 <?php
-
 require 'vendor/autoload.php';
 
 class Wrap {
@@ -7,12 +6,17 @@ class Wrap {
     private $real_path;
     private $nav;
     private $brand = "Wrap by Magiiic";
+    private static $scripts = [];
+    private static $styles = [];
+    private $breadcrumb = '';
+    private $content = '';
+    private $title = '';
 
     public function __construct() {
         define('WRAP_VERSION', '5.0.0-dev');
         
         $this->init();
-        $this->update_cache();
+        // $this->update_cache();
         $this->build_page();
     }
 
@@ -41,20 +45,31 @@ class Wrap {
         define('WRAP_URL', $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST']);
     }
 
-    public function update_cache() {
-        // Cache WRAP_DIR/css/style.css into WRAP_DATA/.css/style.css
-        $css_file = WRAP_DIR . '/css/style.css';
-        $cache_file = WRAP_DATA . '/.css/style.css';
+    public function update_cache( $file ) {
+        // do not cache external urls
+        if (filter_var($file, FILTER_VALIDATE_URL)) {
+            return $file;
+        }
 
-        if (!file_exists($cache_file) || filemtime($css_file) > filemtime($cache_file)) {
+
+        // Cache WRAP_DIR/css/style.css into WRAP_DATA/.css/style.css
+        $source_file = WRAP_DIR . $file;
+        if (!file_exists($source_file)) {
+            return false;
+        }
+        $cache_file = WRAP_DATA . '/.cache/' . ltrim($file, '/');
+        $cache_url = WRAP_URL . '/.cache/' . ltrim($file, '/');
+
+        if (!file_exists($cache_file) || filemtime($source_file) != filemtime($cache_file)) {
             // Create the cache directory if it doesn't exist
             if (!is_dir(dirname($cache_file))) {
                 mkdir(dirname($cache_file), 0777, true);
             }
 
             // Copy the CSS file to the cache directory
-            copy($css_file, $cache_file);
+            copy($source_file, $cache_file);
         }
+        return $cache_url;
     }
 
     public function build_page() {
@@ -128,6 +143,14 @@ class Wrap {
         return $icons;
     }
 
+    public static function queue_script($name, $src) {
+        self::$scripts[$name] = $src;
+    }
+
+    public static function queue_style($name, $src) {
+        self::$styles[$name] = $src;
+    }
+
     /* output_html
      * Output HTML content
      * 
@@ -153,8 +176,18 @@ class Wrap {
         $description = htmlspecialchars($description, ENT_QUOTES, 'UTF-8');
         $keywords = htmlspecialchars($keywords, ENT_QUOTES, 'UTF-8');
 
-        // Update the link to the cached CSS file in the HTML output
-        $css_link = WRAP_URL . '/.css/style.css';
+        self::queue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
+        self::queue_style('style-main', '/dist/main.css');
+
+        $queued_meta = '';
+        foreach (self::$scripts as $key => $src) {
+            $script_url = $this->update_cache($src);
+            $queued_meta .= '<script id="js-' . $key . '" src="' . $script_url . '"></script>' . PHP_EOL;
+        }
+        foreach (self::$styles as $key => $src) {
+            $css_url =  $this->update_cache($src);
+            $queued_meta .= '<link id="css-' . $key . '" href="' . $css_url . '" rel="stylesheet">' . PHP_EOL;
+        }
 
         $template = '<!DOCTYPE html>
         <html lang="en">
@@ -164,8 +197,10 @@ class Wrap {
             <title>{title}</title>
             <meta name="description" content="{description}">
             <meta name="keywords" content="{keywords}">
-            <link rel="stylesheet" href="{css_link}">
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+            
+            <meta name="apple-mobile-web-app-capable" content="yes">
+            <meta name="apple-mobile-web-app-status-bar-style" content="black">
+            {queued_meta}
         </head>
         <body>
         <div class="container">
@@ -201,7 +236,7 @@ class Wrap {
             '{brand}' => $this->brand,
             '{breadcrumb}' => $this->breadcrumb,
             '{nav}' => $this->nav,
-            '{css_link}' => $css_link,
+            '{queued_meta}' => $queued_meta,
         ];
 
         echo strtr($template, $data);
@@ -292,7 +327,10 @@ class Wrap_Folder {
         $ignore_files = array("playlist.php", "browser.prefs");
         if(is_array($files)) {
             foreach ($files as $file) {
-                if ($file[0] == '.' || $file[0] == '_'  || $file[0] == '#' || substr($file, -1) == '~' || in_array($file, $ignore_files)) {
+                if ($file[0] == '.' || $file[0] == '_'  || $file[0] == '#' || substr($file, -1) == '~' ) {
+                    continue;
+                }
+                if (in_array($file, $ignore_files)) {
                     continue;
                 }
                 if (is_dir($this->path . '/' . $file)) {
@@ -307,6 +345,7 @@ class Wrap_Folder {
     public function get_content() {
         $icons = Wrap::icons();
         $content = '<ul class="files">';
+        $playlist = [];
         foreach ($this->files as $filename) {
             $file = new Wrap_File($this->path_url . '/' . $filename);
             $name = $file->name;
@@ -318,17 +357,55 @@ class Wrap_Folder {
                 $thumb = $icon;
             }
             $content .= sprintf( 
-                '<li class="file"><span class=thumbnail>%s</span> <span clas=name>%s</span></li>',
+                '<li class="file" data-file="%s"><span class=thumbnail>%s</span> <span class=name>%s</span></li>',
+                $this->path_url . '/' . $filename,
                 $thumb,
                 $name,
             );
 
-            // $content .= '<li>' . $filename . '</li>';
+            if (in_array($extension, ['mp3', 'wav', 'ogg', 'mp4', 'webm'])) {
+                $playlist[] = array(
+                    'sources' => array(
+                        'src' => Wrap::build_url ($this->path_url . '/' . $filename),
+                        'type' => $file->mime_type,
+                    ),
+                    // 'name' => $file->name,
+                    'poster' => $file->get_thumb(false),
+                );
+            }
         }
         $content .= '</ul>';
+        if(!empty($playlist)) {
+            error_log("Playlist: " . print_r($playlist, true));
+                //     <link href="/node_modules/video.js/dist/video-js.css" rel="stylesheet">
+        //     <script src="/node_modules/video.js/dist/video.js"></script>
+            // Wrap::queue_script('player', '/dist/player.js');
+            // Wrap::queue_style('player', '/dist/player.css');
+            Wrap::queue_script('videojs', 'https://vjs.zencdn.net/7.8.4/video.js');
+            Wrap::queue_style('videojs', 'https://vjs.zencdn.net/7.8.4/video-js.css');
+            Wrap::queue_script('videojs-playlist', 'https://cdn.jsdelivr.net/npm/videojs-playlist@4.3.0/dist/videojs-playlist.js');
+
+            $content .= '<script>
+            var playlist = ' . json_encode($playlist) . ";
+
+            document.addEventListener('DOMContentLoaded', function() {
+                var player = videojs('player');
+                player.playlist(playlist);
+                player.playlist.autoadvance(0);
+            });
+            </script>";
+
+
+            $content .= '<video id="player" class="video-js vjs-default-skin" controls preload="auto" width="640" height="264" data-setup="{}"></video>';
+
+        }
+
+        if(!empty($playlist)) {
+            // error_log("Playlist: " . print_r($playlist, true));
+        }
+
         return $content;
     }
-
     public function get_parents() {
         static $parents = null;
         
@@ -475,7 +552,7 @@ class Wrap_File {
         return $mimes->getMimeType($extension);
     }
     /**
-     * update_cache
+     * get_thumb
      * 
      * If file is a video, generate a thumbnail if none exist or if the video file is newer than the thumbnail
      */
@@ -513,9 +590,42 @@ class Wrap_File {
      */
     public function output() {
         $file = WRAP_DATA . $_SERVER['REQUEST_URI'];
-    
+        $size = filesize($file);
+        $start = 0;
+        $end = $size - 1;
+
         header('Content-Type: ' . $this->mime_type);
-        readfile($file);
+        header("Accept-Ranges: bytes");
+        if (isset($_SERVER['HTTP_RANGE'])) {
+            $range = $_SERVER['HTTP_RANGE'];
+            list($param, $range) = explode('=', $range);
+            if (strtolower(trim($param)) != 'bytes') {
+                header('HTTP/1.1 400 Invalid Request');
+                exit;
+            }
+            list($from, $to) = explode('-', $range);
+            if ($from) {
+                $start = intval($from);
+            }
+            if ($to) {
+                $end = intval($to);
+            }
+            $length = $end - $start + 1;
+            header('HTTP/1.1 206 Partial Content');
+            header("Content-Length: $length");
+            header("Content-Range: bytes $start-$end/$size");
+        } else {
+            header("Content-Length: $size");
+        }
+
+        $fp = fopen($file, 'rb');
+        fseek($fp, $start);
+        while ($start <= $end) {
+            set_time_limit(0);
+            print fread($fp, min(1024, $end - $start + 1));
+            $start += 1024;
+        }
+        fclose($fp);
         die();
     }
 }
