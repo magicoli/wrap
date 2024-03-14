@@ -376,28 +376,23 @@ class Wrap_Folder {
         }
         $content .= '</ul>';
         if(!empty($playlist)) {
-            error_log("Playlist: " . print_r($playlist, true));
-                //     <link href="/node_modules/video.js/dist/video-js.css" rel="stylesheet">
-        //     <script src="/node_modules/video.js/dist/video.js"></script>
-            // Wrap::queue_script('player', '/dist/player.js');
-            // Wrap::queue_style('player', '/dist/player.css');
-            Wrap::queue_script('videojs', 'https://vjs.zencdn.net/7.8.4/video.js');
-            Wrap::queue_style('videojs', 'https://vjs.zencdn.net/7.8.4/video-js.css');
-            Wrap::queue_script('videojs-playlist', 'https://cdn.jsdelivr.net/npm/videojs-playlist@4.3.0/dist/videojs-playlist.js');
+            // Wrap::queue_script('videojs', 'https://vjs.zencdn.net/7.8.4/video.js');
+            // Wrap::queue_style('videojs-style', 'https://vjs.zencdn.net/7.8.4/video-js.css');
+            // Wrap::queue_script('videojs-playlist', 'https://cdn.jsdelivr.net/npm/videojs-playlist@4.3.0/dist/videojs-playlist.js');
+            
+            Wrap::queue_script('videojs', '/dist/videojs.js');
+            Wrap::queue_style('videojs', '/dist/videojs.css');
 
-            $content .= '<script>
-            var playlist = ' . json_encode($playlist) . ";
-
+            $playlist_script .= "<script>
             document.addEventListener('DOMContentLoaded', function() {
                 var player = videojs('player');
-                player.playlist(playlist);
+                player.playlist(" . json_encode($playlist) . ");
                 player.playlist.autoadvance(0);
             });
             </script>";
+            error_log($playlist_script);
 
-
-            $content .= '<video id="player" class="video-js vjs-default-skin" controls preload="auto" width="640" height="264" data-setup="{}"></video>';
-
+            $content .= $playlist_script . '<video id="player" class="video-js vjs-default-skin" controls preload="auto" width="640" height="264" data-setup="{}"></video>';
         }
 
         if(!empty($playlist)) {

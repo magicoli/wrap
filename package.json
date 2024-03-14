@@ -4,7 +4,8 @@
   "description": "W.R.A.P. by Magiiic",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "webpack --watch --mode development",
+    "build": "webpack --mode production"
   },
   "repository": {
     "type": "git",
@@ -17,19 +18,14 @@
   ],
   "author": "Olivier van Helden",
   "license": "AGPL-3.0-or-later",
-  "dependencies": {
-    "video.js": "^8.10.0"
-  },
   "devDependencies": {
+    "video.js": "^7.8.4",
+    "videojs-playlist": "4.3.0",
     "css-loader": "^6.10.0",
     "mini-css-extract-plugin": "^2.8.1",
     "style-loader": "^3.3.4",
     "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.3"
-  },
-  "scripts": {
-    "start": "webpack --watch --mode development",
-    "build": "webpack --mode production"
   }
 }
