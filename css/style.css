@@ -52,6 +52,9 @@ body > .container {
 #header nav ul li:not(:last-child)::after {
     content: ' / ';
 }
+nav li.active {
+    font-weight: bold;
+}
 
 #main {
     padding: 20px;

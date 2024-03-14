@@ -186,13 +186,18 @@ class Wrap_Folder {
     private $childs = [];
     private $files = [];
     private $parents = [];
-    private $folder_name;
+    private $name;
+    private $page_url;
 
     public function __construct($requested_url) {
-        $this->path_url = $_SERVER['REQUEST_URI'];
-        $this->path = WRAP_DATA . $_SERVER['REQUEST_URI'];
+        if(empty($requested_url)) {
+            $requested_url = $_SERVER['REQUEST_URI'];
+        }
+        $this->page_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $this->path_url = $requested_url;
+        $this->path = WRAP_DATA . $requested_url;
         $this->parents = $this->get_parents();
-        $this->folder_name = basename($this->path);
+        $this->name = basename($this->path);
         $this->scan_folder();
     }
 
@@ -245,6 +250,10 @@ class Wrap_Folder {
         return $parents;
     }
     
+    public function get_childs() {
+        return $this->childs;
+    }
+    
     public function get_breadcrumb( $include_current = false ) {
         $parents = $this->get_parents();
         
@@ -253,23 +262,83 @@ class Wrap_Folder {
             $breadcrumb .= '<li><a href="' . Wrap::build_url($parent) . '">' . $this->folder_name($parent) . '</a></li>';
         }
         if($include_current === true) {
-            $breadcrumb .= '<li>' . $this->folder_name() . '</li>';
+            $breadcrumb .= '<li>' . $this->name() . '</li>';
         }
         $breadcrumb .= '</ul>';
         return $breadcrumb;
     }
 
     public function folder_name( $folder = null) {
-        $folder = $folder ?? $this->folder_name;
+        $folder = $folder ?? $this->name;
         return basename($folder);
     }
 
-    public function get_nav() {
-        $content = '<ul>';
-        foreach ($this->childs as $child) {
-            $content .= '<li><a href="' . $this->path_url . '/' . $child . '">' . $child . '</a></li>';
+    /* get_nav_tree
+        * Build full navigation tree, including parent and each up level siblings
+        * Instanciate Wrap_folder for each parent to get their childs
+        * 
+        * @return string
+        */
+    public function get_nav_tree() {
+        $parents = $this->get_parents();
+        $parents[] = $this->path_url;
+        $tree = array();
+        foreach ($parents as $path) {
+            $path_parts = explode('/', trim($path, '/'));
+            $current = &$tree;
+            foreach ($path_parts as $part) {
+                if (!isset($current[$part])) {
+                    $current[$part] = array();
+                }
+                $current = &$current[$part];
+            }
+            $parent = new Wrap_Folder($path);
+            $parent_childs = $parent->get_childs();
+            $current = array_fill_keys($parent_childs, null);
         }
-        $content .= '</ul>';
+        error_log("tree: " . print_r($tree, true));
+        
+        // Call the function with the $tree variable
+        $nestedList = $this->nav_tree_html($tree);
+        
+        return $nestedList;
+    }
+
+    public function nav_tree_html($tree, $parent=null) {
+        $html = '<ul>';
+        foreach ($tree as $key => $value) {
+            $path = $parent . '/' . $key;
+            error_log("\npath " . $path . "\npage" . $this->page_url);
+            $classes = ($path === $this->page_url) ? 'active' : null;
+            $html .= sprintf(
+                '<li class="%s"><a href="%s">%s</a>',
+                $classes,
+                Wrap::build_url($path),
+                $key
+            );
+            if (!empty($value)) {
+                $html .= $this->nav_tree_html($value, $path);
+            }
+            $html .= '</li>';
+        }
+        $html .= '</ul>';
+        return $html;
+    }
+
+    /* get_nav
+     * Get folder navigation
+     * 
+     * @return string
+     */
+    public function get_nav() {
+
+        // $content = '<ul>';
+        // foreach ($this->childs as $child) {
+        //     $content .= '<li><a href="' . $this->path_url . '/' . $child . '">' . $child . '</a></li>';
+        // }
+        // $content .= '</ul>';
+        // $content .= "tree";
+        $content = $this->get_nav_tree();
         return $content;
     }
 }
