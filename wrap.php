@@ -3,14 +3,14 @@
 require 'vendor/autoload.php';
 
 class Wrap {
-    private $data_root;
+    private $wrap_data;
     private $real_path;
     private $nav;
     private $brand = "Wrap by Magiiic";
 
     public function __construct() {
         define('WRAP_VERSION', '5.0.0-dev');
-
+        
         $this->init();
         $this->update_cache();
         $this->build_page();
@@ -29,11 +29,14 @@ class Wrap {
         ];
         foreach ($try as $path) {
             if (file_exists($path)) {
-                $this->data_root = $path;
+                $wrap_data = $path;
                 break;
             }
         }
-        define('WRAP_DATA', $this->data_root);
+        if(empty($wrap_data)) {
+            die("No data folder found");
+        }
+        define('WRAP_DATA', $wrap_data);
         define('WRAP_DIR', dirname(__FILE__)); // Define WRAP_DIR as the actual script directory
         define('WRAP_URL', $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST']);
     }
@@ -56,15 +59,17 @@ class Wrap {
 
     public function build_page() {
         $requested_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        if (is_dir($this->data_root . $requested_url)) {
+        
+        if (is_dir(WRAP_DATA . $requested_url)) {
             $wrap_folder = new Wrap_Folder($requested_url);
+
             $this->content = $wrap_folder->get_content();
             $this->nav = $wrap_folder->get_nav();
             $this->breadcrumb = $wrap_folder->get_breadcrumb();
             $this->title = $wrap_folder->get_name();
 
             $this->output_html('<p>Folder requested: ' . $requested_url . '</p>', 'Folder', 'Folder requested: ' . $requested_url, 'folder' );
-        } elseif (file_exists($this->data_root . $requested_url)) {
+        } elseif (file_exists(WRAP_DATA . $requested_url)) {
             $wrap_file = new Wrap_File($requested_url);
             $wrap_file->output();
         } else {
@@ -173,7 +178,7 @@ class Wrap {
     }
 
     static function debug($message) {
-        echo "$message\n";
+        echo "$message<br>";
         error_log($message);
     }
 
@@ -201,12 +206,16 @@ class Wrap_Folder {
     private $stop_navigation = false;
 
     public function __construct($requested_url) {
+        
         if(empty($requested_url)) {
             $requested_url = $_SERVER['REQUEST_URI'];
         }
         $this->page_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $this->path_url = $requested_url;
         $this->path = WRAP_DATA . $requested_url;
+        if(!file_exists($this->path)) {
+            return false;
+        }
         $this->parents = $this->get_parents();
         $this->name = Wrap::key2name(basename($this->path));
         $this->load_params();
@@ -245,19 +254,20 @@ class Wrap_Folder {
         $content = [];
         $files = scandir($this->path);
         $ignore_files = array("playlist.php", "browser.prefs");
-
-        foreach ($files as $file) {
-            if ($file[0] == '.' || $file[0] == '_'  || $file[0] == '#' || substr($file, -1) == '~' || in_array($file, $ignore_files)) {
-                continue;
-            }
-            if (is_dir($this->path . '/' . $file)) {
-                $this->childs[] = $file;
-            } else {
-                $this->files[] = $file;
+        if(is_array($files)) {
+            foreach ($files as $file) {
+                if ($file[0] == '.' || $file[0] == '_'  || $file[0] == '#' || substr($file, -1) == '~' || in_array($file, $ignore_files)) {
+                    continue;
+                }
+                if (is_dir($this->path . '/' . $file)) {
+                    $this->childs[] = $file;
+                } else {
+                    $this->files[] = $file;
+                }
             }
         }
     }
-
+        
     public function get_content() {
         $content = '<ul>';
         foreach ($this->files as $file) {
@@ -269,15 +279,16 @@ class Wrap_Folder {
 
     public function get_parents() {
         static $parents = null;
-
+        
         if ($parents !== null) {
             return $parents;
         }
-
+        
         $currentPath = $this->path;
         $parentPath = dirname($currentPath);
         $parents = [];
-        while ($parentPath != WRAP_DATA) {
+
+        while ($parentPath != WRAP_DATA && strpos($parentPath, WRAP_DATA) !== false && $parentPath != "/") {
             $parent_url = str_replace(WRAP_DATA, '', $parentPath);
             $folder = new Wrap_Folder($parent_url);
             if($folder->stop_navigation() ) {
@@ -332,7 +343,6 @@ class Wrap_Folder {
             if($parent->stop_navigation() ) {
                 continue;
             }
-            error_log("branch path: $path");
             $path_parts = explode('/', trim($path, '/'));
             $current = &$tree;
             foreach ($path_parts as $part) {
@@ -351,6 +361,7 @@ class Wrap_Folder {
 
     public function nav_tree_html($tree, $parent=null) {
         $skip = true;
+        $html = '';
         foreach ($tree as $key => $value) {
             $path = $parent . '/' . $key;
             $folder = new Wrap_Folder($path);
