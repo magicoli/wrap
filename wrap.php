@@ -346,7 +346,11 @@ class Wrap_Folder {
         $icons = Wrap::icons();
         $content = '<ul class="files">';
         $playlist = [];
+        $id=0;
+        $p=0;
         foreach ($this->files as $filename) {
+            $id++;
+            $idx = '';
             $file = new Wrap_File($this->path_url . '/' . $filename);
             $name = $file->name;
 
@@ -356,12 +360,7 @@ class Wrap_Folder {
             if(empty($thumb)) {
                 $thumb = $icon;
             }
-            $content .= sprintf( 
-                '<li class="file" data-file="%s"><span class=thumbnail>%s</span> <span class=name>%s</span></li>',
-                $this->path_url . '/' . $filename,
-                $thumb,
-                $name,
-            );
+            $classes = [ "file" ];
 
             if (in_array($extension, ['mp3', 'wav', 'ogg', 'mp4', 'webm'])) {
                 $playlist[] = array(
@@ -369,10 +368,28 @@ class Wrap_Folder {
                         'src' => Wrap::build_url ($this->path_url . '/' . $filename),
                         'type' => $file->mime_type,
                     ),
-                    // 'name' => $file->name,
+                    'name' => $file->name,
                     'poster' => $file->get_thumb(false),
                 );
+                $classes[] = 'playable';
+                // $classes[] = str_replace('/', '-', $file->mime_type);
+                $idx = $p;
+                $p++;
             }
+
+            $content .= sprintf( 
+                '<li id="%s" class="%s" data-index="%s">
+                    <span class=thumbnail>%s</span>
+                    <span class=name>%s</span>
+                </li>',
+                'list-item-' . $id,
+                join(' ', $classes),
+                $idx,
+                $thumb,
+                $name,
+                // sprintf('<a href="%s">%s</a>', $this->path_url . '/' . $filename, $name),
+            );
+
         }
         $content .= '</ul>';
         if(!empty($playlist)) {
@@ -412,11 +429,20 @@ class Wrap_Folder {
                 } else {
                     controlBar.appendChild(nextButton);
                 }
+                
+                var files = document.querySelectorAll('.file.playable');
+                files.forEach(function(file) {
+                    file.addEventListener('click', function() {
+                        var playlistIndex = parseInt(this.getAttribute('data-index'), 10);
+                        player.playlist.currentItem(playlistIndex);
+                        player.play();
+                    });
+                });
             });
             </script>";
             error_log($playlist_script);
 
-            $content = $playlist_script . '<video id="player" class="video-js vjs-default-skin" controls preload="auto" width="640" height="264" data-setup="{}"></video>' . '<p/>' . $content;
+            $content .= $playlist_script . '<video id="player" class="video-js vjs-default-skin" controls preload="auto" width="640" height="264" data-setup="{}"></video>';
         }
 
         if(!empty($playlist)) {
