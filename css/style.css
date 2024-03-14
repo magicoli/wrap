@@ -54,7 +54,9 @@ body > .container {
 }
 nav li.active, nav li.active a {
     font-weight: bold;
-    color: var(--primary-color);
+}
+nav li:not(.active), nav li:not(.active) a {
+    font-weight: normal;
 }
 
 #main {

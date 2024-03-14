@@ -354,38 +354,37 @@ class Wrap_Folder {
             $parent_childs = $parent->get_childs();
             $current = array_fill_keys($parent_childs, null);
         }
+        error_log(print_r($tree, true));
         // Call the function with the $tree variable
         $nestedList = $this->nav_tree_html($tree);
         return $nestedList;
     }
-
+    
     public function nav_tree_html($tree, $parent=null) {
-        $skip = true;
         $html = '';
         foreach ($tree as $key => $value) {
             $path = $parent . '/' . $key;
             $folder = new Wrap_Folder($path);
+            $parentFolder = new Wrap_Folder($parent);
             $classes = ($path === $this->page_url) ? 'active' : null;
             $child_html = '';
             if (!empty($value)) {
                 $child_html = $this->nav_tree_html($value, $path);
+            }
+            if($parentFolder->stop_navigation() || $folder->stop_navigation() ) {
+                $html .= $child_html;
+            } else {
                 if (!empty($child_html)) {
                     $child_html = '<ul>' . $child_html . '</ul>';
                 }
-            }
-            if($folder->stop_navigation()) {
-                $html = $child_html;
-            } else {
                 $html .= sprintf(
-                    '<li class="%s"><a href="%s">%s</a>%s</li>  ',
+                    '<li class="%s"><a href="%s">%s</a>%s</li>',
                     $classes,
                     Wrap::build_url($path),
                     $folder->get_name(),
                     $child_html,
                 );
             }
-            // $html .= $this->nav_tree_html($value, $path);
-            $html .= '</li>';
         }
         return $html;
     }
