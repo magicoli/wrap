@@ -23,6 +23,10 @@ class ComposerStaticInit73098b883cd6c94bb2de89a92346d59a
         array (
             'Psr\\Log\\' => 8,
         ),
+        'M' => 
+        array (
+            'Mimey\\' => 6,
+        ),
         'D' => 
         array (
             'Doctrine\\Common\\Cache\\' => 22,
@@ -49,6 +53,10 @@ class ComposerStaticInit73098b883cd6c94bb2de89a92346d59a
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
+        'Mimey\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/ralouphie/mimey/src',
         ),
         'Doctrine\\Common\\Cache\\' => 
         array (
