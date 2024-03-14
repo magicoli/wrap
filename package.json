@@ -19,13 +19,16 @@
   "author": "Olivier van Helden",
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
-    "video.js": "^7.8.4",
-    "videojs-playlist": "4.3.0",
     "css-loader": "^6.10.0",
     "mini-css-extract-plugin": "^2.8.1",
     "style-loader": "^3.3.4",
+    "video.js": "^7.8.4",
+    "videojs-playlist": "4.3.0",
     "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.3"
+  },
+  "dependencies": {
+    "videojs-playlist-ui": "^4.0.0"
   }
 }

@@ -388,11 +388,35 @@ class Wrap_Folder {
                 var player = videojs('player');
                 player.playlist(" . json_encode($playlist) . ");
                 player.playlist.autoadvance(0);
+                player.playlistUi();
+
+                var prevButton = document.createElement('button');
+                prevButton.innerHTML = '&#9664;';
+                prevButton.addEventListener('click', function() {
+                    player.playlist.previous();
+                });
+
+                var nextButton = document.createElement('button');
+                nextButton.innerHTML = '&#9654;';
+                nextButton.addEventListener('click', function() {
+                    player.playlist.next();
+                });
+
+                var controlBar = document.getElementsByClassName('vjs-control-bar')[0];
+                var playToggle = document.getElementsByClassName('vjs-play-control')[0];
+
+                controlBar.insertBefore(prevButton, playToggle);
+
+                if (playToggle.nextSibling) {
+                    controlBar.insertBefore(nextButton, playToggle.nextSibling);
+                } else {
+                    controlBar.appendChild(nextButton);
+                }
             });
             </script>";
             error_log($playlist_script);
 
-            $content .= $playlist_script . '<video id="player" class="video-js vjs-default-skin" controls preload="auto" width="640" height="264" data-setup="{}"></video>';
+            $content = $playlist_script . '<video id="player" class="video-js vjs-default-skin" controls preload="auto" width="640" height="264" data-setup="{}"></video>' . '<p/>' . $content;
         }
 
         if(!empty($playlist)) {
