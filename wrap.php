@@ -61,7 +61,7 @@ class Wrap {
             $this->content = $wrap_folder->get_content();
             $this->nav = $wrap_folder->get_nav();
             $this->breadcrumb = $wrap_folder->get_breadcrumb();
-            $this->title = $wrap_folder->folder_name();
+            $this->title = $wrap_folder->get_name();
 
             $this->output_html('<p>Folder requested: ' . $requested_url . '</p>', 'Folder', 'Folder requested: ' . $requested_url, 'folder' );
         } elseif (file_exists($this->data_root . $requested_url)) {
@@ -176,6 +176,15 @@ class Wrap {
         echo "$message\n";
         error_log($message);
     }
+
+    public static function key2name($string) {
+        $string = str_replace('_', ' ', $string);
+        $string = ucfirst($string);
+        $string = preg_replace('/\d+/', ' $0 ', $string);
+        $string = trim($string);
+        return $string;
+    }
+
 }
 
 $wrap = new Wrap();
@@ -197,8 +206,21 @@ class Wrap_Folder {
         $this->path_url = $requested_url;
         $this->path = WRAP_DATA . $requested_url;
         $this->parents = $this->get_parents();
-        $this->name = basename($this->path);
+        $this->name = Wrap::key2name(basename($this->path));
+        $this->load_params();
         $this->scan_folder();
+    }
+
+    private function load_params() {
+        $folder_params = $this->path . '/.wrap.json';
+        if (file_exists($folder_params)) {
+            $json = file_get_contents($folder_params);
+            $this->params = json_decode($json, true);
+            if(isset($this->params['name'])) {
+                $this->name = $this->params['name'];
+            }
+            error_log("params: " . print_r($this->params, true));
+        }
     }
 
     /* get_content
@@ -259,7 +281,7 @@ class Wrap_Folder {
         
         $breadcrumb = '<ul>';
         foreach ($this->parents as $parent) {
-            $breadcrumb .= '<li><a href="' . Wrap::build_url($parent) . '">' . $this->folder_name($parent) . '</a></li>';
+            $breadcrumb .= '<li><a href="' . Wrap::build_url($parent) . '">' . $this->get_name($parent) . '</a></li>';
         }
         if($include_current === true) {
             $breadcrumb .= '<li>' . $this->name() . '</li>';
@@ -268,7 +290,7 @@ class Wrap_Folder {
         return $breadcrumb;
     }
 
-    public function folder_name( $folder = null) {
+    public function get_name( $folder = null) {
         $folder = $folder ?? $this->name;
         return basename($folder);
     }
@@ -296,7 +318,6 @@ class Wrap_Folder {
             $parent_childs = $parent->get_childs();
             $current = array_fill_keys($parent_childs, null);
         }
-        error_log("tree: " . print_r($tree, true));
         
         // Call the function with the $tree variable
         $nestedList = $this->nav_tree_html($tree);
@@ -308,13 +329,13 @@ class Wrap_Folder {
         $html = '<ul>';
         foreach ($tree as $key => $value) {
             $path = $parent . '/' . $key;
-            error_log("\npath " . $path . "\npage" . $this->page_url);
+            $folder = new Wrap_Folder($path);
             $classes = ($path === $this->page_url) ? 'active' : null;
             $html .= sprintf(
                 '<li class="%s"><a href="%s">%s</a>',
                 $classes,
                 Wrap::build_url($path),
-                $key
+                $folder->get_name(),
             );
             if (!empty($value)) {
                 $html .= $this->nav_tree_html($value, $path);
