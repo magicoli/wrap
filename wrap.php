@@ -197,6 +197,8 @@ class Wrap_Folder {
     private $parents = [];
     private $name;
     private $page_url;
+    private $params = [];
+    private $stop_navigation = false;
 
     public function __construct($requested_url) {
         if(empty($requested_url)) {
@@ -219,8 +221,19 @@ class Wrap_Folder {
             if(isset($this->params['name'])) {
                 $this->name = $this->params['name'];
             }
-            error_log("params: " . print_r($this->params, true));
+            if(isset($this->params['stop_navigation'])) {
+                $this->stop_navigation = $this->params['stop_navigation'];
+            }
+
         }
+    }
+
+    public function stop_navigation() {
+        return $this->stop_navigation;
+    }
+
+    public function get_params() {
+        return $this->params;
     }
 
     /* get_content
@@ -231,8 +244,10 @@ class Wrap_Folder {
     public function scan_folder() {
         $content = [];
         $files = scandir($this->path);
+        $ignore_files = array("playlist.php", "browser.prefs");
+
         foreach ($files as $file) {
-            if ($file == '.' || $file == '..') {
+            if ($file[0] == '.' || $file[0] == '_'  || $file[0] == '#' || substr($file, -1) == '~' || in_array($file, $ignore_files)) {
                 continue;
             }
             if (is_dir($this->path . '/' . $file)) {
@@ -242,7 +257,7 @@ class Wrap_Folder {
             }
         }
     }
-    
+
     public function get_content() {
         $content = '<ul>';
         foreach ($this->files as $file) {
@@ -260,11 +275,16 @@ class Wrap_Folder {
         }
 
         $currentPath = $this->path;
-        $wrapRoot = WRAP_DATA;
         $parentPath = dirname($currentPath);
         $parents = [];
-        while ($parentPath != $wrapRoot) {
-            $parents[] = str_replace($wrapRoot, '', $parentPath);
+        while ($parentPath != WRAP_DATA) {
+            $parent_url = str_replace(WRAP_DATA, '', $parentPath);
+            $folder = new Wrap_Folder($parent_url);
+            if($folder->stop_navigation() ) {
+                break;
+            }
+            $parents[] = $parent_url;
+            // error_log("folder params: " . print_r($folder->params, true));
             $parentPath = dirname($parentPath);
         }
         $parents = array_reverse($parents);
@@ -281,10 +301,11 @@ class Wrap_Folder {
         
         $breadcrumb = '<ul>';
         foreach ($this->parents as $parent) {
-            $breadcrumb .= '<li><a href="' . Wrap::build_url($parent) . '">' . $this->get_name($parent) . '</a></li>';
+            $folder = new Wrap_Folder($parent);
+            $breadcrumb .= '<li><a href="' . Wrap::build_url($parent) . '">' . $folder->get_name() . '</a></li>';
         }
         if($include_current === true) {
-            $breadcrumb .= '<li>' . $this->name() . '</li>';
+            $breadcrumb .= '<li>' . $this->get_name() . '</li>';
         }
         $breadcrumb .= '</ul>';
         return $breadcrumb;
@@ -305,7 +326,13 @@ class Wrap_Folder {
         $parents = $this->get_parents();
         $parents[] = $this->path_url;
         $tree = array();
+        $is_root= true;
         foreach ($parents as $path) {
+            $parent = new Wrap_Folder($path);
+            if($parent->stop_navigation() ) {
+                continue;
+            }
+            error_log("branch path: $path");
             $path_parts = explode('/', trim($path, '/'));
             $current = &$tree;
             foreach ($path_parts as $part) {
@@ -314,35 +341,41 @@ class Wrap_Folder {
                 }
                 $current = &$current[$part];
             }
-            $parent = new Wrap_Folder($path);
             $parent_childs = $parent->get_childs();
             $current = array_fill_keys($parent_childs, null);
         }
-        
         // Call the function with the $tree variable
         $nestedList = $this->nav_tree_html($tree);
-        
         return $nestedList;
     }
 
     public function nav_tree_html($tree, $parent=null) {
-        $html = '<ul>';
+        $skip = true;
         foreach ($tree as $key => $value) {
             $path = $parent . '/' . $key;
             $folder = new Wrap_Folder($path);
             $classes = ($path === $this->page_url) ? 'active' : null;
-            $html .= sprintf(
-                '<li class="%s"><a href="%s">%s</a>',
-                $classes,
-                Wrap::build_url($path),
-                $folder->get_name(),
-            );
+            $child_html = '';
             if (!empty($value)) {
-                $html .= $this->nav_tree_html($value, $path);
+                $child_html = $this->nav_tree_html($value, $path);
+                if (!empty($child_html)) {
+                    $child_html = '<ul>' . $child_html . '</ul>';
+                }
             }
+            if($folder->stop_navigation()) {
+                $html = $child_html;
+            } else {
+                $html .= sprintf(
+                    '<li class="%s"><a href="%s">%s</a>%s</li>  ',
+                    $classes,
+                    Wrap::build_url($path),
+                    $folder->get_name(),
+                    $child_html,
+                );
+            }
+            // $html .= $this->nav_tree_html($value, $path);
             $html .= '</li>';
         }
-        $html .= '</ul>';
         return $html;
     }
 
