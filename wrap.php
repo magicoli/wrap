@@ -93,6 +93,41 @@ class Wrap {
         return WRAP_URL . $path;
     }
 
+    public static function icons() {
+        static $icons = null;
+        if ($icons !== null) {
+            return $icons;
+        }
+        $fa = [
+            'csv' => 'fa-file-csv',
+            'doc' => 'fa-file-word',
+            'docx' => 'fa-file-word',
+            'gif' => 'fa-file-image',
+            'gz' => 'fa-file-archive',
+            'jpeg' => 'fa-file-image',
+            'jpg' => 'fa-file-image',
+            'mov' => 'fa-file-video',
+            'mp3' => 'fa-file-audio',
+            'mp4' => 'fa-file-video',
+            'pdf' => 'fa-file-pdf',
+            'png' => 'fa-file-image',
+            'ppt' => 'fa-file-powerpoint',
+            'pptx' => 'fa-file-powerpoint',
+            'rar' => 'fa-file-archive',
+            'tar' => 'fa-file-archive',
+            'wav' => 'fa-file-audio',
+            'xls' => 'fa-file-excel',
+            'xlsx' => 'fa-file-excel',
+            'zip' => 'fa-file-archive',
+        ];
+        // <i class="fas ' . $icon . '"></i>
+        $icons = array_map(function($icon) {
+            return '<i class="icon fas ' . $icon . '"></i>';
+        }, $fa);
+        
+        return $icons;
+    }
+
     /* output_html
      * Output HTML content
      * 
@@ -130,8 +165,7 @@ class Wrap {
             <meta name="description" content="{description}">
             <meta name="keywords" content="{keywords}">
             <link rel="stylesheet" href="{css_link}">
-            <style>
-            </style>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
         </head>
         <body>
         <div class="container">
@@ -182,10 +216,12 @@ class Wrap {
         error_log($message);
     }
 
-    public static function key2name($string) {
+    public static function filename2name($string) {
+        $string = pathinfo($string, PATHINFO_FILENAME);
         $string = str_replace('_', ' ', $string);
         $string = ucfirst($string);
-        $string = preg_replace('/\d+/', ' $0 ', $string);
+        $string = preg_replace('/(?<=[a-zA-Z])\d+/', ' $0', $string); // Ajoute un espace avant le nombre si précédé par une lettre
+        $string = preg_replace('/\d+(?=[a-zA-Z])/', '$0 ', $string); // Ajoute un espace après le nombre si suivi par une lettre
         $string = trim($string);
         return $string;
     }
@@ -217,7 +253,7 @@ class Wrap_Folder {
             return false;
         }
         $this->parents = $this->get_parents();
-        $this->name = Wrap::key2name(basename($this->path));
+        $this->name = Wrap::filename2name(basename($this->path));
         $this->load_params();
         $this->scan_folder();
     }
@@ -269,9 +305,25 @@ class Wrap_Folder {
     }
         
     public function get_content() {
+        $icons = Wrap::icons();
         $content = '<ul>';
-        foreach ($this->files as $file) {
-            $content .= '<li>' . $file . '</li>';
+        foreach ($this->files as $filename) {
+            $file = new Wrap_File($this->path_url . '/' . $filename);
+            $name = $file->name;
+
+            $extension = $file->extension;
+            $thumb = $file->get_thumb();
+            $icon = isset($icons[$extension]) ? $icons[$extension] : null;
+            if(empty($thumb)) {
+                $thumb = $icon;
+            }
+            $content .= sprintf( 
+                '<li>%s %s</li>',
+                $thumb,
+                $name,
+            );
+
+            // $content .= '<li>' . $filename . '</li>';
         }
         $content .= '</ul>';
         return $content;
@@ -295,7 +347,6 @@ class Wrap_Folder {
                 break;
             }
             $parents[] = $parent_url;
-            // error_log("folder params: " . print_r($folder->params, true));
             $parentPath = dirname($parentPath);
         }
         $parents = array_reverse($parents);
@@ -354,7 +405,7 @@ class Wrap_Folder {
             $parent_childs = $parent->get_childs();
             $current = array_fill_keys($parent_childs, null);
         }
-        error_log(print_r($tree, true));
+
         // Call the function with the $tree variable
         $nestedList = $this->nav_tree_html($tree);
         return $nestedList;
@@ -409,20 +460,61 @@ class Wrap_Folder {
 
 class Wrap_File {
     public function __construct($requested_url) {
+        $this->path = WRAP_DATA . $requested_url;
+        $this->path_url = $requested_url;
+        $this->name = Wrap::filename2name($this->path);
+        $this->extension = pathinfo($this->path, PATHINFO_EXTENSION);
+        $this->mime_type = $this->getMimeType($this->extension);
     }
 
-    /* output
-     * Output raw file, without processing
+    private function getMimeType($extension) {
+        static $mimes = null;
+        if ($mimes === null) {
+            $mimes = new \Mimey\MimeTypes;
+        }
+        return $mimes->getMimeType($extension);
+    }
+    /**
+     * update_cache
      * 
-     * @return void
+     * If file is a video, generate a thumbnail if none exist or if the video file is newer than the thumbnail
+     */
+    public function get_thumb( $output_html = true ) {
+        $thumbnail = '/.thumbs/' . $this->path_url . '.jpg';
+        $thumbfile = WRAP_DATA . $thumbnail;
+        $thumburl = Wrap::build_url($thumbnail);
+
+        if (strpos($this->mime_type, 'video') !== false) {
+            if (!file_exists($thumbfile) || filemtime($this->path) > filemtime($thumbfile)) {
+                // Create the cache directory if it doesn't exist
+                if (!is_dir(dirname($thumbfile))) {
+                    mkdir(dirname($thumbfile), 0777, true);
+                }
+
+                // Generate a thumbnail from the video file
+                $ffmpeg = FFMpeg\FFMpeg::create();
+                $video = $ffmpeg->open($this->path);
+                $frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(0));
+                $frame->save($thumbfile);
+            }
+        }
+
+        if (file_exists($thumbfile) && filesize($thumbfile) > 0) {
+            if($output_html) {
+                return '<img class="thumbnail" src="' . $thumburl . '" alt="' . $this->name . '">';
+            } else {
+                return $thumburl;
+            }
+        }
+    }
+
+    /**
+     * Raw file output
      */
     public function output() {
         $file = WRAP_DATA . $_SERVER['REQUEST_URI'];
-        $extension = pathinfo($file, PATHINFO_EXTENSION);
-        $mimes = new \Mimey\MimeTypes;
-        $mime_type = $mimes->getMimeType($extension);
     
-        header('Content-Type: ' . $mime_type);
+        header('Content-Type: ' . $this->mime_type);
         readfile($file);
         die();
     }
