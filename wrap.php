@@ -352,6 +352,8 @@ class Wrap_Folder {
         $id=0;
         $p=0;
         foreach ($this->files as $filename) {
+            $classes = [];
+
             $id++;
             $idx = '';
             // error_log("Looking for file " . $this->path_url . '/' . $filename);
@@ -364,7 +366,8 @@ class Wrap_Folder {
             if(empty($thumb)) {
                 $thumb = $icon;
             }
-            $classes = [ "file" ];
+            $classes[] = "file";
+            $classes[] = "list-item";
 
             if (in_array($extension, ['mp3', 'mov', 'wav', 'ogg', 'mp4', 'webm'])) {
                 $playlist[] = array(
@@ -385,6 +388,7 @@ class Wrap_Folder {
                 '<li id="%s" class="%s" data-index="%s">
                     <span class=thumbnail>%s</span>
                     <span class=name>%s</span>
+                    <span class=buttons></span>
                 </li>',
                 'list-item-' . $id,
                 join(' ', $classes),

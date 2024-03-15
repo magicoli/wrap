@@ -41,6 +41,8 @@ dialog:modal {
 .vjs-control-bar .vjs-fav-button {
     font-size: 24px !important; /* Ajustez la taille comme vous le souhaitez */
 }
+/* .button-favorite.active, */
+.tag-favorite .button.favorite,
 .vjs-control-bar .vjs-fav-button.active {
     color: red !important;
 }
