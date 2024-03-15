@@ -150,4 +150,64 @@ export function setupFavorites(player) {
     player.on('playlistitem', function() {
         updateFavButtonState();
     });
+
+    // Ajouter un bouton pour afficher uniquement les favoris
+    var favFilterButton = document.createElement('button');
+    favFilterButton.innerHTML = 'Afficher uniquement les favoris';
+    favFilterButton.className = 'fav-filter-button';
+
+    // Créer un nouvel élément li et lui attribuer la classe action
+    var li = document.createElement('li');
+    li.className = 'action';
+
+    // Ajouter le bouton à l'élément li
+    li.appendChild(favFilterButton);
+
+    // Ajouter l'élément li à l'élément actions
+    document.getElementById('actions').appendChild(li);
+
+    var currentPlaylist;
+
+    // Fonction pour afficher uniquement les favoris
+    function showFavorites() {
+        // Obtenir la liste de lecture actuelle
+        currentPlaylist = player.playlist();
+
+        // Filtrer la liste de lecture pour n'inclure que les favoris
+        var favoritePlaylist = currentPlaylist.filter(function(item) {
+            return favorites.includes(item.sources.src);
+        });
+
+        // Définir la nouvelle liste de lecture
+        player.playlist(favoritePlaylist);
+
+        // Ajouter une règle CSS pour masquer tous les .list-item sauf les .tag-favorite
+        var style = document.createElement('style');
+        style.innerHTML = '.list-item:not(.tag-favorite) { display: none; }';
+        style.id = 'favorite-filter-style';
+        document.head.appendChild(style);
+
+        // Changer le texte du bouton pour permettre de réafficher tous les éléments
+        favFilterButton.innerHTML = 'Afficher tous les éléments';
+        favFilterButton.removeEventListener('click', showFavorites);
+        favFilterButton.addEventListener('click', showAll);
+    }
+
+    // Fonction pour afficher tous les éléments
+    function showAll() {
+        // Rétablir la liste de lecture originale
+        player.playlist(currentPlaylist);
+
+        // Supprimer la règle CSS pour afficher tous les .list-item
+        var style = document.getElementById('favorite-filter-style');
+        document.head.removeChild(style);
+
+        // Changer le texte du bouton pour permettre de filtrer les favoris
+        favFilterButton.innerHTML = 'Afficher uniquement les favoris';
+        favFilterButton.removeEventListener('click', showAll);
+        favFilterButton.addEventListener('click', showFavorites);
+    }
+
+    // Gestionnaire d'événements pour le bouton de filtrage des favoris
+    favFilterButton.addEventListener('click', showFavorites);
 };

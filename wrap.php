@@ -217,6 +217,7 @@ class Wrap {
             <main id="main">
                 <nav id=nav>
                     {nav}
+                    <ul id="actions">Options</ul>
                 </nav>
                 <div id="content">
                     {content}
@@ -395,7 +396,6 @@ class Wrap_Folder {
                 $idx,
                 $thumb,
                 $name,
-                // sprintf('<a href="%s">%s</a>', $this->path_url . '/' . $filename, $name),
             );
 
         }
