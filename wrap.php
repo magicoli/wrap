@@ -74,8 +74,8 @@ class Wrap {
 
     public function build_page() {
         $requested_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        
-        if (is_dir(WRAP_DATA . $requested_url)) {
+        $requested_path = WRAP_DATA . urldecode($requested_url);
+        if (is_dir($requested_path)) {
             $wrap_folder = new Wrap_Folder($requested_url);
 
             $this->content = $wrap_folder->get_content();
@@ -84,7 +84,7 @@ class Wrap {
             $this->title = $wrap_folder->get_name();
 
             $this->output_html('<p>Folder requested: ' . $requested_url . '</p>', 'Folder', 'Folder requested: ' . $requested_url, 'folder' );
-        } elseif (file_exists(WRAP_DATA . $requested_url)) {
+        } elseif (file_exists($requested_path)) {
             $wrap_file = new Wrap_File($requested_url);
             $wrap_file->output();
         } else {
@@ -124,6 +124,7 @@ class Wrap {
             'mov' => 'fa-file-video',
             'mp3' => 'fa-file-audio',
             'mp4' => 'fa-file-video',
+            'mov' => 'fa-file-video',
             'pdf' => 'fa-file-pdf',
             'png' => 'fa-file-image',
             'ppt' => 'fa-file-powerpoint',
@@ -131,6 +132,7 @@ class Wrap {
             'rar' => 'fa-file-archive',
             'tar' => 'fa-file-archive',
             'wav' => 'fa-file-audio',
+            'webm' => 'fa-file-video',
             'xls' => 'fa-file-excel',
             'xlsx' => 'fa-file-excel',
             'zip' => 'fa-file-archive',
@@ -283,7 +285,8 @@ class Wrap_Folder {
         }
         $this->page_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $this->path_url = $requested_url;
-        $this->path = WRAP_DATA . $requested_url;
+        $this->path = WRAP_DATA . urldecode($requested_url);
+        
         if(!file_exists($this->path)) {
             return false;
         }
@@ -351,7 +354,8 @@ class Wrap_Folder {
         foreach ($this->files as $filename) {
             $id++;
             $idx = '';
-            $file = new Wrap_File($this->path_url . '/' . $filename);
+            // error_log("Looking for file " . $this->path_url . '/' . $filename);
+            $file = new Wrap_File($this->path_url . '/' . urlencode($filename));
             $name = $file->name;
 
             $extension = $file->extension;
@@ -362,7 +366,7 @@ class Wrap_Folder {
             }
             $classes = [ "file" ];
 
-            if (in_array($extension, ['mp3', 'wav', 'ogg', 'mp4', 'webm'])) {
+            if (in_array($extension, ['mp3', 'mov', 'wav', 'ogg', 'mp4', 'webm'])) {
                 $playlist[] = array(
                     'sources' => array(
                         'src' => Wrap::build_url ($this->path_url . '/' . $filename),
@@ -400,7 +404,7 @@ class Wrap_Folder {
             Wrap::queue_script('videojs', '/dist/videojs.js');
             Wrap::queue_style('videojs', '/dist/videojs.css');
 
-            $playlist_script .= "<script>
+            $playlist_script = "<script>
             document.addEventListener('DOMContentLoaded', function() {
                 var player = videojs('player');
                 player.playlist(" . json_encode($playlist) . ");
@@ -456,7 +460,7 @@ class Wrap_Folder {
                 });
             });
             </script>";
-            error_log($playlist_script);
+            // error_log($playlist_script);
             $player = '<dialog id="player-modal"><div id=player><video id="player" class="video-js vjs-default-skin" controls preload="auto" data-setup="{}"></video></div></dialog>';
             $content .= $player . $playlist_script;
         }
@@ -598,7 +602,7 @@ class Wrap_Folder {
 
 class Wrap_File {
     public function __construct($requested_url) {
-        $this->path = WRAP_DATA . $requested_url;
+        $this->path = WRAP_DATA . urldecode($requested_url);
         $this->path_url = $requested_url;
         $this->name = Wrap::filename2name($this->path);
         $this->extension = pathinfo($this->path, PATHINFO_EXTENSION);
@@ -619,7 +623,7 @@ class Wrap_File {
      */
     public function get_thumb( $output_html = true ) {
         $thumbnail = '/.thumbs/' . $this->path_url . '.jpg';
-        $thumbfile = WRAP_DATA . $thumbnail;
+        $thumbfile = WRAP_DATA . urldecode($thumbnail);
         $thumburl = Wrap::build_url($thumbnail);
 
         if (strpos($this->mime_type, 'video') !== false) {
@@ -650,7 +654,7 @@ class Wrap_File {
      * Raw file output
      */
     public function output() {
-        $file = WRAP_DATA . $_SERVER['REQUEST_URI'];
+        $file = $this->path;
         $size = filesize($file);
         $start = 0;
         $end = $size - 1;
