@@ -94,19 +94,20 @@ export function setupFavorites(player) {
     
         // Gestionnaire d'événements pour le bouton de favori
         favButton.addEventListener('click', function() {
-            // Obtenir l'index de l'élément actuel
+            // Obtenir l'index et le src de l'élément actuel
             var currentIndex = player.playlist.currentItem();
-    
+            var currentSrc = player.playlist()[currentIndex].sources.src;
+        
             // Obtenir l'élément avec le même data-index que l'élément actuel
             var currentElement = document.querySelector('.file.playable[data-index="' + currentIndex + '"]');
-    
+        
             // Ajouter ou supprimer la classe tag-favorite
             currentElement.classList.toggle('tag-favorite');
-    
+        
             // Mettre à jour les favoris stockés
             var favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-            var favoriteIndex = favorites.indexOf(currentIndex);
-    
+            var favoriteIndex = favorites.indexOf(currentSrc);
+        
             if (favoriteIndex !== -1) {
                 // Supprimer des favoris
                 favorites.splice(favoriteIndex, 1);
@@ -114,24 +115,25 @@ export function setupFavorites(player) {
                 favButton.classList.remove('active');
             } else {
                 // Ajouter aux favoris
-                favorites.push(currentIndex);
+                favorites.push(currentSrc);
                 // Ajouter la classe active
                 favButton.classList.add('active');
             }
-
+        
             // Enregistrer les favoris
             localStorage.setItem('favorites', JSON.stringify(favorites));
         });
     });
 
     function updateFavButtonState() {
-        // Obtenir l'index de l'élément actuel
+        // Obtenir l'index et le src de l'élément actuel
         var currentIndex = player.playlist.currentItem();
-
+        var currentSrc = player.playlist()[currentIndex].sources.src;
+    
         // Mettre à jour les favoris stockés
         var favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-        var favoriteIndex = favorites.indexOf(currentIndex);
-
+        var favoriteIndex = favorites.indexOf(currentSrc);
+    
         if (favoriteIndex !== -1) {
             // Si la vidéo actuelle est un favori, ajouter la classe active
             favButton.classList.add('active');
