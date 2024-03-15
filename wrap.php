@@ -404,64 +404,15 @@ class Wrap_Folder {
             Wrap::queue_script('videojs', '/dist/videojs.js');
             Wrap::queue_style('videojs', '/dist/videojs.css');
 
-            $playlist_script = "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var player = videojs('player');
-                player.playlist(" . json_encode($playlist) . ");
-                player.playlist.autoadvance(0);
-                player.playlistUi();
+            $playlist_script = "<script>setupPlayer(" . json_encode($playlist) . ");</script>";
 
-                var prevButton = document.createElement('button');
-                prevButton.innerHTML = '&#9664;';
-                prevButton.addEventListener('click', function() {
-                    player.playlist.previous();
-                });
-
-                var nextButton = document.createElement('button');
-                nextButton.innerHTML = '&#9654;';
-                nextButton.addEventListener('click', function() {
-                    player.playlist.next();
-                });
-
-                var controlBar = document.getElementsByClassName('vjs-control-bar')[0];
-                var playToggle = document.getElementsByClassName('vjs-play-control')[0];
-
-                controlBar.insertBefore(prevButton, playToggle);
-
-                if (playToggle.nextSibling) {
-                    controlBar.insertBefore(nextButton, playToggle.nextSibling);
-                } else {
-                    controlBar.appendChild(nextButton);
-                }
-                
-                var dialog = document.getElementById('player-modal');
-                var files = document.querySelectorAll('.file.playable');
-                files.forEach(function(file) {
-                    file.addEventListener('click', function() {
-                        var playlistIndex = parseInt(this.getAttribute('data-index'), 10);
-                        player.playlist.currentItem(playlistIndex);
-                        player.play();
-
-                        // Afficher le conteneur <dialog>
-                        dialog.showModal();
-                    });
-                });
-                dialog.addEventListener('close', function() {
-                    player.pause();
-                });
-                dialog.addEventListener('click', function() {
-                    // player.pause();
-                    this.close();
-                });
-                
-                var video = dialog.querySelector('#player .video-js');
-                video.addEventListener('click', function(event) {
-                    event.stopPropagation();
-                });
-            });
-            </script>";
             // error_log($playlist_script);
-            $player = '<dialog id="player-modal"><div id=player><video id="player" class="video-js vjs-default-skin" controls preload="auto" data-setup="{}"></video></div></dialog>';
+            $waverform = '  <div id="waveform">
+                <div id="time">0:00</div>
+                <div id="duration">0:00</div>
+                <div id="hover"></div>
+            </div>';
+            $player = '<dialog id="player-modal"><div id=player><video id="player" class="video-js vjs-default-skin" controls preload="auto" data-setup="{}"></video>' . $waveform . '</div></dialog>';
             $content .= $player . $playlist_script;
         }
 
