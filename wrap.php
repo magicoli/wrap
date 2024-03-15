@@ -522,9 +522,6 @@ class Wrap_Folder {
             if($parentFolder->stop_navigation() || $folder->stop_navigation() ) {
                 $html .= $child_html;
             } else {
-                if (!empty($child_html)) {
-                    $child_html = '<ul>' . $child_html . '</ul>';
-                }
                 $html .= sprintf(
                     '<li class="%s"><a href="%s">%s</a>%s</li>',
                     $classes,
@@ -533,6 +530,9 @@ class Wrap_Folder {
                     $child_html,
                 );
             }
+        }
+        if (!empty($html && ! preg_match('/^<ul[ >]/', $html)) ) {
+            $html = '<ul class=nav>' . $html . '</ul>';
         }
         return $html;
     }

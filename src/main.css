@@ -79,7 +79,6 @@ li.list-item {
     position: relative;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: grid;
-    gap: 10px;
 }
 
 li.list-item span.thumbnail {
@@ -129,6 +128,37 @@ li.list-item .name {
 
 #footer {
     border-top: 1px solid #ccc;
+}
+
+nav a {
+    text-decoration: none;
+}
+nav a:hover {
+    text-decoration: underline;
+}
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 0 0.5em;
+    /* display: flex;
+    gap: 10px; */
+}
+
+nav > ul:not(:last-of-type) {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: solid 1px #ccc;
+}
+
+nav ul ul {
+    padding-left: 10px;
+    font-size: 90%;
+}
+nav > ul > li {
+    margin: 0.5em 0;
+}
+nav li {
+    margin: 0.25em 0;
 }
 
 @media (min-width: 768px) {
