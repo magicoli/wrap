@@ -430,19 +430,35 @@ class Wrap_Folder {
                     controlBar.appendChild(nextButton);
                 }
                 
+                var dialog = document.getElementById('player-modal');
                 var files = document.querySelectorAll('.file.playable');
                 files.forEach(function(file) {
                     file.addEventListener('click', function() {
                         var playlistIndex = parseInt(this.getAttribute('data-index'), 10);
                         player.playlist.currentItem(playlistIndex);
                         player.play();
+
+                        // Afficher le conteneur <dialog>
+                        dialog.showModal();
                     });
+                });
+                dialog.addEventListener('close', function() {
+                    player.pause();
+                });
+                dialog.addEventListener('click', function() {
+                    // player.pause();
+                    this.close();
+                });
+                
+                var video = dialog.querySelector('video');
+                video.addEventListener('click', function(event) {
+                    event.stopPropagation();
                 });
             });
             </script>";
             error_log($playlist_script);
-
-            $content .= $playlist_script . '<video id="player" class="video-js vjs-default-skin" controls preload="auto" width="640" height="264" data-setup="{}"></video>';
+            $player = '<dialog id="player-modal"><div id=player><video id="player" class="video-js vjs-default-skin" controls preload="auto" data-setup="{}"></video></div></dialog>';
+            $content .= $player . $playlist_script;
         }
 
         if(!empty($playlist)) {
