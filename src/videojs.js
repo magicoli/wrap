@@ -11,12 +11,38 @@ import './videojs.css';
 
 window.videojs = videojs;
 
+// # Playlist array structure
+// $playlist[] = array(
+//     'sources' => array(
+//         'src' => Wrap::build_url ($this->path_url . '/' . $filename),
+//         'type' => $file->mime_type,
+//     ),
+//     'name' => $file->name,
+//     'poster' => $file->get_thumb(false),
+// );
+
+
 window.setupPlayer = function(playlist) {
     document.addEventListener('DOMContentLoaded', function() {
         var player = videojs('player');
         player.playlist(playlist);
         player.playlist.autoadvance(0);
         player.playlistUi();
+
+        // Créer un nouvel élément pour le titre de la vidéo
+        var videoTitle = document.createElement('div');
+        videoTitle.className = 'video-title';
+        videoTitle.style.display = 'none'; // Cacher le titre par défaut
+
+        // Créer un nouvel élément pour le titre de la vidéo
+        var videoTitle = document.createElement('div');
+        videoTitle.className = 'video-title';
+
+        var playerElement = document.getElementById('player');
+        playerElement.appendChild(videoTitle); // Ajouter le titre à l'élément du lecteur
+
+        var controlBar = document.getElementsByClassName('vjs-control-bar')[0];
+        controlBar.appendChild(videoTitle); // Ajouter le titre à la barre de contrôle
 
         player.on('ready', function() {
             var prevButton = document.createElement('button');
@@ -41,6 +67,29 @@ window.setupPlayer = function(playlist) {
             } else {
                 controlBar.appendChild(nextButton);
             }
+        });
+
+        player.on('loadedmetadata', function() {
+            // Obtenir l'index de l'élément actuel
+            var currentIndex = player.playlist.currentItem();
+
+            // Obtenir l'objet vidéo actuel
+            var currentVideo = player.playlist()[currentIndex];
+
+            // Afficher le titre de la vidéo actuelle
+            videoTitle.textContent = currentVideo.name;
+            videoTitle.style.display = 'block';
+        });
+
+        player.on('playlistitem', function() {
+            // Obtenir l'index de l'élément actuel
+            var currentIndex = player.playlist.currentItem();
+
+            // Obtenir l'objet vidéo actuel
+            var currentVideo = player.playlist()[currentIndex];
+
+            // Mettre à jour le titre chaque fois que la vidéo change
+            videoTitle.textContent = currentVideo.name;
         });
 
         var files = document.querySelectorAll('.file.playable');

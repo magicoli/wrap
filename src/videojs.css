@@ -25,3 +25,15 @@ dialog:modal {
 #player video {
     margin: auto;
 }
+
+.video-title {
+    display: none;
+    position: absolute;
+    bottom: 40px;
+    left: 10px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    font-size: 2rem;
+    text-align: center;
+}
