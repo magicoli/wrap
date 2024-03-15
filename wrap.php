@@ -454,7 +454,7 @@ class Wrap_Folder {
                     this.close();
                 });
                 
-                var video = dialog.querySelector('video');
+                var video = dialog.querySelector('#player .video-js');
                 video.addEventListener('click', function(event) {
                     event.stopPropagation();
                 });
