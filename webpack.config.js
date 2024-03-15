@@ -5,12 +5,12 @@ module.exports = {
     mode: 'development',
     entry: {
         main: './src/index.js',
-        videojs: './src/videojs.js',
-        // 'videojs-playlist': './src/videojs-playlist.js'
+        player: './src/player.js',
+        // 'player-playlist': './src/player-playlist.js'
     },
     // externals: {
-    //     'video.js': 'videojs',
-    //     'videojs-playlist': 'videojs-playlist'
+    //     'video.js': 'player',
+    //     'player-playlist': 'player-playlist'
     // },
     output: {
         filename: '[name].js',

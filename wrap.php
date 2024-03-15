@@ -401,8 +401,8 @@ class Wrap_Folder {
             // Wrap::queue_style('videojs-style', 'https://vjs.zencdn.net/7.8.4/video-js.css');
             // Wrap::queue_script('videojs-playlist', 'https://cdn.jsdelivr.net/npm/videojs-playlist@4.3.0/dist/videojs-playlist.js');
             
-            Wrap::queue_script('videojs', '/dist/videojs.js');
-            Wrap::queue_style('videojs', '/dist/videojs.css');
+            Wrap::queue_script('player', '/dist/player.js');
+            Wrap::queue_style('player', '/dist/player.css');
 
             $playlist_script = "<script>setupPlayer(" . json_encode($playlist) . ");</script>";
 
