@@ -37,3 +37,10 @@ dialog:modal {
     font-size: 2rem;
     text-align: center;
 }
+
+.vjs-control-bar .vjs-fav-button {
+    font-size: 24px !important; /* Ajustez la taille comme vous le souhaitez */
+}
+.vjs-control-bar .vjs-fav-button.active {
+    color: red !important;
+}

@@ -42,6 +42,16 @@ window.setupPlayer = function(playlist) {
         var controlBar = document.getElementsByClassName('vjs-control-bar')[0];
         controlBar.appendChild(videoTitle); // Ajouter le titre à la barre de contrôle
 
+        // Charger les favoris stockés
+        var favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        var favButton;
+
+        // Ajouter la classe tag-favorite aux éléments favoris
+        favorites.forEach(function(index) {
+            var element = document.querySelector('.file.playable[data-index="' + index + '"]');
+            element.classList.add('tag-favorite');
+        });
+        
         player.on('ready', function() {
             var prevButton = document.createElement('button');
             prevButton.innerHTML = '&#9664;';
@@ -65,6 +75,73 @@ window.setupPlayer = function(playlist) {
             } else {
                 controlBar.appendChild(nextButton);
             }
+
+            // Créer un bouton de favori
+            favButton = document.createElement('button');
+            favButton.innerHTML = '&#10084;'; // Symbole de coeur
+            favButton.className = 'vjs-fav-button';
+
+            // Obtenir la barre de progression
+            var progressBar = document.getElementsByClassName('vjs-progress-control')[0];
+
+            // Ajouter le bouton de favori à la barre de contrôle avant la barre de progression
+            controlBar.insertBefore(favButton, progressBar);
+        
+            // Gestionnaire d'événements pour le bouton de favori
+            favButton.addEventListener('click', function() {
+                // Obtenir l'index de l'élément actuel
+                var currentIndex = player.playlist.currentItem();
+        
+                // Obtenir l'élément avec le même data-index que l'élément actuel
+                var currentElement = document.querySelector('.file.playable[data-index="' + currentIndex + '"]');
+        
+                // Ajouter ou supprimer la classe tag-favorite
+                currentElement.classList.toggle('tag-favorite');
+        
+                // Mettre à jour les favoris stockés
+                var favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+                var favoriteIndex = favorites.indexOf(currentIndex);
+        
+                if (favoriteIndex !== -1) {
+                    // Supprimer des favoris
+                    favorites.splice(favoriteIndex, 1);
+                    // Supprimer la classe active
+                    favButton.classList.remove('active');
+                } else {
+                    // Ajouter aux favoris
+                    favorites.push(currentIndex);
+                    // Ajouter la classe active
+                    favButton.classList.add('active');
+                }
+
+                // Enregistrer les favoris
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+            });
+        });
+
+        function updateFavButtonState() {
+            // Obtenir l'index de l'élément actuel
+            var currentIndex = player.playlist.currentItem();
+
+            // Mettre à jour les favoris stockés
+            var favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+            var favoriteIndex = favorites.indexOf(currentIndex);
+
+            if (favoriteIndex !== -1) {
+                // Si la vidéo actuelle est un favori, ajouter la classe active
+                favButton.classList.add('active');
+            } else {
+                // Sinon, supprimer la classe active
+                favButton.classList.remove('active');
+            }
+        }
+
+        player.on('loadedmetadata', function() {
+            updateFavButtonState();
+        });
+
+        player.on('playlistitem', function() {
+            updateFavButtonState();
         });
 
         player.on('loadedmetadata', function() {
