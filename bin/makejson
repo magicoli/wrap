@@ -1,0 +1,92 @@
+#!/usr/bin/env php
+<?php
+// Only run if either the script is being run from the command line or WRAP_VERSION is defined, die otherwise
+if (php_sapi_name() !== 'cli' && !defined('WRAP_VERSION')) {
+    die('This script can only be executed from the command line or included by WRAP.');
+}
+
+// Lire le fichier JSON existant
+if( ! file_exists('playlist.php') && ! file_exists('_pagetitle.txt') && ! file_exists('.browser.prefs') ) {
+    // Nothing to do, die gracefully
+    die();
+}
+
+// First load .wrap.json if already present
+if(file_exists('.wrap.json')) {
+    $json = file_get_contents('.wrap.json');
+    $data = json_decode($json, true);
+} else {
+    $data = array();
+}
+$changes = false;
+
+if( file_exists('playlist.php') ) {
+    $playlistUpdatedTime = filemtime('playlist.php');
+    $proceed = false;
+    if (isset($data['playlist_imported'])) {
+        if ($playlistUpdatedTime > $data['playlist_imported']) {
+            $proceed = true;
+        }
+    } else {
+        $proceed = true;
+    }
+    if($proceed) {
+        // @include('playlist.php');
+        $code = file_get_contents('playlist.php');
+        $proceed = true;
+        // Exécuter le code PHP dans playlist.php et attraper les erreurs de syntaxe
+        try {
+            eval('?>' . $code);
+        } catch (ParseError $e) {
+            // Gérer l'erreur de syntaxe
+            echo 'Erreur de syntaxe dans playlist.php: ',  $e->getMessage(), "\n";
+            $proceed = false;
+        }
+    
+        if($proceed) {
+            // Mettre à jour les propriétés que vous voulez
+            if( isset($customnames) ) {
+                $files = $customnames;
+            } else if( isset($reserve) ) {
+                $files = $reserve;
+            }
+            foreach($files as $filename => $name) {
+                // Extraire les valeurs de la balise span.info
+                preg_match('/<span class=info>(.*?)<\/span>/', $name, $matches);
+                $tags = isset($matches[1]) ? explode(',', $matches[1]) : array();
+                
+                // Nettoyer la balise span.info de $name
+                $name = trim(preg_replace('/<span class=info>.*?<\/span>/', '', $name));
+                
+                $file = array('filename' => $filename, 'name' => $name, 'tags' => $tags);
+                $data['files'][] = $file;
+            }
+            
+            // TODO: see if we need special formatting for folders too
+            if( ! empty($customfolders) ) {
+                $data['folders'] = $customfolders;
+            }
+            $data['playlist_imported'] = $playlistUpdatedTime;
+            $changes = true;
+        }
+    }
+}
+
+if(file_exists('_pagetitle.txt')) {
+    $name = trim(file_get_contents('_pagetitle.txt'));
+    if($name != $data['name']) {
+        $data['name'] = $name;
+        $changes = true;
+    }
+}
+
+if($changes) {
+    // Écrire le tableau PHP de retour dans le fichier JSON
+    copy('.wrap.json', '.wrap.json.backup');
+    file_put_contents('.wrap.json', json_encode($data, JSON_PRETTY_PRINT));
+    // echo json_encode($data, JSON_PRETTY_PRINT);
+
+    error_log( getcwd() . "/.wrap.json updated by " . __FILE__ );
+} else {
+    error_log( "no changes to " . __DIR__ . "/.wrap.json" );
+}
