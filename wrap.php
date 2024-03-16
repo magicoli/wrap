@@ -686,12 +686,23 @@ class Wrap_File {
                 if (!is_dir(dirname($thumbfile))) {
                     mkdir(dirname($thumbfile), 0777, true);
                 }
-
-                // Generate a thumbnail from the video file
-                $ffmpeg = FFMpeg\FFMpeg::create();
-                $video = $ffmpeg->open($this->path);
-                $frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(0));
-                $frame->save($thumbfile);
+                // legacy thumbnail is {file directory}/.browsercache/{$filename without extension}-large.jpg
+                // or .browsercache/{$filename without extension}-thumb.jpg, prefer large.
+                // if found, copy to $thumbfile
+                $legacy_thumb_base = dirname($this->path) . '/.browsercache/' . pathinfo($this->path, PATHINFO_FILENAME);
+                $legacy_thumb_large = $legacy_thumb_base . '-large.jpg';
+                $legacy_thumb_thumb = $legacy_thumb_base . '-thumb.jpg';
+                if (file_exists($legacy_thumb_large)) {
+                    copy($legacy_thumb_large, $thumbfile);
+                } elseif (file_exists($legacy_thumb_thumb)) {
+                    copy($legacy_thumb_thumb, $thumbfile);
+                } else {
+                    // Generate a thumbnail from the video file
+                    $ffmpeg = FFMpeg\FFMpeg::create();
+                    $video = $ffmpeg->open($this->path);
+                    $frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(0));
+                    $frame->save($thumbfile);
+                }
             }
         }
 
