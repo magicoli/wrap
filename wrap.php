@@ -264,6 +264,13 @@ class Wrap {
         return $string;
     }
 
+    public static function santitize_slug($string) {
+        $string = strtolower($string);
+        $string = iconv('UTF-8', 'ASCII//TRANSLIT', $string);
+        $string = preg_replace('/[^a-z0-9]+/', '-', $string);
+        $string = trim($string, '-');
+        return $string;
+    }
 }
 
 $wrap = new Wrap();
@@ -327,6 +334,7 @@ class Wrap_Folder {
      */
     public function scan_folder() {
         $content = [];
+
         $files = scandir($this->path);
         $ignore_files = array("playlist.php", "browser.prefs");
         if(is_array($files)) {
@@ -352,14 +360,64 @@ class Wrap_Folder {
         $playlist = [];
         $id=0;
         $p=0;
-        foreach ($this->files as $filename) {
+
+        
+        // The files actually in the folder
+        $files = $this->files;
+        $files_map = [];
+        
+        $params = self::get_params();
+        if(isset($params['files'])) {
+            // Do some magic to sort $files according to the current order in the $params['files'] array as decribed below
+            
+            // We have a list of files to use for display order, display name and tags
+            // Files present in the folder but not in the list are displayed after.
+            // Files present in the list but not in the folder are ignored.
+            //
+            // Example:
+            //     $params['files'] = array(
+            //         array(
+            //             'filename' => '8-matilda_ancora_callback.mp4',
+            //             'name' => '8-Matilda Ancora (callback)',
+            //             'tags' => array(
+            //                 'Dame brushing',
+            //             ),
+            //         ),
+            //         // (...) more files
+            //     );
+
+            // First, we create a simple array of the files in the params array
+            foreach ($params['files'] as $file) {
+                $files_map[$file['filename']] = $file;
+            }
+            
+            // Then we remove from $files_map the files not in the folder
+            foreach ($files_map as $file => $data) {
+                if (!in_array($file, $files)) {
+                    unset($files_map[$file]);
+                }
+            }
+        }
+
+        // Finally we add the remaining files, present in the folder but not in the params array
+        foreach ($files as $file) {
+            if (!isset($files_map[$file])) {
+                $files_map[$file] = [
+                    'filename' => $file,
+                    'name' => Wrap::filename2name($file),
+                    'tags' => [],
+                ];
+            }
+        }
+        
+        foreach ($files_map as $filename => $data) {
             $classes = [];
 
             $id++;
             $idx = '';
             // error_log("Looking for file " . $this->path_url . '/' . $filename);
             $file = new Wrap_File($this->path_url . '/' . urlencode($filename));
-            $name = $file->name;
+            $file->name = isset($data['name']) ? $data['name'] : $file->name;
 
             $extension = $file->extension;
             $thumb = $file->get_thumb();
@@ -369,6 +427,22 @@ class Wrap_Folder {
             }
             $classes[] = "file";
             $classes[] = "list-item";
+
+            $tags = [];
+            if(isset($data['tags']) && is_array($data['tags'])) {
+                foreach ($data['tags'] as $tag) {
+                    $tag_slug = Wrap::santitize_slug($tag);
+                    $tags[$tag_slug] = $tag;
+                    $this->tags[$tag_slug] = $tag;
+                    $classes[] = 'tag-' . Wrap::santitize_slug($tag);
+                }
+            }
+            if(isset($this->tags) && is_array($this->tags) ) {
+                $this->tags = array_merge($this->tags, $tags);
+            } else {
+                $this->tags = $tags;
+            }
+            // empty($file->tags) ? $classes[] = 'no-tags' : $classes[] = 'has-tags';
 
             if (in_array($extension, ['mp3', 'mov', 'wav', 'ogg', 'mp4', 'webm'])) {
                 $playlist[] = array(
@@ -385,18 +459,39 @@ class Wrap_Folder {
                 $p++;
             }
 
-            $content .= sprintf( 
-                '<li id="%s" class="%s" data-index="%s">
-                    <span class=thumbnail>%s</span>
-                    <span class=name>%s</span>
-                    <span class=buttons></span>
+            $content .= strtr(
+                '<li id="{id}" class="{classes}" data-index="{idx}">
+                    <figure>
+                        <span class=thumbnail>{thumb}</span>
+                        <figcaption class=name>
+                            <span class=name>{name}</span>
+                            <span class=tags>{tags}</span>
+                            <span class=buttons></span>
+                        </figcaption>
+                    </figure>
                 </li>',
-                'list-item-' . $id,
-                join(' ', $classes),
-                $idx,
-                $thumb,
-                $name,
-            );
+                array(
+                '{id}' => $id,
+                '{idx}' => $idx,
+                '{thumb}' => $thumb,
+                '{name}' => $file->name,
+                '{tags}' => empty($tags) ? '' : '<span class=tag>' . join('</span> <span class=tag>', $tags) . '</span>',
+                '{classes}' => join(' ', $classes),
+            ));
+            // $content .= sprintf( 
+            //     '<li id="%s" class="%s" data-index="%s">
+            //         <span class=thumbnail>%s</span>
+            //         <span class=name>%s</span>
+            //         <span class=buttons></span>
+            //         <span class=tags></span>
+            //     </li>',
+            //     'list-item-' . $id,
+            //     join(' ', $classes),
+            //     $idx,
+            //     $thumb,
+            //     $file->name,
+            //     join(', ', $tags),
+            // );
 
         }
         $content .= '</ul>';
@@ -411,12 +506,12 @@ class Wrap_Folder {
             $playlist_script = "<script>setupPlayer(" . json_encode($playlist) . ");</script>";
 
             // error_log($playlist_script);
-            $waverform = '  <div id="waveform">
-                <div id="time">0:00</div>
-                <div id="duration">0:00</div>
-                <div id="hover"></div>
-            </div>';
-            $player = '<dialog id="player-modal"><div id=player><video id="player" class="video-js vjs-default-skin" controls preload="auto" data-setup="{}"></video>' . $waveform . '</div></dialog>';
+            // $waverform = '  <div id="waveform">
+            //     <div id="time">0:00</div>
+            //     <div id="duration">0:00</div>
+            //     <div id="hover"></div>
+            // </div>';
+            $player = '<dialog id="player-modal"><div id=player><video id="player" class="video-js vjs-default-skin" controls preload="auto" data-setup="{}"></video></div></dialog>';
             $content .= $player . $playlist_script;
         }
 
@@ -556,6 +651,10 @@ class Wrap_Folder {
 }
 
 class Wrap_File {
+    public $filename;
+    public $name;
+    public $tags = [];
+    
     public function __construct($requested_url) {
         $this->path = WRAP_DATA . urldecode($requested_url);
         $this->path_url = $requested_url;
