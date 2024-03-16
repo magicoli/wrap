@@ -7,7 +7,7 @@ class item {
 		$arg=func_get_args();
 		if(is_array($arg[0]))
 		{
-			while(list($key, $value)=each($arg[0]))
+			foreach ($arg[0] as $key => $value)
 			{
 				$this->$key=$value;
 			}
@@ -50,7 +50,7 @@ class item {
 	function buildTagsView()
 	{
 		$array=get_object_vars($this);
-		while(list($key, $value)=each($array))
+		foreach ($array as $key => $value)
 		{
 			$result.="$key: $value<br>";
 		}
@@ -64,7 +64,7 @@ class item {
 			"description" => $this->longdesc,
 			"author" => $this->author
 		);
-		while(list($key, $value)=each($info))
+		foreach ($info as $key => $value)
 		{
 			if($value)
 			{

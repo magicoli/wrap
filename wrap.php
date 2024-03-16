@@ -507,20 +507,20 @@ add_css(BASE_URI . "/themes/$theme/print.css");
 
 add_js(BASE_URI . "/lib/wrap/js/wrap.js");
 add_js(BASE_URI . "/js/wrap.js");
+error_log("Here I am, Jack! " . __LINE__);
 
 if(is_array($path))
 {
 	$prefsfolders=array($scriptroot, DOCUMENT_ROOT . "/lib");
 	$prefsfolder=DOCUMENT_ROOT;
 	if($includeparentstyle) {
-		while(list($key, $value)=each($path))
-		{
+		foreach($path as $key => $value) {
 			$prefsfolder .= "/$value";
 			$prefsfolders[]=$prefsfolder;
 		}
 	}
 
-	while(list($key, $value)=each($prefsfolders))
+	foreach ($prefsfolders as $key => $value)
 	{
 		if(is_file("$value/_section.conf.plist")) {
 			$plist = new CFPropertyList("$value/_section.conf.plist");
@@ -552,7 +552,7 @@ if(is_array($path))
 
 	reset($path);
 
-	while(list($key, $value)=each($path))
+	foreach ($path as $key => $value)
 	{
 		$prefsfolder .= "/$value";
 		$currenturl.=urldecode("/$value");
@@ -581,6 +581,7 @@ else
 	$pagetitle="blob";
 	$page['title']="blob";
 }
+error_log("Here I am, Jack! " . __LINE__);
 
 #$pagetitle=generateFolderName($directory);
 $pagetitle=$pagesettings[$directory]['pagetitle'];
@@ -872,7 +873,7 @@ $pathparams=$pagesettings[$directory];
 
 if(is_array($pathparams['customfolders']))
 {
-	while (list($key, $value)=each($pathparams['customfolders']))
+	foreach ($pathparams['customfolders'] as $key => $value)
 	{
 		$thisurl=preg_replace("#^/#", "", "$parentdir/$key");
 		$thisurl=cleanpath($thisurl);
@@ -1009,7 +1010,7 @@ if ($navigation)
 		}
 		if(is_array($parent['customfolders']))
 		{
-			while (list($key, $value)=each($parent['customfolders']))
+			foreach ($parent['customfolders'] as $key => $value)
 			{
 				$thisurl=preg_replace("#^/#", "", "$parentdir/$key");
 				$thisurl=cleanpath($thisurl);
@@ -1042,7 +1043,7 @@ if ($navigation)
 		$flip=array_flip($unsorteddir);
 		natcasesort($flip);
 		$unsorteddir=array_flip($flip);
-		while(list($sister, $name)=each($unsorteddir))
+		foreach ($unsorteddir as $sister => $name)
 		{
 			$sister=preg_replace('#^/*#', '', $sister);
 			// getPageSettings($sister);
@@ -1062,7 +1063,7 @@ if ($navigation)
 		}
 		//		natcasesort($subdirs);
 
-		while(list($sister, $name)=each($sisterdirs))
+		foreach ($sisterdirs as $sister => $name)
 		{
 			$sisterclean=cleanpath("/$sister/");
 			// $sisterclean=preg_replace('#^[/]*#', '/', $sisterclean);
@@ -1193,7 +1194,7 @@ if ($d)
 			$fileArray=fileToSimpleArray(DOCUMENT_ROOT . "/$directory/$entry");
 			if (is_array($fileArray))
 			{
-				while(list($thisurl, $site)=each($fileArray))
+				foreach ($fileArray as $thisurl => $site)
 				{
 					#				echo "found $thisurl: $site<br>";
 					if (! "$site" || trim($site) == "") {
@@ -1289,7 +1290,7 @@ if ($d)
 			if(is_array($ignore))
 			{
 				reset($ignore);
-				while(list($key, $pattern)=each($ignore))
+				foreach ($ignore as $key => $pattern)
 				{
 					if(preg_match("#^$pattern$#", $entry))
 					{
@@ -1313,7 +1314,7 @@ if ($d)
 
 	if(is_array($customnames))
 	{
-		while(list($checkfile, $name)=each($customnames))
+		foreach ($customnames as $checkfile => $name)
 		{
 			unset($file);
 			unset($subdir);
@@ -1415,7 +1416,7 @@ if ($d)
 		$sorteddir=array_flip($flip);
 		$subdirs=$customdirs;
 		reset($sorteddir);
-		while(list($key, $value)=each($sorteddir)) {
+		foreach ($sorteddir as $key => $value) {
 			$indexkey=preg_replace("#^/|/$#", "", cleanpath("$directory/$key"));
 			if($pagesettings[$indexkey]['menutitle']) {
 				$subdirs[$key]=$pagesettings[$indexkey]['menutitle'];
@@ -1425,7 +1426,7 @@ if ($d)
 		}
 
 		//		natcasesort($subdirs);
-		while(list($dir, $name)=each($subdirs))
+		foreach ($subdirs as $dir => $name)
 		{
 			if($handleastitle["$dir"])
 			{
@@ -1460,7 +1461,7 @@ if ($d)
 	if(is_array($items))
 	{
 		natsort($items);
-		while(list($key, $file)=each($items))
+		foreach ($items as $key => $file)
 		{
 			$extension=strtolower(preg_replace('#^.*\.#', '', $file));
 			$filetype=preg_replace("#/.*#", "", $mimetypes[$extension]);
@@ -1724,7 +1725,7 @@ if($menumain && $mainmenu) {
 if (is_array($names))
 {
 	reset($names);
-	while(list($file, $name)=each($names))
+	foreach ($names as $file => $name)
 	{
 		$extension=strtolower(preg_replace('#^.*\.#', '', $file));
 		$filetype=preg_replace("#/.*#", "", $mimetypes[$extension]);
@@ -1791,7 +1792,7 @@ if (is_array($names))
 			if(is_array($allowedvariants[$filetype]))
 			{
 				reset($allowedvariants[$filetype]);
-				while(list($key, $type)=each($allowedvariants[$filetype]))
+				foreach ($allowedvariants[$filetype] as $key => $type)
 				{
 					if ($foundvariants[$type] && $foundvariants[$type] != "$file")
 					{
@@ -1812,12 +1813,12 @@ if (is_array($names))
 if(is_array($downloadFiles))
 {
 	reset($downloadFiles);
-	while(list($file, $movie)=each($downloadFiles)) {
+	foreach ($downloadFiles as $file => $movie) {
 		$extension=strtolower(preg_replace('#^.*\.#', '', $file));
 		$filetype=preg_replace("#/.*#", "", $mimetypes[$extension]);
 		if(is_array($allowedvariants[$filetype])) {
 			reset($allowedvariants[$filetype]);
-			while(list($key, $type)=each($allowedvariants[$filetype]))
+			foreach ($allowedvariants[$filetype] as $key => $type)
 			{
 				if($movie[$type]["file"]) {
 					$duplicate=urldecode(preg_replace("#^/#", "", $movie[$type]["file"]));
@@ -1910,7 +1911,7 @@ if($foundsomethingtoplay &! $downloadOnly )
 				{
 					$i = -1;
 				}
-				while (list($file, $name)=each($list))
+				foreach ($list as $file => $name)
 				{
 					$i++;
 					// $thisurlfile=preg_replace("#'#", urlencode("'"), $file);
@@ -1965,7 +1966,7 @@ if($foundsomethingtoplay &! $downloadOnly )
 				{
 					$i = -1;
 				}
-				while (list($file, $name)=each($list))
+				foreach ($list as $file => $name)
 				{
 					$i++;
 					// $thisurlfile=preg_replace("#'#", urlencode("'"), $file);
@@ -2005,7 +2006,7 @@ $section="untitled";
 if(is_array($names))
 {
 	reset($names);
-	while (list($file, $name)=each($names))
+	foreach ($names as $file => $name)
 	{
 		$onMouseOver='';
 		$onMouseOut='';
@@ -2145,7 +2146,7 @@ if(is_array($names))
 			$buttonlinks = "
 				<div class='links'>";
 			reset($downloadFiles[$file]);
-			while(list($downloadtype, $download)=each($downloadFiles[$file]))
+			foreach ($downloadFiles[$file] as $downloadtype => $download)
 			{
 				$buttonlinks .= "
 					<a class='link' href='${download['link']}'>${downloadtype}</a>";
@@ -3089,7 +3090,7 @@ if(($sitekeywords || $pagekeywords)) {
 	$flattext=preg_replace("#[-_]#", " ", $flattext);
 	$flattext=preg_replace("#  *#", " ", $flattext);
 	$flattext=utf8_encode(strtolower(utf8_decode($flattext)));
-	while(list($key, $expression)=each($keywords)) {
+	foreach ($keywords as $key => $expression) {
 		$words=preg_split("#\|#", $expression);
 		$keyword=$words[0];
 		foreach ($words as $word){

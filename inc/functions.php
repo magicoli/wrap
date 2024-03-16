@@ -137,7 +137,7 @@ function parseFBEevents ($args) {
 					<div class='channeldescription'>
 					</div>
 					<div class='items'>";
-		while (list($id, $event)=each($events)) {
+		foreach ($events as $id => $event) {
 			$string.="$îd
 						<p class=item>
 							<div class=\"itemtitle\">
@@ -259,7 +259,7 @@ function parseItunes ($args) {
 					<div class='channeldescription'>
 					</div>
 					<div class='items'>";
-		while (list($id, $event)=each($events)) {
+		foreach ($events as $id => $event) {
 			$string.="$îd
 						<p class=item>
 							<div class=\"itemtitle\">
@@ -330,7 +330,7 @@ function parseWeather ($args) {
 	# yahoo						80897		615702
 	# weather.com				GPXX7711:1	FRXX0076:1
 	# World Weather Online		880019		803267
-	while (list($key, $WOEID) = each($args)) {
+	foreach ($args as $key => $WOEID) {
 		$result=parseRDFtoVar("http://weather.yahooapis.com/forecastrss?w=80897&u=c");
 		if ($result)
 		{
@@ -456,7 +456,7 @@ function is_playable($file)
 		return true;
 	}
 	reset($playable);
-	while(list($key, $extention)=each($playable))
+	foreach ($playable as $key => $extention)
 	{
 		if(preg_match("#$extention$#", $file))
 		{
@@ -474,7 +474,7 @@ function is_downloadable($file)
 		return false;
 	}
 	reset($downloadable);
-	while(list($key, $extention)=each($downloadable))
+	foreach ($downloadable as $key => $extention)
 	{
 		if(preg_match("#$extention$#", $file))
 		{
@@ -535,7 +535,7 @@ function processtags($type, $data)
 	if(is_array($type))
 	{
 		$html=$data;
-		while(list($key, $value)=each($type))
+		foreach ($type as $key => $value)
 		{
 			if(!is_string($value)) continue;
 			$html=preg_replace("#\[$key\]#", $value, $html);
@@ -810,7 +810,7 @@ function matchesIgnorePattern($entry)
 	if(is_array($ignore))
 	{
 		reset($ignore);
-		while(list($key, $pattern)=each($ignore))
+		foreach ($ignore as $key => $pattern)
 		{
 			if(preg_match("#^$pattern$#", $entry))
 			{
@@ -826,7 +826,7 @@ function matchesPattern($entry, $patterns)
 	if(!empty($entry) && is_array($patterns))
 	{
 		reset($patterns);
-		while(list($key, $pattern)=each($patterns))
+		foreach ($patterns as $key => $pattern)
 		{
 			if(preg_match("#^$pattern$#", $entry))
 			{
@@ -909,7 +909,7 @@ function parseAtom($file)
 	if($execReturn ==0)
 	{
 		//	echo "$execReturn: /usr/local/bin/AtomicParsley '$file' -t<br>";
-		while(list($key, $line)=each($output))
+		foreach ($output as $key => $line)
 		{
 			if(preg_match("#Atom.*contains:#", $line))
 			{
@@ -938,7 +938,7 @@ function parseAtom($file)
 	if($execReturn ==0)
 	{
 		//	echo "$execReturn: /usr/local/bin/AtomicParsley '$file' -t<br>";
-		while(list($key, $line)=each($output))
+		foreach ($output as $key => $line)
 		{
 			//		$lineparts=preg_split('#:#', $outputlines);
 			$split=preg_split('#:#', trim($line));
@@ -955,7 +955,7 @@ function firstValidValue()
 	$values=func_get_args();
 	if(is_array($values))
 	{
-		while(list($key, $value)=each($values))
+		foreach ($values as $key => $value)
 		{
 			if($value && $value!="")
 			{
