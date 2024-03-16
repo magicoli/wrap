@@ -25,28 +25,40 @@ It is poorly documented, but it works now with PHP7 (and probably 8).
 
 ## Installation
 
-* VERY IMPORTANT: **Put this project outside your web directory**. It contains
+1. VERY IMPORTANT: **Install this project outside your web directory**, as it contains
   unprotected scripts and tools aimed to alter your disk content
-* bin/ tools are not needed for web publishing. They are used to manipulate
-  video files. If you only need to publish ready to use files, you can safely
-  (and should) remove bin/ folder
-* In your apache config, add alias, rules and wrap.php as DirectoryIndex:
-  ```
-  Alias /wrap/ /opt/wrap/
-  DirectoryIndex index.php index.html /wrap/wrap.php
+    ```bash
+    git clone https://github.com/magicoli/wrap wrap5 --branch 5.x
+    sudo mv wrap5 /opt/
+    cd /opt/wrap5/
+    composer update # see below for php < 8.2
+    npm update
+    cp .htaccess wrap-loader.php /var/www/html/ # or where your web root is
+    ```
+2. make a "data" directory alongside your document root. E.g. if your document root is /var/www/html, create /var/www/data
+    ```bash
+    mkdir /var/www/data
+    ```
 
-  <Directory /opt/wrap/>
-    <IfVersion < 2.3>
-      Order allow,deny
-      Allow from all
-    </IfVersion>
-    <IfVersion >= 2.3>
-    Require all granted
-    </IfVersion>
-    AllowOverride All
-  </Directory>
-  ```
-* you can place wrap.css and wrap.html in your web root folder to customize layout
-* use themes/bootstrap/page-template.html as base for wrap.html and be sure to
-  include all needed shortcodes
-* More on this later...
+### If Apache2 open_basedir is set
+
+Add wrap folder, data folder, as well as ffmpeg and ffprobe binaries to base dir like this (adjust to your setup):
+```
+  php_admin_value open_basedir "/opt/wrap5:/usr/bin/ffmpeg:/usr/bin/ffprobe:/var/www/data:<<whatever config you already have>>"
+```
+
+### Note for PHP < 8.2
+
+Project is compatible with PHP version 7.4 and later. However, it was built with PHP 8.2. 
+
+No worry! If you encounter the error:
+```
+Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.2.0".
+```
+
+run from within your wrap directory: 
+```bash
+composer config platform.php 7.4 # or whatever version configured in Apache
+composer update
+git checkout -- composer.json # revert to allow future git updates
+```

@@ -1,5 +1,16 @@
 {
+    "name": "magicoli/wrap5",
+    "description": "W.R.A.P. by Magiiic",
+    "type": "library",
+    "license": "AGPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Olivier van Helden",
+            "email": "olivier@van-helden.net"
+        }
+    ],
     "require": {
+        "php": ">=7.4",
         "php-ffmpeg/php-ffmpeg": "^0.19.0",
         "ralouphie/mimey": "^1.0"
     }
