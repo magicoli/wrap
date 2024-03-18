@@ -78,7 +78,7 @@ function smartReadFile($location, $filename, $mimeType='application/force-downlo
 }
 
 
-$f=$_REQUEST[f];
+$f=$_REQUEST['f'];
 $DOCUMENT_ROOT=getenv('DOCUMENT_ROOT');
 $HTTP_HOST=getenv('HTTP_HOST');
 $fullpath=$DOCUMENT_ROOT . "$f";
