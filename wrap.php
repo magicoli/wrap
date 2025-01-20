@@ -507,7 +507,6 @@ add_css(BASE_URI . "/themes/$theme/print.css");
 
 add_js(BASE_URI . "/lib/wrap/js/wrap.js");
 add_js(BASE_URI . "/js/wrap.js");
-error_log("Here I am, Jack! " . __LINE__);
 
 if(is_array($path))
 {
@@ -581,7 +580,6 @@ else
 	$pagetitle="blob";
 	$page['title']="blob";
 }
-error_log("Here I am, Jack! " . __LINE__);
 
 #$pagetitle=generateFolderName($directory);
 $pagetitle=$pagesettings[$directory]['pagetitle'];
@@ -1319,17 +1317,40 @@ if ($d)
 			unset($file);
 			unset($subdir);
 
-			if(preg_match('#(^title|^\[.*\]$|^s:)#', $checkfile))
+			if(preg_match('/^#/', $checkfile))
+			{
+				$section=preg_replace('/^#/', "", "$checkfile");
+				// error_log("section $section");
+				// if(empty($checkfile)) {
+				// 	$checkfile="section" . count($sections);
+				// }
+				// $names[$checkfile]=$name;
+				$names[$checkfile]=$name;
+				if( is_array( $index ) ) {
+					$if=count($index);
+					$indexsections[$if]=$section;
+					$index[]="FALSE"; //$file;
+				}
+// 				$if=count($index);
+// //				debug("section $if: $section");
+// 				$indexsections[$if]=$section;
+				// $index[]="FALSE"; //$file;
+			} else if(preg_match('#(^title|^\[.*\]$|^s:)#', $checkfile))
 			{
 				$section=preg_replace("#\[(.*)\]#", "\\1", "$checkfile");
 				if(empty($checkfile)) {
 					$checkfile="section" . count($sections);
 				}
 				$names[$checkfile]=$name;
-				$if=count($index);
-//				debug("section $if: $section");
-				$indexsections[$if]=$section;
-				$index[]="FALSE"; //$file;
+				if( is_array( $index ) ) {
+					$if=count($index);
+					$indexsections[$if]=$section;
+					$index[]="FALSE"; //$file;
+				}
+// 				$if=count($index);
+// //				debug("section $if: $section");
+// 				$indexsections[$if]=$section;
+// 				$index[]="FALSE"; //$file;
 			} else {
 				$extension=strtolower(preg_replace('#^.*\.#', '', $checkfile));
 				$filetype=preg_replace("#/.*#", "", $mimetypes[$extension]);
@@ -2003,6 +2024,7 @@ $title="notitle";
 ( $names ) and $namescount=count($names);
 $sections=array();
 $section="untitled";
+
 if(is_array($names))
 {
 	reset($names);
@@ -2332,8 +2354,25 @@ if(is_array($names))
 			$fileurl=urlsafe("$file");
 		}
 
-		if(preg_match('#^(title|^\[.*\]$)#', $file))
+		if(preg_match( '/#/', $file) ) {
+			// New method, with hashes
+			if(!empty($sections[$section])) {
+				$sections[$section] .= "
+						</div>
+					</div>
+				</section>";
+			}
+			$section_id=preg_replace('/#/', '', "$file");
+			$sections[$section] .= "
+				<section>
+			 		<div class=section id='$section_id'>
+						<h2 class=playlisttitle>$name</h2>
+						<div class=playlist>";
+			$j = -1;
+		} else 
+		if(preg_match( '#^(#|title|^\[.*\]$)#', $file) )
 		{
+			// Old method, with "title|" prefix
 			if(!empty($sections[$section])) {
 				$sections[$section] .= "
 						</div>
