@@ -8,7 +8,7 @@
 
 define('WRAP_VERSION', '3.1.1');
 
- // We don't want to be called directly
+// We don't want to be called directly
 if (getenv('REQUEST_URI') == getenv('SCRIPT_NAME')) die; // called directly
 if ( preg_match(":^" . dirname(getenv('SCRIPT_NAME')) . "/:", getenv('REQUEST_URI'))) die; // called from inside wrap directory
 
@@ -1312,6 +1312,8 @@ if ($d)
 
 	if(is_array($customnames))
 	{
+		array_walk($customnames, "unescape");
+
 		foreach ($customnames as $checkfile => $name)
 		{
 			unset($file);
@@ -1319,6 +1321,8 @@ if ($d)
 
 			if(preg_match('/^#/', $checkfile))
 			{
+				// TODO: also handle entries without key
+
 				$section=preg_replace('/^#/', "", "$checkfile");
 				// error_log("section $section");
 				// if(empty($checkfile)) {
@@ -1426,6 +1430,9 @@ if ($d)
 		reset($customnames);
 	}
 
+	## Apply htmlsafe to $names with array_map
+	// $names=array_map("htmlsafe", $names);
+	// array_walk($names, "unescape");
 
 	########
 	## Process subdirectories

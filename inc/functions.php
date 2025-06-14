@@ -508,7 +508,19 @@ function quotesafe($string)
 function htmlsafe($string)
 {
 	// return htmlentities(utf8_decode($string));
-	$string=preg_replace("#&#", "&amp;", $string);
+	$string = preg_replace("#&#", "&amp;", $string);
+	// Escape single quotes only if not already escaped
+	$string = preg_replace("/(?<!\\\\)'/", "\\'", $string);
+	return $string;
+}
+
+function unescape($string) {
+	$string = preg_replace("#\\\\'#", "'", $string);
+	$string = preg_replace("#\\\\\"#", "\"", $string);
+	$string = preg_replace("#\\\\\\\\#", "\\", $string);
+	$string = htmlspecialchars(urldecode($string));
+	$string = html_entity_decode(preg_replace("/%u([0-9a-f]{3,4})/i", "&#x\\1;", urldecode($string)), null, 'UTF-8');
+
 	return $string;
 }
 
