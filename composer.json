@@ -1,0 +1,27 @@
+{
+    "name": "magicoli/wrap5",
+    "description": "W.R.A.P. by Magiiic",
+    "type": "library",
+    "license": "AGPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Olivier van Helden",
+            "email": "olivier@van-helden.net"
+        }
+    ],
+    "scripts": {
+        "post-install-cmd": "[ $COMPOSER_DEV_MODE -eq 0 ] || vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility",
+        "post-update-cmd" : "[ $COMPOSER_DEV_MODE -eq 0 ] || vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility",
+        "bump-version": "vendor/magicoli/php-bump-library/vendor/bin/robo --load-from=vendor/magicoli/php-bump-library/RoboFile.php bump:version"
+    },
+    "require": {
+        "php": ">=7.4",
+        "php-ffmpeg/php-ffmpeg": "^0.19.0",
+        "ralouphie/mimey": "^1.0",
+        "blueimp/jquery-file-upload": "^10.32"
+    },
+    "require-dev": {
+        "magicoli/php-bump-library": "^1.0",
+        "phpcompatibility/php-compatibility": "^9.3"
+    }
+}

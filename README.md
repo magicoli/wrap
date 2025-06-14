@@ -1,14 +1,14 @@
 # Web Reel Automated Publishing: it's a W.R.A.P.
 
-* Version:         3.0.3
-* Project URI:     https://wrap.rocks/
-* GitLab URI:      https://git.magiiic.com/magicoli/wrap
-* Donate link:     https://paypal.me/magicoli
-* Author:          Magiiic
-* Author URI:      https://magiiic.com/
-* Text Domain:     wrap
-* Domain Path:     /languages
-* License:         GNU Affero GPL v3.0 (AGPLv3)
+![Version 5.5.O-dev](https://badgen.net/badge/Version/5.5.O-dev/blue)
+![Stable 3.1.1](https://badgen.net/badge/Stable/3.1.1/green)
+![Requires PHP 7.4](https://badgen.net/badge/PHP/5.7/7884bf)
+![License AGPLv3](https://badgen.net/badge/License/AGPLv3/552b55)
+
+WARNING: This is a development branch, use latest stable version from 
+https://github.com/magicoli/wrap/
+
+## Description
 
 Wrap is a basic CMS, aimed to display mostly galleries of images or videos.
 The idea is to allow the website maintainer to push media in subfolders.
