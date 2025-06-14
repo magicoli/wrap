@@ -1,0 +1,77 @@
+#!/usr/bin/python3
+
+import os
+import cv2
+import numpy as np
+import shutil
+
+def detect_white_area(image):
+    # Convert image to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Apply thresholding to segment the white area
+    _, thresh = cv2.threshold(gray, 220, 255, cv2.THRESH_BINARY)
+
+    # Find contours in the thresholded image
+    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Filter contours based on area and rectangular shape
+    min_contour_area = 5000  # Minimum contour area to consider
+    min_contour_aspect_ratio = 0.5  # Minimum aspect ratio of a rectangular contour
+    white_areas = []
+    for contour in contours:
+        area = cv2.contourArea(contour)
+        x, y, w, h = cv2.boundingRect(contour)
+        aspect_ratio = w / float(h)
+        if area > min_contour_area and aspect_ratio > min_contour_aspect_ratio:
+            white_areas.append((x, y, w, h))
+
+    return white_areas
+
+def main():
+    # Create 'cartons' directory if it doesn't exist
+    output_directory = "cartons"
+    os.makedirs(output_directory, exist_ok=True)
+
+    # Get the list of image files in the current directory
+    current_directory = os.getcwd()
+    image_files = [filename for filename in os.listdir(current_directory) if filename.endswith(".jpg")]
+
+    # Process each image
+    for image_file in image_files:
+        # Load the image
+        image_path = os.path.join(current_directory, image_file)
+        image = cv2.imread(image_path)
+
+        # Detect white areas in the image
+        white_areas = detect_white_area(image)
+
+        # Check if significant white areas are found
+        if len(white_areas) > 0:
+            # Print the image file name and the number of white areas found
+            print(f"Image: {image_file}, White Areas: {len(white_areas)}")
+
+            # Crop and save the white sheet portion
+            for i, white_area in enumerate(white_areas):
+                x, y, w, h = white_area
+
+                # Adjust the cropping rectangle to cover the entire white sheet
+                padding = 10  # Additional padding to ensure complete coverage
+                x -= padding
+                y -= padding
+                w += 2 * padding
+                h += 2 * padding
+
+                # Ensure the coordinates are within image boundaries
+                x = max(0, x)
+                y = max(0, y)
+                w = min(w, image.shape[1] - x)
+                h = min(h, image.shape[0] - y)
+
+                sheet = image[y:y+h, x:x+w]
+                output_filename = f"{os.path.splitext(image_file)[0]}_{i}.jpg"
+                output_path = os.path.join(current_directory, output_directory, output_filename)
+                cv2.imwrite(output_path, sheet)
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Requires OpenCV libraries
+# sudo apt install libopencv-dev python3-opencv
+
+
+# Path to input video file
+input="$1"
+ls "$input" >/dev/null || exit $?
+
+# Path to output image file
+if [ "$2" ]
+then
+  output="$2"
+else
+  output=echo "$input" | sed "s/\.[a-z0-9]$//"
+fi
+
+# Run FFmpeg with the select filter to extract frames with faces
+# ffmpeg -i "$input" -vf "select='eq(pict_type,PICT_TYPE_I),detect=face' " -vsync 0 -f image2 "temp%d.jpg"
+ffmpeg -i "$input" -vf "select=eq(pict_type,PICT_TYPE_I),detect=face" -vsync 0 -f image2 "temp%d.jpg"
+exit
+# Loop through the extracted frames and find the "best" face image
+BEST_IMAGE=""
+BEST_SCORE=0
+for FILENAME in temp*.jpg; do
+  printf "."
+    # Run a face detection algorithm to calculate a score for the frame
+    SCORE=$(smile.py "$FILENAME")
+
+    # If the score is higher than the current best score, update the best image
+    if [ "$SCORE" -gt "$BEST_SCORE" ]; then
+        BEST_SCORE=$SCORE
+        BEST_IMAGE="$FILENAME"
+    fi
+done
+
+# Copy the best image to the output location
+cp "$BEST_IMAGE" "$output"
+
+# Clean up temporary files
+rm temp*.jpg
