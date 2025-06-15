@@ -405,7 +405,7 @@ $foldername=basename($directory);
 
 $facebookapi=true;
 
-if(!is_file(__DIR__ . "facebook-php-sdk/facebook.php")) {
+if(!is_file(__DIR__ . "/facebook-php-sdk/facebook.php")) {
 	$facebookapi=false;
 }
 if (!function_exists('curl_init')) {
@@ -482,29 +482,29 @@ $path=preg_split('#/#', preg_replace('#/$#', '', $uri));
 
 // if(is_file(__DIR__ . "css/browser.css")) {
 // 	$combinedcss.="
-// 		<link href='" . BASE_URL . "/css/browser.css' rel='stylesheet' media='all'>";
+// 		<link href='" . BASE_URL . "legacy/css/browser.css' rel='stylesheet' media='all'>";
 // 	$inpagecss.=file_get_contents(__DIR__ . "css/browser.css");
 // }
 // if(is_file(__DIR__ . "/lib/browser.css")) {
 // 	$combinedcss.="
-// 		<link href='" . BASE_URL . "/css/browser.css' rel='stylesheet' media='all'>";
+// 		<link href='" . BASE_URL . "legacy/css/browser.css' rel='stylesheet' media='all'>";
 // 	$inpagecss.=file_get_contents(__DIR__ . "/css/browser.css");
 // }
 
 // if(is_file(__DIR__ . "css/$scriptname.css")) {
 // 	$combinedcss.="
-// 		<link href='" . BASE_URL . "/css/$scriptname.css' rel='stylesheet' media='all'>";
+// 		<link href='" . BASE_URL . "legacy/css/$scriptname.css' rel='stylesheet' media='all'>";
 // 	$inpagecss.=file_get_contents(__DIR__ . "css/$scriptname.css");
 // }
 //
-add_css(BASE_URI . "/css/wrap.css");
-add_css(BASE_URI . "/themes/$theme/wrap.css");
+add_css(BASE_URI . "/legacy/css/wrap.css");
+add_css(BASE_URI . "/legacy/themes/$theme/wrap.css");
 
-add_css(BASE_URI . "/css/print.css");
-add_css(BASE_URI . "/themes/$theme/print.css");
+add_css(BASE_URI . "/legacy/css/print.css");
+add_css(BASE_URI . "/legacy/themes/$theme/print.css");
 
-add_js(BASE_URI . "/lib/wrap/js/wrap.js");
-add_js(BASE_URI . "/js/wrap.js");
+add_js(BASE_URI . "/legacy/lib/wrap/js/wrap.js");
+add_js(BASE_URI . "/legacy/js/wrap.js");
 
 if(is_array($path))
 {
@@ -669,9 +669,9 @@ if(is_array($wrap_rights)) {
 }
 
 ## Facebook authentication
-require_once("modules/fbauth/fbauth.php");
-require_once("modules/videosub.php");
-// require_once("modules/video-js/video-js.php");
+require_once("legacy/modules/fbauth/fbauth.php");
+require_once("legacy/modules/videosub.php");
+// require_once("legacy/modules/video-js/video-js.php");
 
 unset($_SESSION['debug']);
 
@@ -1632,9 +1632,9 @@ if($includeparentstyle) {
 }
 
 $checktemplate[]=preg_replace("#\.php$#", ".html", $scriptfilename);
-$checktemplate[]="themes/$theme/page-template.html";
-$checktemplate[]="themes/classic/page-template.html";
-$checktemplate[]="themes/minimal/page-template.html";
+$checktemplate[]="legacy/themes/$theme/page-template.html";
+$checktemplate[]="legacy/themes/classic/page-template.html";
+$checktemplate[]="legacy/themes/minimal/page-template.html";
 $checktemplate[]="wrap.html";
 
 $pagetemplate=firstValidFile($checktemplate);
@@ -1814,7 +1814,7 @@ if (is_array($names))
 		if($downloadAllowed == true)
 		{
 			$downloadFiles[$file][$extension]["file"]="$filesafe";
-			$downloadFiles[$file][$extension]["link"] = BASE_URL . "/download.php?f=" . $downloadFiles[$file][$extension]["file"];
+			$downloadFiles[$file][$extension]["link"] = BASE_URL . "legacy/download.php?f=" . $downloadFiles[$file][$extension]["file"];
 			if(is_array($allowedvariants[$filetype]))
 			{
 				reset($allowedvariants[$filetype]);
@@ -1823,7 +1823,7 @@ if (is_array($names))
 					if ($foundvariants[$type] && $foundvariants[$type] != "$file")
 					{
 						$downloadFiles[$file][$type]['file']="/" . urlsafe($foundvariants[$type]);
-						$downloadFiles[$file][$type]['link'] = BASE_URL . "/download.php?f=" . $downloadFiles[$file][$type]['file'];
+						$downloadFiles[$file][$type]['link'] = BASE_URL . "legacy/download.php?f=" . $downloadFiles[$file][$type]['file'];
 					}
 				}
 			}
@@ -2186,7 +2186,7 @@ if(is_array($names))
 			$downloadfile="$filesafe";
 			$buttonlinks =  "
 				<div class='links'>
-				<a class='link' href='" . BASE_URL . "download.php?f=$downloadfile'>$extension</a>
+				<a class='link' href='" . BASE_URL . "legacy/download.php?f=$downloadfile'>$extension</a>
 				</div>
 				";
 		}
@@ -2407,7 +2407,7 @@ if(is_array($names))
 			{
 				//				$img=preg_replace("#\.pdf\$#", ".jpg", $file);
 				$downloads .= "
-						<a class=itemlink href='" . BASE_URL . "download.php?f=$filesafe'>
+						<a class=itemlink href='" . BASE_URL . "legacy/download.php?f=$filesafe'>
 							<div class=download>
 								<div class=thumbframe>
 									$thumbcode
@@ -2450,12 +2450,12 @@ if(is_array($names))
 			{
 				//				$img=preg_replace("#\.wav\$#", ".jpg", $file);
 				$item .= "
-						<a href='" . BASE_URL . "download.php?f=$filesafe'>
+						<a href='" . BASE_URL . "legacy/download.php?f=$filesafe'>
 							$thumbcode
 							<div class='name'>$name</div>
 						</a>
 						<div class='short'>" . htmlsafe($short) . "</div>
-						<a href='" . BASE_URL . "download.php?f=$filesafe'>
+						<a href='" . BASE_URL . "legacy/download.php?f=$filesafe'>
 							<div class='links'>download</div>
 						</a>";
 			}

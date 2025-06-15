@@ -5,10 +5,10 @@
 Move all current code to legacy/ (FIRST TASK). At the end of this task,
 the application must remain fully functional, with all legacy features.
 
-  - [ ] Move legacy-wrap.php, bin/, contrib/, css/, doc/, download.php, images/, inc/, js/, modules/, themes/ to `legacy/` folder
-  - [ ] Keep exact same file structure in legacy/ (no reorganization, no renaming)
-  - [ ] Update main entry point `wrap.php` to include legacy code from new location
-  - [ ] Update only minimal necessary file paths in legacy code
+  - [x] Move legacy-wrap.php, bin/, contrib/, css/, doc/, download.php, images/, inc/, js/, modules/, themes/ to `legacy/` folder
+  - [x] Keep exact same file structure in legacy/ (no reorganization, no renaming)
+  - [x] Update main entry point `wrap.php` to include legacy code from new location
+  - [x] Update only minimal necessary file paths in legacy code
   - [ ] Test thoroughly: ensure all current functionality works exactly as before
 
 Create folder structure for standalone engine
