@@ -9,7 +9,7 @@ the application must remain fully functional, with all legacy features.
   - [x] Keep exact same file structure in legacy/ (no reorganization, no renaming)
   - [x] Update main entry point `wrap.php` to include legacy code from new location
   - [x] Update only minimal necessary file paths in legacy code
-  - [ ] Test thoroughly: ensure all current functionality works exactly as before
+  - [x] Test thoroughly: ensure all current functionality works exactly as before
 
 Create folder structure for standalone engine
 
@@ -245,7 +245,7 @@ Perfect for temporary project collaborations - no forced registration, delegated
   - [ ] `engine/core/file_system.php` - File system operations and utilities
   - [ ] `engine/data/directory.php` - Directory scanning and pattern matching
 - [ ] Extract processing logic from current code
-  - [ ] Create PHP alternatives for `bin/` scripts (batchsync, etc.)
+  - [ ] Create PHP replacements for `bin/` scripts (batchloop, mediawatch, makeplaylist, etc.)
   - [ ] Extract thumbnail generation logic
   - [ ] Move metadata parsing from `inc/functions.php` (parseAtom, etc.)
   - [ ] Extract file variant detection logic (stripVariantSuffix, findVariants)
