@@ -13,13 +13,13 @@ the application must remain fully functional, with all legacy features.
 
 Create folder structure for standalone engine
 
-  - [ ] `engine/` - Main engine folder (standalone, third-party ready)
-  - [ ] `engine/core/` - Core classes (application, config, container)
-  - [ ] `engine/data/` - Data models and file operations  
-  - [ ] `engine/auth/` - User management and authentication
-  - [ ] `engine/api/` - RESTful API for external integrations (WordPress plugin, etc.)
-  - [ ] `webui/` - Web interface components (separate from engine)
-  - [ ] `cli/` - Command line tools (separate from engine)
+  - [x] `engine/` - Main engine folder (standalone, third-party ready)
+  - [x] `engine/core/` - Core classes (application, config, container)
+  - [x] `engine/models/` - Data models and file operations  
+  - [x] `engine/auth/` - User management and authentication
+  - [x] `engine/api/` - RESTful API for external integrations (WordPress plugin, etc.)
+  - [x] `webui/` - Web interface components (separate from engine)
+  - [x] `cli/` - Command line tools (separate from engine)
 
 Setup autoloading with Composer
 
@@ -28,7 +28,7 @@ Setup autoloading with Composer
   - [ ] Add namespace mapping: `"Wrap\\": "engine/"`
   - [ ] Create autoloader bootstrap in `engine/autoload.php`
 
-## 3. Legacy features fixes (Deployable Individually)
+## 2. Legacy features fixes (Deployable Individually)
 
 First take care of the parts of the code that currently need fixes, optimisation
 or enhancements.
@@ -83,7 +83,7 @@ Make zip generation available on any page
   - [ ] Add progress tracking for large archives
   - [ ] Deploy independently - removes server dependency
 
-## 2. Legacy features migration (following needs)
+## 3. Legacy features migration (following needs)
 
 Eventually, all features currently provided by legacy code must be adapted
 to use the new environment. This could be made progressively, following the 
@@ -106,7 +106,7 @@ moved to the new environment at the same time.
 
 ### Enhanced Folder System (MEDIUM PRIORITY)
 Improve folder-based navigation and presentation
-  - [ ] Create `engine/data/directory.php` - Enhanced directory handling
+  - [ ] Create `engine/models/directory.php` - Enhanced directory handling
   - [ ] Add folder metadata support (descriptions, custom ordering)
   - [ ] Implement smart folder filtering (by date, type, size)
   - [ ] Add folder presentation options (grid, list, timeline views)
@@ -140,7 +140,7 @@ for manual rules files editing and synchronizing.
 ### Thumbnail Generation Reliability (HIGH PRIORITY)
 Fix unreliable thumbnail generation
   - [ ] Extract thumbnail logic from scattered locations
-  - [ ] Create `engine/data/image.php` and `engine/data/video.php` with thumbnail methods
+  - [ ] Create `engine/models/image.php` and `engine/models/video.php` with thumbnail methods
   - [ ] Implement proper error handling for missing dependencies
   - [ ] Add fallback mechanisms for different environments
   - [ ] Deploy independently - fixes thumbnail issues
@@ -148,7 +148,7 @@ Fix unreliable thumbnail generation
 ### File Variant Management (MEDIUM PRIORITY)
 Improve file variant detection and handling
   - [ ] Extract `stripVariantSuffix()`, `findVariants()` from functions.php
-  - [ ] Create `engine/data/file.php` with variant handling methods
+  - [ ] Create `engine/models/file.php` with variant handling methods
   - [ ] Implement consistent variant naming conventions
   - [ ] Add support for new variant types
   - [ ] Deploy independently - improves file organization
@@ -156,7 +156,7 @@ Improve file variant detection and handling
 ### Pattern Matching System (MEDIUM PRIORITY)
 Centralize file and directory pattern matching
   - [ ] Extract `matchesPattern()`, `matchesIgnorePattern()` from functions.php  
-  - [ ] Create `engine/data/directory.php` with pattern matching methods
+  - [ ] Create `engine/models/directory.php` with pattern matching methods
   - [ ] Add support for regex patterns and exclusions
   - [ ] Implement performance optimizations for large directories
   - [ ] Deploy independently - improves directory scanning
@@ -186,8 +186,8 @@ Perfect for temporary project collaborations - no forced registration, delegated
 - [ ] Support for one-time authentication or session-based access
 
 **Delegated User Management:**
-- [ ] `engine/data/client.php` - Client (project manager) management
-- [ ] `engine/data/project.php` - Project-specific user lists and permissions
+- [ ] `engine/models/client.php` - Client (project manager) management
+- [ ] `engine/models/project.php` - Project-specific user lists and permissions
 - [ ] `engine/api/invite.php` - User invitation API endpoints
 - [ ] Admin creates clients, clients invite users to their projects
 - [ ] Project-specific permissions: read-only, upload, favorites/selections, admin
@@ -231,19 +231,19 @@ Perfect for temporary project collaborations - no forced registration, delegated
   - [ ] `engine/core/container.php` - Simple dependency injection
   - [ ] `engine/core/router.php` - URL routing for modern features
 - [ ] Create data model classes (only when needed)
-  - [ ] `engine/data/client.php` - Client/project management
-  - [ ] `engine/data/directory.php` - Directory scanning and management
-  - [ ] `engine/data/file.php` - Generic file handling with metadata
-  - [ ] `engine/data/playlist.php` - File collections and selections
+  - [ ] `engine/models/client.php` - Client/project management
+  - [ ] `engine/models/directory.php` - Directory scanning and management
+  - [ ] `engine/models/file.php` - Generic file handling with metadata
+  - [ ] `engine/models/playlist.php` - File collections and selections
 
 ### Processing Layer (Standalone)
 
 - [ ] Media processing classes (can work without WebUI)
-  - [ ] `engine/data/media.php` - Parent class for video, images, audio etc.
-  - [ ] `engine/data/video.php` - Video processing including conversion and thumbnails
-  - [ ] `engine/data/image.php` - Image processing including thumbnails
+  - [ ] `engine/models/media.php` - Parent class for video, images, audio etc.
+  - [ ] `engine/models/video.php` - Video processing including conversion and thumbnails
+  - [ ] `engine/models/image.php` - Image processing including thumbnails
   - [ ] `engine/core/file_system.php` - File system operations and utilities
-  - [ ] `engine/data/directory.php` - Directory scanning and pattern matching
+  - [ ] `engine/models/directory.php` - Directory scanning and pattern matching
 - [ ] Extract processing logic from current code
   - [ ] Create PHP replacements for `bin/` scripts (batchloop, mediawatch, makeplaylist, etc.)
   - [ ] Extract thumbnail generation logic
@@ -367,11 +367,11 @@ Perfect for temporary project collaborations - no forced registration, delegated
 
 ### 2. Functions Refactoring (`inc/functions.php`)
 **Core Functions to Extract:**
-- [ ] `parseAtom()` → `engine/data/video.php::parseAtomData()`
-- [ ] `generateFileName()`, `generateFolderName()` → `engine/data/file.php::generateName()`
-- [ ] `matchesPattern()`, `matchesIgnorePattern()` → `engine/data/directory.php::matchesPattern()`
-- [ ] `stripVariantSuffix()`, `findVariants()` → `engine/data/file.php::handleVariants()`
-- [ ] `is_playable()`, `is_downloadable()` → `engine/data/file.php::getFileType()`
+- [ ] `parseAtom()` → `engine/models/video.php::parseAtomData()`
+- [ ] `generateFileName()`, `generateFolderName()` → `engine/models/file.php::generateName()`
+- [ ] `matchesPattern()`, `matchesIgnorePattern()` → `engine/models/directory.php::matchesPattern()`
+- [ ] `stripVariantSuffix()`, `findVariants()` → `engine/models/file.php::handleVariants()`
+- [ ] `is_playable()`, `is_downloadable()` → `engine/models/file.php::getFileType()`
 - [ ] `getPageSettings()` → `engine/core/config.php::getPageSettings()`
 - [ ] `cleanpath()`, `firstWritableFolder()` → `engine/core/file_system.php::cleanPath()`
 - [ ] `add_css()`, `add_js()` → `webui/asset_manager.php::addAsset()`
