@@ -9,6 +9,6 @@
  * @var [type]
  */
 
-define('WRAP_VERSION', '3.1.1');
+define('WRAP_VERSION', '5.5.0-dev');
 
-require_once __DIR__ . '/legacy-wrap.php';
+require_once __DIR__ . '/legacy/legacy-wrap.php';
