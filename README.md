@@ -6,7 +6,8 @@
 ![License AGPLv3](https://badgen.net/badge/License/AGPLv3/552b55)
 
 WARNING: This is a development branch, it is likely to contain bugs and should
-not be used in production environment. Use latest stable version instead:
+not be used in production environment. Use latest stable version in master 
+brtanch instead:
 https://github.com/magicoli/wrap/
 
 # About Migration
