@@ -5,8 +5,23 @@
 ![Requires PHP 7.4](https://badgen.net/badge/PHP/5.7/7884bf)
 ![License AGPLv3](https://badgen.net/badge/License/AGPLv3/552b55)
 
-WARNING: This is a development branch, use latest stable version from 
+WARNING: This is a development branch, it is likely to contain bugs and should
+not be used in production environment. Use latest stable version instead:
 https://github.com/magicoli/wrap/
+
+# About Migration
+
+This is a very old application. The git repository already dates back to 2013,
+but the project itself started in the early 2000. As such, it contains a huge
+lot of outdated code an bad practices and became very difficult to maintain.
+
+There were already several attempts to rewrite it from scratch (v4.x and 5.x), 
+but as it is used daily, it has always been difficult to achieve a state where
+new version could be installed seamlessly in old websites.
+
+Version 5.5 is a new approach: restart from the latest stable version (3.1.1)
+and implemment the new features one by one, while maintaining an absolute backwards
+compatibility.
 
 ## Description
 
