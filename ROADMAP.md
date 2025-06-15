@@ -10,7 +10,9 @@ the application must remain fully functional, with all legacy features.
   - [ ] Update main entry point `wrap.php` to include legacy code from new location
   - [ ] Update only minimal necessary file paths in legacy code
   - [ ] Test thoroughly: ensure all current functionality works exactly as before
+
 Create folder structure for standalone engine
+
   - [ ] `engine/` - Main engine folder (standalone, third-party ready)
   - [ ] `engine/core/` - Core classes (application, config, container)
   - [ ] `engine/data/` - Data models and file operations  
@@ -18,7 +20,9 @@ Create folder structure for standalone engine
   - [ ] `engine/api/` - RESTful API for external integrations (WordPress plugin, etc.)
   - [ ] `webui/` - Web interface components (separate from engine)
   - [ ] `cli/` - Command line tools (separate from engine)
+
 Setup autoloading with Composer
+
   - [ ] Create `engine/composer.json` for engine-specific dependencies
   - [ ] Update main `composer.json` with PSR-4 autoloading for `Wrap\` namespace
   - [ ] Add namespace mapping: `"Wrap\\": "engine/"`
