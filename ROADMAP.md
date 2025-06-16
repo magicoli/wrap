@@ -100,6 +100,7 @@ moved to the new environment at the same time.
   - [ ] tags and categories (currently pseudo sub directories)
   - [ ] video editing (currentaly manuel, text files and CLI scripts)
   - [ ] zip file generation for downloads (currently manual)
+  - [ ] billing and statistics
   ... (list to be completed)
 
 ## 4. New features
@@ -199,16 +200,6 @@ Perfect for temporary project collaborations - no forced registration, delegated
 3. **Favorites/Selections**: Can create and share favorite lists/selections
 4. **Admin**: Full project management rights (invite users, modify settings)
 
-**Project Notification System:**
-- [ ] `engine/notification/email_notifier.php` - Email notification system
-- [ ] Per-project email lists managed by clients
-- [ ] Automated notifications when daily sessions are complete
-- [ ] Client-configurable notification preferences:
-  - Immediate notifications on new uploads
-  - Daily digest when processing is complete
-  - Weekly project summaries
-  - Custom notification triggers (e.g., when specific folders are updated)
-
 **Invite System Workflow:**
 1. Client adds email address to project invitation list
 2. User receives invitation email with verification code
@@ -221,7 +212,57 @@ Perfect for temporary project collaborations - no forced registration, delegated
 - [ ] Allow WordPress users to also use email verification for projects they're not WordPress members of
 - [ ] Single sign-on when both WordPress and WRAP authentication are present
 
-## 5. Infrastructure 
+## 5. Long-term new features and improvements
+
+Those features might be planned for a next major release.
+
+### Email and Notification System
+- [ ] `engine/notification/email_notifier.php` - Email notification system
+- [ ] Per-project email lists managed by clients
+- [ ] Automated notifications when daily sessions are complete
+- [ ] Client-configurable notification preferences:
+    - Immediate notifications of new uploads
+    - Daily digest when processing is complete
+    - Weekly project summaries
+    - Custom notification triggers (e.g., when specific folders are updated)
+
+### User-submitted videos
+Allow external users to submit videos for a project (on invite/open).
+- Videos uploads
+- Direct video recording from the website
+
+### File transfer platforms integration
+- [ ] Wetransfer (adapt current scripts)
+- [ ] Google Drive
+- [ ] One Drive
+- [ ] Infomaniak
+- [ ] DropBox
+
+### Autonomous paid service
+- Flat fee per project or per session
+- Proportional rate per disk usage or video processing
+- Autonomous usage: clients gets editor rights on project
+- Default project duration (1 month)
+- Automatic archiving after paid duration
+
+### Scheduled backups
+- Backup original files (uploads) and pages configurations (playlists, project setup)
+- Every hour during project
+- Keep snapshots of last few hours, last few days, last few weeks
+
+### Project archiving
+- Keep generated pages
+- Optional keep original files and config
+- Clean cache, temporary and intermediate build files
+- Manual or automatic (grace after project duration, with or without notification)
+
+### Comedians database
+- profile pages
+- showreel
+- photobook
+- search features (size, hair/eyes color, ethnicity, ...)
+
+## 6. Infrastructure 
 
 ### Core Foundation (Support Classes)
 
@@ -291,7 +332,7 @@ Perfect for temporary project collaborations - no forced registration, delegated
   - [ ] Optimize media processing pipeline
   - [ ] Add CDN support
 
-## 6. Interfaces
+## 7. Interfaces
 
 ### Web Interface Layer (When Needed)
 
@@ -324,7 +365,7 @@ Perfect for temporary project collaborations - no forced registration, delegated
   - [ ] Replace legacy functions one by one
 - [ ] Delete legacy code (once the new structure is completely implemented)
 
-## 7. Testing & Documentation
+## 8. Testing & Documentation
 - [ ] Quality assurance
   - [ ] Unit tests for all new classes
   - [ ] Integration tests for workflows
@@ -364,9 +405,9 @@ Perfect for temporary project collaborations - no forced registration, delegated
 
 ### 2. Functions Refactoring (`inc/functions.php`)
 **Core Functions to Extract:**
-- [ ] `parseAtom()` → `engine/models/video.php::parseAtomData()`
-- [ ] `generateFileName()`, `generateFolderName()` → `engine/models/file.php::generateName()`
-- [ ] `matchesPattern()`, `matchesIgnorePattern()` → `engine/models/directory.php::matchesPattern()`
+- [ ] `parseAtom()` → `engine/models/video.php::parseAtomData()` (COMPLEX - video parsing)
+- [ ] `generateFileName()` → `engine/models/file.php::generateName()` (SIMPLE - string manipulation)
+- [ ] `matchesPattern()` → `engine/models/directory.php::matchesPattern()` (MEDIUM - regex logic)
 - [ ] `stripVariantSuffix()`, `findVariants()` → `engine/models/file.php::handleVariants()`
 - [ ] `is_playable()`, `is_downloadable()` → `engine/models/file.php::getFileType()`
 - [ ] `getPageSettings()` → `engine/core/config.php::getPageSettings()`
