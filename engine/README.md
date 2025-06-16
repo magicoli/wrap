@@ -18,7 +18,20 @@ This folder contains the standalone WRAP engine that can be used by third-party 
 - ❌ **Frontend assets** (CSS/JS go in `webui/`)
 - ❌ **Actual data files** (uploaded files, cache, generated content)
 
-## Key principles:
+## Usage:
+
+```php
+// Load the WRAP engine
+require_once 'path/to/wrap-engine/engine.php';
+
+// Engine constants are now available:
+// WRAP_ENGINE (true)
+// WRAP_ENGINE_PATH (/path/to/engine)
+// WRAP_ENGINE_VERSION (5.5.0-dev)
+
+// Use engine classes
+$app = new Wrap\Core\Application();
+```
 - **Framework agnostic** - Can work without web interface
 - **Third-party ready** - Clean API for external usage  
 - **PSR-4 autoloading** - Namespace: `Wrap\`

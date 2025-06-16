@@ -19,10 +19,17 @@ foreach ([__DIR__, dirname(__DIR__)] as $path) {
     // Temporary workaround during development. In production, the
     // engine path will be __DIR__ . '/engine' or similar, not outside
     // the cli directory.
-    if(file_exists($path . '/engine/autoload.php')) {
-        require_once $path . '/engine/autoload.php';
+    if(file_exists($path . '/engine/engine.php')) {
+        require_once $path . '/engine/engine.php';
         break;
     }
+}
+
+// Check if engine loaded properly
+if (!defined('WRAP_ENGINE')) {
+    echo "Error: WRAP Engine not found or misconfigured.\n";
+    echo "Make sure engine/engine.php exists and composer install was run in engine/ folder.\n";
+    exit(1);
 }
 
 use Symfony\Component\Console\Application;

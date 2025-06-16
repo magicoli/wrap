@@ -11,4 +11,7 @@
 
 define('WRAP_VERSION', '5.5.0-dev');
 
+// Load the engine
+require_once __DIR__ . '/engine/engine.php';
+
 require_once __DIR__ . '/legacy/legacy-wrap.php';
