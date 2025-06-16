@@ -3,11 +3,11 @@
         'name' => 'magicoli/wrap-engine',
         'pretty_version' => 'dev-5.5-dev',
         'version' => 'dev-5.5-dev',
-        'reference' => '22a022b67bedcfffc62dbc32eb7147b4093c3945',
+        'reference' => '6bac625266f4e4b318464c862ae4d1171a821713',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'dev' => false,
+        'dev' => true,
     ),
     'versions' => array(
         'alchemy/binary-driver' => array(
@@ -40,7 +40,7 @@
         'magicoli/wrap-engine' => array(
             'pretty_version' => 'dev-5.5-dev',
             'version' => 'dev-5.5-dev',
-            'reference' => '22a022b67bedcfffc62dbc32eb7147b4093c3945',
+            'reference' => '6bac625266f4e4b318464c862ae4d1171a821713',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

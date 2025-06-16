@@ -1435,6 +1435,6 @@
             "install-path": "../symfony/var-exporter"
         }
     ],
-    "dev": false,
+    "dev": true,
     "dev-package-names": []
 }

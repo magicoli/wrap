@@ -23,10 +23,10 @@ Create folder structure for standalone engine
 
 Setup autoloading with Composer
 
-  - [ ] Create `engine/composer.json` for engine-specific dependencies
-  - [ ] Update main `composer.json` with PSR-4 autoloading for `Wrap\` namespace
+  - [X] Create `engine/composer.json` for engine-specific dependencies
+  - [X] Update main `composer.json` with PSR-4 autoloading for `Wrap\` namespace
   - [x] Add namespace mapping: `"Wrap\\": "engine/"`
-  - [ ] Create autoloader bootstrap in `engine/engine.php`
+  - [X] Create autoloader bootstrap in `engine/engine.php`
 
 ## 2. Legacy features fixes (Deployable Individually)
 
@@ -278,9 +278,6 @@ Perfect for temporary project collaborations - no forced registration, delegated
   - [ ] No login required for viewing content (public access)
   - [ ] Login required only for upload functionality
   - [ ] Integration with existing wrap-wp WordPress plugin
-- [ ] Extract from current `modules/fbauth/`
-  - [ ] Modernize Facebook integration
-  - [ ] Add support for other auth providers
 
 ### Modern Features & Improvements
 - [ ] Enhanced functionality
@@ -310,9 +307,9 @@ Perfect for temporary project collaborations - no forced registration, delegated
 
 ### Command Line Tools (When Needed)
 - [ ] CLI utilities (using processing layer)
-  - [ ] `engine/cli/media_processor.php` - Batch media processing
-  - [ ] `engine/cli/directory_sync.php` - Directory synchronization
-  - [ ] `engine/cli/cache_manager.php` - Cache management
+  - [x] `cli/wrap-cli.php` - Main CLI source file
+  - [x] `cli/bin/wrap-cli` - Compiled standalone executable
+  - [ ] additional classes and files for engine features integration
 - [ ] Modernize `bin/` scripts
   - [ ] Convert bash scripts to PHP CLI commands
   - [ ] Use Symfony Console component
@@ -383,7 +380,7 @@ Most current CLI tools will need to be converted in PHP, to be used
 by admin or by automated task directly via the web app.
 
 The final remaining CLI is likely to become one single executable file
-`wrap` with arguments, e.g. `wrap merge output.mp4 video1.mp4 video2.mp4` 
+`wrap-cli` with arguments, e.g. `wrap-cli merge output.mp4 video1.mp4 video2.mp4` 
 would call the corresponding process in engine/.
 
 A lot of current CLI scripts will not be needed at all in the finalized
@@ -406,7 +403,7 @@ So, video-js or its new alternative must not be in modules but in composer
 packages.
 
 **Current Modules:**
-- [ ] `modules/fbauth/` → `engine/auth/facebook.php`
+- [ ] `modules/fbauth/` → `engine/auth/facebook.php` (abandonned)
 - [ ] `modules/aloha.php` → `webui/editor.php`
 - [ ] `modules/videosub.php` → `webui/video_player.php` (subtitle support)
 - [ ] `modules/video-js/` → `webui/video_player.php` (Video.js integration)
