@@ -91,17 +91,48 @@ needs of tasks being processed. No fundamental change must be done inside
 legacy/ folder. If a feature is modified, fixed or enhanced, it has to be
 moved to the new environment at the same time.
 
-  - [ ] directory structure scan
-  - [ ] page rendering
-  - [ ] client video uploads (currently external library)
-  - [ ] global, per client and per project preferences (currently config files)
-  - [ ] pages and sidebar contents (currently pseudo markdown text files)
-  - [ ] playlist editing (currently manual, text file)
-  - [ ] tags and categories (currently pseudo sub directories)
-  - [ ] video editing (currentaly manuel, text files and CLI scripts)
-  - [ ] zip file generation for downloads (currently manual)
-  - [ ] billing and statistics
-  ... (list to be completed)
+### Global, per client and per project config storage
+- [ ] analize options for storage (project config, playlists...)
+- [ ] keep current file-based compatibility
+- [ ] convert file-based configs to new config storage
+
+**Config includes:**
+- [ ] global sitename and logo
+- [ ] client name and logo (superseeds global)
+- [ ] default session-level pages naming ('casting', 'session', 'day'...) (per client/project)
+- [ ] default category type naming ('role', 'category', ...) (per client/project)
+- [ ] multiple categories ('role', 'film', ...) (per client/project)
+- [ ] default tags/categories (per client/project)
+- [ ] playlists (currently in playlist.php as customnames) (per page/session)
+- [ ] submenus (currently in playlist.php customfolders)
+- [ ] file metadata (displayed name, size, date...)
+- [ ] video metadata (file metadata + sources, composition rules, formats)
+- [ ] project owner
+- [ ] project access list (essentially emails for notifications and upload rights)
+
+**About menus:**
+
+Current project/session submenus include 3 different kind of pages according to 
+legacy folder naming:
+- [ ] names without prefix are treated as normal pages
+- [ ] names starting with "selection" or "shortlist" (with or without _ prefix) 
+      will be treated as favorites/custom lists, accessible by a "Favorites" 
+      selector, they are no longer actual pages
+- [ ] other names prefixed with underscore are categories (including roles), 
+      accessible by a "Category" selector, they are no longer treated as actual pages 
+
+### General features migration
+- [ ] directory structure scan
+- [ ] page rendering
+- [ ] client video uploads (currently external library)
+- [ ] global, per client and per project preferences (currently config files)
+- [ ] pages and sidebar contents (currently pseudo markdown text files)
+- [ ] playlist editing (currently manual, text file)
+- [ ] tags and categories (currently pseudo sub directories)
+- [ ] video editing (currentaly manuel, text files and CLI scripts)
+- [ ] zip file generation for downloads (currently manual)
+- [ ] billing and statistics
+... (list to be completed)
 
 ## 4. New features
 
@@ -216,7 +247,7 @@ Perfect for temporary project collaborations - no forced registration, delegated
 
 Those features might be planned for a next major release.
 
-### Email and Notification System
+### Email and Notifications
 - [ ] `engine/notification/email_notifier.php` - Email notification system
 - [ ] Per-project email lists managed by clients
 - [ ] Automated notifications when daily sessions are complete
@@ -225,6 +256,11 @@ Those features might be planned for a next major release.
     - Daily digest when processing is complete
     - Weekly project summaries
     - Custom notification triggers (e.g., when specific folders are updated)
+
+### Trombinoscope
+- [ ] multiple print formats (grid, list, with or without comedian/video details)
+- [ ] print putton on each page with media content
+- [ ] exclude site header, footer and navigation from print
 
 ### User-submitted videos
 Allow external users to submit videos for a project (on invite/open).
