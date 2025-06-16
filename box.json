@@ -1,0 +1,31 @@
+{
+    "main": "cli/wrap-cli.php",
+    "output": "cli/bin/wrap-cli",
+    "force-autodiscovery": true,
+    "directories": [
+        "engine",
+        "cli"
+    ],
+    "files": [
+        "cli/wrap-cli.php"
+    ],
+    "finder": [
+        {
+            "name": "*.php",
+            "in": "cli",
+            "exclude": [
+                "tests",
+                "test",
+                "Tests",
+                "tmp",
+                "dev"
+            ]
+        }
+    ],
+    "stub": true,
+    "banner": "WRAP CLI - Web Responsive Application Platform",
+    "compression": "GZ",
+    "compactors": [
+        "KevinGH\\Box\\Compactor\\Php"
+    ]
+}

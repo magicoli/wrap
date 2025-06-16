@@ -15,12 +15,20 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 // Load engine
-foreach ([__DIR__, dirname(__DIR__)] as $path) {
-    // Temporary workaround during development. In production, the
-    // engine path will be __DIR__ . '/engine' or similar, not outside
-    // the cli directory.
-    if(file_exists($path . '/engine/engine.php')) {
-        require_once $path . '/engine/engine.php';
+$enginePaths = [
+    // PHAR context - try different possible paths
+    // 'phar://' . \Phar::running(false) . '/engine/engine.php',
+    // 'phar://' . \Phar::running(false) . '/../engine/engine.php',
+
+    // Production context - engine is in the same directory
+    __DIR__ . '/engine/engine.php',
+    // Development context - engine is outside CLI directory
+    dirname(__DIR__) . '/engine/engine.php'
+];
+
+foreach ($enginePaths as $enginePath) {
+    if (file_exists($enginePath)) {
+        require_once $enginePath;
         break;
     }
 }
@@ -28,6 +36,9 @@ foreach ([__DIR__, dirname(__DIR__)] as $path) {
 // Check if engine loaded properly
 if (!defined('WRAP_ENGINE')) {
     echo "Error: WRAP Engine not found or misconfigured.\n";
+    foreach ($enginePaths as $path) {
+        echo " - $path\n";
+    }
     echo "Make sure engine/engine.php exists and composer install was run in engine/ folder.\n";
     exit(1);
 }
