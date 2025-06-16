@@ -6,18 +6,23 @@
  * Single CLI executable for WRAP commands.
  * 
  * Usage:
- *   ./wrap media:convert video.mov --format=mp4
- *   ./wrap cache:clear --type=thumbnails
- *   ./wrap user:invite john@example.com --project=demo
+ *   ./cli/wrap-cli.php media:convert video.mov --format=mp4
+ *   ./cli/wrap-cli.php cache:clear --type=thumbnails
+ *   ./cli/wrap-cli.php user:invite john@example.com --project=demo
  */
 
-define('WRAP_CLI_PATH', __DIR__);
-require_once WRAP_CLI_PATH . '/vendor/autoload.php';
+// Load CLI dependencies
+require_once __DIR__ . '/vendor/autoload.php';
 
-if(!defined('WRAP_ENGINE_PATH')) {
-    // Leave the option to define WRAP_ENGINE_PATH externally for other 
-    // flexibility on other projects integrations
-    define('WRAP_ENGINE_PATH', dirname(__DIR__) . '/engine');
+// Load engine
+foreach ([__DIR__, dirname(__DIR__)] as $path) {
+    // Temporary workaround during development. In production, the
+    // engine path will be __DIR__ . '/engine' or similar, not outside
+    // the cli directory.
+    if(file_exists($path . '/engine/autoload.php')) {
+        require_once $path . '/engine/autoload.php';
+        break;
+    }
 }
 
 use Symfony\Component\Console\Application;

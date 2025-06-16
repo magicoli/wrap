@@ -1,12 +1,11 @@
 {
     "name": "magicoli/wrap-engine",
-    "description": "WRAP Engine - Standalone media processing and file management library",
+    "description": "W.R.A.P. Engine - Standalone media processing and file management library",
     "type": "library",
     "license": "AGPL-3.0-or-later",
     "authors": [
         {
             "name": "Olivier van Helden",
-            "email": "olivier@van-helden.net",
             "homepage": "https://magiiic.com"
         }
     ],

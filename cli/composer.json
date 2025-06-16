@@ -1,13 +1,12 @@
 {
     "name": "magicoli/wrap-cli",
-    "description": "WRAP CLI - Command line interface for W.R.A.P. by Magiiic",
+    "description": "W.R.A.P. CLI - Command line tools for W.R.A.P. by Magiiic",
     "type": "library",
     "license": "AGPL-3.0-or-later",
     "authors": [
         {
             "name": "Olivier van Helden",
-            "email": "olivier@van-helden.net",
-            "homepage": "https://magiiic.com"
+            "homepage": "https://magiiic.com/"
         }
     ],
     "require": {
@@ -16,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Wrap\\Cli": "./"
+            "Wrap\\Cli\\": "./"
         }
     },
     "config": {

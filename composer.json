@@ -6,7 +6,7 @@
     "authors": [
         {
             "name": "Olivier van Helden",
-            "email": "olivier@van-helden.net"
+            "homepage": "https://magiiic.com"
         }
     ],
     "autoload": {

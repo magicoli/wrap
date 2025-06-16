@@ -10,7 +10,7 @@
  *   $app = new Wrap\Core\Application();
  */
 
-// Check if we're in a standalone engine installation
+// Load engine's own dependencies
 require_once __DIR__ . '/vendor/autoload.php';
 
 // Define engine constants
