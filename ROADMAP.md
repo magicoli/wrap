@@ -25,7 +25,7 @@ Setup autoloading with Composer
 
   - [ ] Create `engine/composer.json` for engine-specific dependencies
   - [ ] Update main `composer.json` with PSR-4 autoloading for `Wrap\` namespace
-  - [ ] Add namespace mapping: `"Wrap\\": "engine/"`
+  - [x] Add namespace mapping: `"Wrap\\": "engine/"`
   - [ ] Create autoloader bootstrap in `engine/autoload.php`
 
 ## 2. Legacy features fixes (Deployable Individually)
